@@ -79,6 +79,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${playfair.variable} ${lato.variable} h-full scroll-smooth antialiased`}
+      data-scroll-behavior="smooth"
     >
       <body className="bg-background text-foreground min-h-full flex flex-col font-sans">
         <QueryProvider>

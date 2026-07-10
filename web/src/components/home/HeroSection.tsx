@@ -133,6 +133,7 @@ export default function HeroSection() {
                 alt="Premium Indian Spices Flatlay - Nirmal's Spices"
                 fill
                 priority
+                loading="eager"
                 className="object-cover object-center"
                 sizes="(max-width: 768px) 100vw, 550px"
               />
