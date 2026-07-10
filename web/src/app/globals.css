@@ -1,0 +1,174 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-accent: "Lato", sans-serif;
+
+  /* Custom Color Tokens */
+  --color-crimson: #C0392B;
+  --color-crimson-dark: #922B21;
+  --color-crimson-light: #E74C3C;
+  --color-saffron: #E67E22;
+  --color-saffron-light: #F39C12;
+  --color-turmeric: #D4AC0D;
+  --color-gold: #B7950B;
+  --color-gold-light: #F9E79F;
+  --color-bark: #6E3B1F;
+  --color-cream: #FDF6EC;
+  --color-cream-dark: #F5EDD8;
+  --color-parchment: #FAF3E0;
+  --color-charcoal: #1C1C1E;
+  --color-charcoal-mid: #2C2C2E;
+  --color-slate: #3A3A3C;
+  --color-muted: #8A8A8E;
+  --color-border-spice: #E8E0D0;
+
+  /* Theme Mappings */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Shadows & Radius */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 2.0);
+
+  /* Animations */
+  --animate-ticker: ticker 25s linear infinite;
+  --animate-spin-slow: spin 10s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(3deg); }
+  }
+}
+
+:root {
+  --background: #FAF3E0; /* Warm parchment base background */
+  --foreground: #1C1C1E; /* Charcoal text */
+  
+  --card: #FFFFFF;
+  --card-foreground: #1C1C1E;
+  
+  --popover: #FFFFFF;
+  --popover-foreground: #1C1C1E;
+  
+  --primary: #C0392B; /* Crimson theme primary */
+  --primary-foreground: #FFFFFF;
+  
+  --secondary: #FDF6EC; /* Cream secondary */
+  --secondary-foreground: #C0392B;
+  
+  --muted: #E8E0D0;
+  --muted-foreground: #8A8A8E;
+  
+  --accent: #E67E22; /* Saffron accent */
+  --accent-foreground: #FFFFFF;
+  
+  --destructive: #E74C3C;
+  --destructive-foreground: #FFFFFF;
+  
+  --border: #E8E0D0; /* Spice border tone */
+  --input: #E8E0D0;
+  --ring: #C0392B;
+  
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: #121212;
+  --foreground: #F5EDD8;
+  
+  --card: #1C1C1E;
+  --card-foreground: #FDF6EC;
+  
+  --popover: #1C1C1E;
+  --popover-foreground: #FDF6EC;
+  
+  --primary: #E74C3C;
+  --primary-foreground: #121212;
+  
+  --secondary: #2C2C2E;
+  --secondary-foreground: #E74C3C;
+  
+  --muted: #2C2C2E;
+  --muted-foreground: #8A8A8E;
+  
+  --accent: #F39C12;
+  --accent-foreground: #121212;
+  
+  --destructive: #C0392B;
+  --destructive-foreground: #FFFFFF;
+  
+  --border: #3A3A3C;
+  --input: #3A3A3C;
+  --ring: #E74C3C;
+}
+
+@layer base {
+  * {
+    @apply border-border/80 outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  html {
+    @apply font-sans scroll-smooth;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight text-charcoal dark:text-cream-dark;
+  }
+}
+
+/* Custom premium scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--crimson);
+  border-radius: 99px;
+  border: 2px solid var(--cream);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--crimson-dark);
+}
+
+/* Ticker loop setup */
+.announcement-ticker {
+  display: flex;
+  white-space: nowrap;
+  width: max-content;
+  animation: var(--animate-ticker);
+}

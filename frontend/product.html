@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pageTitle">Product | Nirmal's Spices</title>
+  <meta name="description" content="Pure authentic Indian spice from Nirmal's Spices, Harda, Madhya Pradesh.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .ingredients-list { list-style: disc; padding-left: 20px; line-height: 2; color: var(--slate); font-size: 0.9rem; }
+    .benefits-list { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+    .benefit-item {
+      display: flex; align-items: flex-start; gap: 10px; padding: var(--space-md);
+      background: var(--cream); border-radius: var(--radius-md); font-size: 0.85rem;
+    }
+    .benefit-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .usage-tips { display: flex; flex-direction: column; gap: var(--space-md); }
+    .usage-tip {
+      display: flex; gap: var(--space-md); padding: var(--space-md);
+      background: var(--parchment); border-radius: var(--radius-md);
+      border-left: 3px solid var(--crimson); font-size: 0.875rem; color: var(--slate);
+    }
+    .usage-tip-num {
+      width: 28px; height: 28px; background: var(--crimson); color: white;
+      border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+    }
+    .review-card {
+      padding: var(--space-lg); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      margin-bottom: var(--space-md); transition: all var(--transition-fast);
+    }
+    .review-card:hover { border-color: var(--saffron-light); box-shadow: var(--shadow-sm); }
+    .review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm); }
+    .review-author { display: flex; align-items: center; gap: var(--space-sm); }
+    .review-avatar {
+      width: 40px; height: 40px; border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--crimson), var(--saffron)); color: white;
+      display: flex; align-items: center; justify-content: center; font-weight: 700;
+    }
+    .review-meta { font-size: 0.8rem; color: var(--muted); }
+    .review-text { font-size: 0.9rem; color: var(--slate); line-height: 1.7; font-style: italic; }
+    @media (max-width: 600px) { .benefits-list { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<!-- Announcement Bar -->
+<div class="announcement-bar">
+  <div style="overflow:hidden;width:100%;">
+    <div class="announcement-ticker">
+      <span>🌶️ FREE DELIVERY on orders above ₹499 &nbsp;|&nbsp;</span>
+      <span>⭐ 43 Varieties of Authentic Indian Spices &nbsp;|&nbsp;</span>
+      <span>🌶️ FREE DELIVERY on orders above ₹499 &nbsp;|&nbsp;</span>
+      <span>⭐ 43 Varieties of Authentic Indian Spices &nbsp;|&nbsp;</span>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header id="header">
+  <div class="header-main">
+    <div class="container">
+      <div class="flex-between gap-md">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open menu"><i class="ri-menu-line"></i></button>
+        <a href="index.html" class="header-logo">
+          <div class="logo-emblem">🌶️</div>
+          <div class="logo-text"><span class="logo-brand">Nirmal's Spices</span><span class="logo-tagline">Pure • Authentic • Harda, MP</span></div>
+        </a>
+        <div class="header-search">
+          <div class="search-input-wrap">
+            <input type="search" id="searchInput" placeholder="Search spices..." aria-label="Search">
+            <button class="search-btn" aria-label="Search"><i class="ri-search-line"></i></button>
+          </div>
+          <div class="search-dropdown" id="searchDropdown"></div>
+        </div>
+        <nav class="header-actions">
+          <a href="login.html" class="header-action-btn"><span class="icon"><i class="ri-user-3-line"></i></span><span>Account</span></a>
+          <button class="header-action-btn" id="cartToggle" aria-label="Cart"><span class="icon"><i class="ri-shopping-bag-3-line"></i></span><span>Cart</span><span class="header-badge" id="cartBadge" style="display:none">0</span></button>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <nav class="category-nav">
+    <div class="container">
+      <ul class="category-nav-list">
+        <li class="category-nav-item"><a href="index.html">🏠 Home</a></li>
+        <li class="category-nav-item"><a href="collection.html">Categories</a></li>
+        <li class="category-nav-item"><a href="collection.html?cat=blend-spices">🧂 Blend Spices</a></li>
+        <li class="category-nav-item"><a href="collection.html?cat=ground-spices">🌶️ Ground Spices</a></li>
+        <li class="category-nav-item"><a href="collection.html?cat=whole-spices">🌿 Whole Spices</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+  <div class="mobile-nav-drawer">
+    <div class="mobile-nav-header">
+      <div class="header-logo"><div class="logo-emblem" style="width:36px;height:36px;font-size:1rem">🌶️</div><div class="logo-text"><span class="logo-brand" style="font-size:1.1rem">Nirmal's Spices</span></div></div>
+      <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close"><i class="ri-close-line"></i></button>
+    </div>
+    <nav class="mobile-nav-links">
+      <a href="index.html" class="mobile-nav-link"><i class="ri-home-5-line"></i> Home</a>
+      <a href="collection.html" class="mobile-nav-link"><i class="ri-apps-line"></i> All Products</a>
+      <a href="login.html" class="mobile-nav-link"><i class="ri-user-3-line"></i> Login</a>
+    </nav>
+  </div>
+</div>
+
+<main id="main">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">›</span>
+      <a href="collection.html" id="breadCat">Spices</a>
+      <span class="sep">›</span>
+      <span class="current" id="breadProduct">Product</span>
+    </nav>
+  </div>
+
+  <section class="product-detail-section" aria-labelledby="product-title">
+    <div class="container">
+      <div class="product-detail-grid" id="productDetailGrid">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Tabs -->
+  <section style="padding: 0 0 var(--space-3xl)" aria-label="Product details">
+    <div class="container">
+      <div class="detail-tabs" role="tablist" aria-label="Product information tabs">
+        <button class="detail-tab active" data-tab="desc" onclick="switchTab('desc')" role="tab" aria-selected="true">Description</button>
+        <button class="detail-tab" data-tab="ingredients" onclick="switchTab('ingredients')" role="tab" aria-selected="false">Ingredients</button>
+        <button class="detail-tab" data-tab="benefits" onclick="switchTab('benefits')" role="tab" aria-selected="false">Benefits</button>
+        <button class="detail-tab" data-tab="usage" onclick="switchTab('usage')" role="tab" aria-selected="false">Usage Tips</button>
+        <button class="detail-tab" data-tab="reviews" onclick="switchTab('reviews')" role="tab" aria-selected="false">Reviews ⭐</button>
+      </div>
+
+      <div id="tab-desc" class="detail-tab-content active" role="tabpanel">
+        <p style="color:var(--slate);line-height:1.9;font-size:0.95rem" id="productDesc">Loading product description...</p>
+      </div>
+
+      <div id="tab-ingredients" class="detail-tab-content" role="tabpanel">
+        <h3 style="margin-bottom:var(--space-md);color:var(--charcoal)">Key Ingredients</h3>
+        <ul class="ingredients-list" id="ingredientsList">
+          <li>Turmeric (Haldi)</li>
+          <li>Coriander (Dhania)</li>
+          <li>Cumin (Jeera)</li>
+          <li>Red Chili (Lal Mirch)</li>
+          <li>Black Pepper (Kali Mirch)</li>
+          <li>Dry Mango Powder (Amchur)</li>
+          <li>Salt (Namak)</li>
+          <li>Fenugreek Seeds (Methi dana)</li>
+        </ul>
+        <div style="margin-top:var(--space-lg);padding:var(--space-md);background:var(--cream);border-radius:var(--radius-md);font-size:0.85rem;color:var(--muted)">
+          ⚠️ <strong>Allergen Info:</strong> This product is manufactured in a facility that processes tree nuts and wheat. Contains no artificial colors, flavors, or preservatives.
+        </div>
+      </div>
+
+      <div id="tab-benefits" class="detail-tab-content" role="tabpanel">
+        <h3 style="margin-bottom:var(--space-lg);color:var(--charcoal)">Health & Culinary Benefits</h3>
+        <div class="benefits-list">
+          <div class="benefit-item"><span class="benefit-icon">💪</span><span>Rich in antioxidants that help protect cells from damage</span></div>
+          <div class="benefit-item"><span class="benefit-icon">🫁</span><span>Anti-inflammatory properties support overall wellness</span></div>
+          <div class="benefit-item"><span class="benefit-icon">🍽️</span><span>Enhances digestive health and gut microbiome</span></div>
+          <div class="benefit-item"><span class="benefit-icon">🌿</span><span>100% natural — no artificial additives or preservatives</span></div>
+          <div class="benefit-item"><span class="benefit-icon">✨</span><span>Rich aroma and authentic flavor elevates any dish</span></div>
+          <div class="benefit-item"><span class="benefit-icon">🏠</span><span>Freshly ground to preserve essential oils and nutrients</span></div>
+        </div>
+      </div>
+
+      <div id="tab-usage" class="detail-tab-content" role="tabpanel">
+        <h3 style="margin-bottom:var(--space-lg);color:var(--charcoal)">How to Use</h3>
+        <div class="usage-tips">
+          <div class="usage-tip">
+            <div class="usage-tip-num">1</div>
+            <div><strong>Start with Oil:</strong> Heat oil in a pan on medium flame before adding the masala for best flavor release and to prevent burning.</div>
+          </div>
+          <div class="usage-tip">
+            <div class="usage-tip-num">2</div>
+            <div><strong>Right Amount:</strong> Use 1–2 teaspoons per serving as a starting point and adjust to your taste preference.</div>
+          </div>
+          <div class="usage-tip">
+            <div class="usage-tip-num">3</div>
+            <div><strong>Add Mid-Cook:</strong> For curries, add after the onions are golden brown. For dry vegetables, add alongside the main ingredient.</div>
+          </div>
+          <div class="usage-tip">
+            <div class="usage-tip-num">4</div>
+            <div><strong>Finish with Heat:</strong> A pinch sprinkled at the end gives an aromatic boost. Always cover after adding for 2 minutes.</div>
+          </div>
+          <div class="usage-tip">
+            <div class="usage-tip-num">5</div>
+            <div><strong>Storage:</strong> Store in a cool, dry place away from direct sunlight. Seal tightly after use to preserve freshness and aroma.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-reviews" class="detail-tab-content" role="tabpanel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-xl);flex-wrap:wrap;gap:16px">
+          <div>
+            <div style="font-size:3rem;font-weight:700;color:var(--charcoal)" id="avgRating">4.8</div>
+            <div style="color:var(--saffron-light);font-size:1.5rem" id="avgStars">★★★★★</div>
+            <div style="color:var(--muted);font-size:0.85rem" id="totalReviews">238 reviews</div>
+          </div>
+          <button class="btn btn-primary" onclick="showToast('Review form coming soon! 📝','info')">
+            <i class="ri-edit-line"></i> Write a Review
+          </button>
+        </div>
+
+        <div id="reviewsList">
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-author">
+                <div class="review-avatar">P</div>
+                <div><div style="font-weight:700;font-size:0.9rem">Priya Sharma</div><div class="review-meta">📍 Bhopal, MP · 3 days ago</div></div>
+              </div>
+              <div style="color:var(--saffron-light);font-size:1rem">★★★★★</div>
+            </div>
+            <p class="review-text">"Absolutely love the authentic flavor! The aroma is incredible and the quality is consistently excellent. I've been a loyal customer for over a year now."</p>
+          </div>
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-author">
+                <div class="review-avatar">R</div>
+                <div><div style="font-weight:700;font-size:0.9rem">Rajesh Kumar</div><div class="review-meta">📍 Indore, MP · 1 week ago</div></div>
+              </div>
+              <div style="color:var(--saffron-light);font-size:1rem">★★★★★</div>
+            </div>
+            <p class="review-text">"Pure and authentic taste. No artificial smell. Great packaging — arrives sealed and fresh every time. Highly recommend to anyone who loves real Indian cooking!"</p>
+          </div>
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-author">
+                <div class="review-avatar">S</div>
+                <div><div style="font-weight:700;font-size:0.9rem">Sunita Patel</div><div class="review-meta">📍 Nagpur, MH · 2 weeks ago</div></div>
+              </div>
+              <div style="color:var(--saffron-light);font-size:1rem">★★★★☆</div>
+            </div>
+            <p class="review-text">"Good quality and true to the authentic taste I remember from childhood. Delivery was fast and the product was well-sealed. Will definitely order again!"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Products -->
+  <section style="padding: var(--space-3xl) 0;background:var(--cream)" aria-labelledby="related-heading">
+    <div class="container">
+      <div class="section-header-alt">
+        <div>
+          <p class="section-eyebrow">You Might Also Like</p>
+          <h2 class="section-title" id="related-heading">Related Products</h2>
+        </div>
+        <a href="collection.html" class="view-all-link">View All <i class="ri-arrow-right-line"></i></a>
+      </div>
+      <div class="products-grid" id="relatedGrid" style="grid-template-columns:repeat(4,1fr)"></div>
+    </div>
+  </section>
+</main>
+
+<!-- Footer minimal -->
+<footer>
+  <div class="container">
+    <div class="footer-bottom">
+      <p class="footer-bottom-text">© 2025 Nirmal's Spices. All rights reserved. Made with ❤️ in Harda, MP.</p>
+      <div class="footer-payment-methods">
+        <span class="payment-badge">UPI</span><span class="payment-badge">Visa</span><span class="payment-badge">COD</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Cart Sidebar -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-sidebar" id="cartSidebar" aria-hidden="true">
+  <div class="cart-header">
+    <h2 class="cart-title"><i class="ri-shopping-bag-3-line"></i> My Cart <span class="cart-count" id="cartItemCount">0</span></h2>
+    <button class="cart-close" id="cartClose" aria-label="Close cart"><i class="ri-close-line"></i></button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty" id="cartEmpty"><div class="cart-empty-icon">🛒</div><h3>Your cart is empty</h3><p>Add some delicious spices!</p></div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-summary">
+      <div class="cart-summary-row"><span>Subtotal</span><span id="cartSubtotal">₹0</span></div>
+      <div class="cart-summary-row"><span>Delivery</span><span id="cartDelivery">₹40</span></div>
+      <div class="cart-summary-row total"><span>Total</span><span class="amount" id="cartTotal">₹0</span></div>
+    </div>
+    <a href="checkout.html" class="cart-checkout-btn"><i class="ri-shield-check-line"></i> Proceed to Checkout</a>
+  </div>
+</aside>
+
+<div class="toast-container" id="toastContainer"></div>
+<a href="https://wa.me/919770057005" class="whatsapp-float" aria-label="WhatsApp" target="_blank" rel="noopener"><i class="ri-whatsapp-fill"></i></a>
+
+<script src="app.js"></script>
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.detail-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+  document.querySelectorAll('.detail-tab-content').forEach(c => c.classList.remove('active'));
+  const btn = document.querySelector(`[data-tab="${tab}"]`);
+  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected','true'); }
+  const content = document.getElementById(`tab-${tab}`);
+  if (content) content.classList.add('active');
+}
+
+function renderProductDetail(product) {
+  const grid = document.getElementById('productDetailGrid');
+  if (!grid || !product) return;
+
+  const discount = Math.round((1 - product.price / product.mrp) * 100);
+  document.title = `${product.name} | Nirmal's Spices`;
+  document.getElementById('pageTitle').textContent = `${product.name} | Nirmal's Spices`;
+
+  const breadCat = document.getElementById('breadCat');
+  const breadProd = document.getElementById('breadProduct');
+  if (breadCat) { breadCat.textContent = CATEGORY_LABELS[product.category] || 'Spices'; breadCat.href = `collection.html?cat=${product.category}`; }
+  if (breadProd) breadProd.textContent = product.name;
+
+  const avgR  = document.getElementById('avgRating');
+  const avgS  = document.getElementById('avgStars');
+  const totR  = document.getElementById('totalReviews');
+  const desc  = document.getElementById('productDesc');
+  if (avgR)  avgR.textContent  = product.rating;
+  if (avgS)  avgS.textContent  = '★'.repeat(Math.floor(product.rating)) + '☆'.repeat(5 - Math.floor(product.rating));
+  if (totR)  totR.textContent  = `${product.reviews} reviews`;
+  if (desc)  desc.textContent  = product.desc + ' Sourced from trusted farmers in Harda, Madhya Pradesh and processed in our state-of-the-art hygienic facility. No artificial colors, flavors, or preservatives. Lab-tested for purity and authenticity.';
+
+  grid.innerHTML = `
+    <div>
+      <div class="product-gallery-main">
+        <img src="${product.img}" alt="${product.name}" id="mainGalleryImg" width="400" height="400">
+      </div>
+      <div class="product-gallery-thumbs">
+        ${[product.img, product.img, product.img].map((img, i) => `
+          <div class="gallery-thumb ${i===0?'active':''}" onclick="setGalleryImg('${img}', this)">
+            <img src="${img}" alt="${product.name} view ${i+1}" loading="lazy">
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="product-detail-info">
+      <div class="product-detail-category">${CATEGORY_LABELS[product.category] || 'Spice'}</div>
+      <h1 class="product-detail-name" id="product-title">${product.name}</h1>
+
+      <div class="product-detail-rating">
+        <span style="color:var(--saffron-light);font-size:1.1rem" aria-label="${product.rating} stars">${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5-Math.floor(product.rating))}</span>
+        <span style="font-size:0.85rem;color:var(--muted)">${product.rating} · ${product.reviews} reviews</span>
+        <span style="font-size:0.75rem;background:var(--success);color:white;padding:3px 10px;border-radius:999px;font-weight:700">✓ Verified</span>
+      </div>
+
+      <div class="product-detail-price">
+        <span class="price-current">₹${product.price}</span>
+        ${product.mrp > product.price ? `<span class="price-original">MRP ₹${product.mrp}</span>` : ''}
+        ${discount > 0 ? `<span class="price-off">${discount}% off</span>` : ''}
+      </div>
+
+      <p class="product-detail-desc">${product.desc}</p>
+
+      <div style="margin-bottom:var(--space-lg)">
+        <p style="font-size:0.85rem;font-weight:600;color:var(--charcoal);margin-bottom:var(--space-sm)">Weight</p>
+        <div class="weight-options" id="weightOptions">
+          <button class="weight-option active">${product.weight}</button>
+          ${product.weight !== '200g' ? '<button class="weight-option">200g</button>' : ''}
+          ${product.weight !== '500g' ? '<button class="weight-option">500g</button>' : ''}
+          ${product.weight !== '1 Kg' ? '<button class="weight-option">1 Kg</button>' : ''}
+        </div>
+      </div>
+
+      <div class="product-detail-qty">
+        <p style="font-size:0.85rem;font-weight:600;color:var(--charcoal)">Quantity</p>
+        <div class="qty-control-lg" role="group" aria-label="Quantity">
+          <button class="qty-btn" onclick="changeDetailQty(-1)" aria-label="Decrease">−</button>
+          <span class="qty-value" id="detailQty" aria-live="polite">1</span>
+          <button class="qty-btn" onclick="changeDetailQty(1)" aria-label="Increase">+</button>
+        </div>
+      </div>
+
+      <div class="product-detail-actions">
+        <button class="btn btn-primary btn-lg" onclick="addDetailToCart(${product.id})">
+          <i class="ri-shopping-bag-3-line"></i> Add to Cart
+        </button>
+        <button class="btn btn-gold btn-lg" onclick="buyNow(${product.id})">
+          <i class="ri-lightning-line"></i> Buy Now
+        </button>
+        <button class="btn btn-secondary btn-icon btn-lg" onclick="toggleWishlist(${product.id})" id="detailWishBtn" aria-label="Add to wishlist">
+          <i class="ri-heart-line"></i>
+        </button>
+      </div>
+
+      <div class="product-trust-badges">
+        <div class="trust-badge-item"><span class="icon">✅</span> 100% Pure & Natural</div>
+        <div class="trust-badge-item"><span class="icon">✅</span> No Preservatives</div>
+        <div class="trust-badge-item"><span class="icon">✅</span> Lab Tested</div>
+        <div class="trust-badge-item"><span class="icon">✅</span> Eco-Friendly Pkg</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:var(--space-sm);font-size:0.875rem;color:var(--slate)">
+        <div style="display:flex;align-items:center;gap:8px">
+          <i class="ri-truck-line" style="color:var(--success)"></i>
+          <span>Free delivery on orders above ₹499. Expected in <strong>3–5 business days</strong></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <i class="ri-arrow-go-back-line" style="color:var(--info)"></i>
+          <span>7-day easy return policy. <a href="#" style="color:var(--crimson)">Learn more</a></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <i class="ri-shield-check-line" style="color:var(--crimson)"></i>
+          <span>Secure checkout with SSL encryption</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Weight option interactivity
+  document.querySelectorAll('.weight-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.weight-option').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+}
+
+let detailQty = 1;
+function changeDetailQty(delta) {
+  detailQty = Math.max(1, Math.min(10, detailQty + delta));
+  const el = document.getElementById('detailQty');
+  if (el) el.textContent = detailQty;
+}
+
+function addDetailToCart(productId) {
+  addToCart(productId, detailQty);
+  openCart();
+}
+
+function buyNow(productId) {
+  addToCart(productId, detailQty);
+  window.location.href = 'checkout.html';
+}
+
+function setGalleryImg(src, thumb) {
+  const mainImg = document.getElementById('mainGalleryImg');
+  if (mainImg) { mainImg.style.opacity = 0; setTimeout(() => { mainImg.src = src; mainImg.style.opacity = 1; }, 150); }
+  document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+}
+
+function renderRelated(product) {
+  const grid = document.getElementById('relatedGrid');
+  if (!grid || !product) return;
+  const related = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+  if (related.length === 0) { grid.closest('section').style.display = 'none'; return; }
+  related.forEach(p => {
+    const card = createProductCard(p);
+    grid.appendChild(card);
+  });
+  observeAnimations();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const params  = new URLSearchParams(window.location.search);
+  const slug    = params.get('slug');
+  const product = PRODUCTS.find(p => p.slug === slug) || PRODUCTS[5]; // fallback to Chicken Masala
+
+  renderProductDetail(product);
+  renderRelated(product);
+  updateCartUI();
+
+  const cartToggle  = document.getElementById('cartToggle');
+  const cartClose   = document.getElementById('cartClose');
+  const cartOverlay = document.getElementById('cartOverlay');
+  const menuToggle  = document.getElementById('mobileMenuToggle');
+  const navClose    = document.getElementById('mobileNavClose');
+  const navOverlay  = document.getElementById('mobileNavOverlay');
+
+  if (cartToggle)  cartToggle.addEventListener('click', openCart);
+  if (cartClose)   cartClose.addEventListener('click', closeCart);
+  if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
+  if (menuToggle)  menuToggle.addEventListener('click', openMobileNav);
+  if (navClose)    navClose.addEventListener('click', closeMobileNav);
+  if (navOverlay)  navOverlay.addEventListener('click', closeMobileNav);
+
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    let t;
+    searchInput.addEventListener('input', e => { clearTimeout(t); t = setTimeout(() => handleSearch(e.target.value), 250); });
+    document.addEventListener('click', e => { if (!e.target.closest('.header-search')) document.getElementById('searchDropdown')?.classList.remove('open'); });
+  }
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeCart(); closeMobileNav(); }
+  });
+});
+
+window.switchTab = switchTab;
+window.changeDetailQty = changeDetailQty;
+window.addDetailToCart = addDetailToCart;
+window.buyNow = buyNow;
+window.setGalleryImg = setGalleryImg;
+</script>
+</body>
+</html>

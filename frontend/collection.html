@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Spices | Nirmal's Spices – Premium Indian Spice Collection</title>
+  <meta name="description" content="Browse all 43 varieties of authentic Indian spices from Nirmal's Spices. Ground spices, blend masalas, whole spices, instant mixes, flour and salts from Harda, MP.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .collection-hero {
+      background: linear-gradient(135deg, var(--crimson-dark) 0%, var(--crimson) 60%, var(--saffron) 100%);
+      padding: var(--space-2xl) 0;
+      text-align: center;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+    .collection-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='2' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .collection-page-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: var(--white);
+      margin-bottom: var(--space-sm);
+    }
+    .collection-controls {
+      display: flex;
+      gap: var(--space-md);
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-lg) 0;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: var(--space-xl);
+    }
+    .filter-chips {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+    .filter-chip {
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      border: 1.5px solid var(--border);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-family: var(--font-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .filter-chip:hover { border-color: var(--crimson); color: var(--crimson); }
+    .filter-chip.active { background: var(--crimson); color: var(--white); border-color: var(--crimson); }
+    .sort-select {
+      padding: 10px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      color: var(--charcoal);
+      outline: none;
+      cursor: pointer;
+      background: var(--white);
+    }
+    .collection-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: var(--space-xl);
+      padding: var(--space-xl) 0 var(--space-3xl);
+    }
+    .filter-sidebar {
+      position: sticky;
+      top: 100px;
+    }
+    .filter-panel {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--space-md);
+      border: 1px solid var(--border);
+    }
+    .filter-panel-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: var(--font-accent);
+      margin-bottom: var(--space-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .filter-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .filter-option {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--slate);
+      transition: color var(--transition-fast);
+    }
+    .filter-option:hover { color: var(--crimson); }
+    .filter-option input { width: 16px; height: 16px; accent-color: var(--crimson); }
+    .price-range-inputs {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+    .price-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .price-input:focus { border-color: var(--crimson); }
+    .products-count {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    @media (max-width: 992px) {
+      .collection-layout { grid-template-columns: 1fr; }
+      .filter-sidebar { display: none; position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Announcement Bar -->
+<div class="announcement-bar">
+  <div style="overflow:hidden;width:100%;">
+    <div class="announcement-ticker">
+      <span>🌶️ FREE DELIVERY on orders above ₹499 &nbsp;|&nbsp;</span>
+      <span>⭐ 43 Varieties of Authentic Indian Spices &nbsp;|&nbsp;</span>
+      <span>🌿 100% Pure & Natural &nbsp;|&nbsp;</span>
+      <span>🌶️ FREE DELIVERY on orders above ₹499 &nbsp;|&nbsp;</span>
+      <span>⭐ 43 Varieties of Authentic Indian Spices &nbsp;|&nbsp;</span>
+      <span>🌿 100% Pure & Natural &nbsp;|&nbsp;</span>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header id="header">
+  <div class="header-main">
+    <div class="container">
+      <div class="flex-between gap-md">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open menu"><i class="ri-menu-line"></i></button>
+        <a href="index.html" class="header-logo">
+          <div class="logo-emblem">🌶️</div>
+          <div class="logo-text">
+            <span class="logo-brand">Nirmal's Spices</span>
+            <span class="logo-tagline">Pure • Authentic • Harda, MP</span>
+          </div>
+        </a>
+        <div class="header-search">
+          <div class="search-input-wrap">
+            <input type="search" id="searchInput" placeholder="Search spices..." aria-label="Search">
+            <button class="search-btn" id="searchBtn" aria-label="Search"><i class="ri-search-line"></i></button>
+          </div>
+          <div class="search-dropdown" id="searchDropdown"></div>
+        </div>
+        <nav class="header-actions">
+          <a href="login.html" class="header-action-btn"><span class="icon"><i class="ri-user-3-line"></i></span><span>Account</span></a>
+          <button class="header-action-btn" id="wishlistBtn" aria-label="Wishlist"><span class="icon"><i class="ri-heart-line"></i></span><span>Wishlist</span><span class="header-badge" id="wishlistBadge" style="display:none">0</span></button>
+          <button class="header-action-btn" id="cartToggle" aria-label="Cart"><span class="icon"><i class="ri-shopping-bag-3-line"></i></span><span>Cart</span><span class="header-badge" id="cartBadge" style="display:none">0</span></button>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <nav class="category-nav">
+    <div class="container">
+      <ul class="category-nav-list">
+        <li class="category-nav-item"><a href="index.html">🏠 Home</a></li>
+        <li class="category-nav-item active"><a href="collection.html">Categories</a></li>
+        <li class="category-nav-item"><a href="collection.html?cat=blend-spices">🧂 Blend Spices</a></li>
+        <li class="category-nav-item"><a href="collection.html?cat=ground-spices">🌶️ Ground Spices</a></li>
+        <li class="category-nav-item"><a href="collection.html?cat=whole-spices">🌿 Whole Spices</a></li>
+        <li class="category-nav-item"><a href="collection.html?cat=instant-mix">⚡ Instant Mix</a></li>
+        <li class="category-nav-item"><a href="contact.html">📞 Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+  <div class="mobile-nav-drawer">
+    <div class="mobile-nav-header">
+      <div class="header-logo"><div class="logo-emblem" style="width:36px;height:36px;font-size:1rem">🌶️</div><div class="logo-text"><span class="logo-brand" style="font-size:1.1rem">Nirmal's Spices</span></div></div>
+      <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu"><i class="ri-close-line"></i></button>
+    </div>
+    <nav class="mobile-nav-links">
+      <a href="index.html" class="mobile-nav-link"><i class="ri-home-5-line"></i> Home</a>
+      <a href="collection.html" class="mobile-nav-link active"><i class="ri-apps-line"></i> All Products</a>
+      <a href="collection.html?cat=blend-spices" class="mobile-nav-link"><i class="ri-restaurant-line"></i> Blend Spices</a>
+      <a href="collection.html?cat=ground-spices" class="mobile-nav-link"><i class="ri-fire-line"></i> Ground Spices</a>
+      <a href="collection.html?cat=whole-spices" class="mobile-nav-link"><i class="ri-leaf-line"></i> Whole Spices</a>
+      <a href="login.html" class="mobile-nav-link"><i class="ri-user-3-line"></i> Login / Register</a>
+    </nav>
+    <div class="mobile-nav-footer"><p style="font-size:0.8rem;color:var(--muted)">📞 +91 9770057005</p></div>
+  </div>
+</div>
+
+<main id="main">
+  <!-- Collection Hero -->
+  <section class="collection-hero" aria-labelledby="collection-title">
+    <div class="container" style="position:relative;z-index:1">
+      <nav class="breadcrumb" style="justify-content:center;color:rgba(255,255,255,0.7)" aria-label="Breadcrumb">
+        <a href="index.html" style="color:rgba(255,255,255,0.7)">Home</a>
+        <span class="sep">›</span>
+        <span class="current" style="color:white" id="breadcrumbCurrent">All Products</span>
+      </nav>
+      <h1 class="collection-page-title" id="collection-title" id="collectionTitle">Our Spice Collection</h1>
+      <p style="color:rgba(255,255,255,0.8);font-size:1rem;max-width:540px;margin:0 auto">
+        43 varieties of authentic, locally sourced Indian spices — hygienically processed for freshness and unmatched flavor
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Collection Layout -->
+  <div class="container">
+    <div class="collection-layout">
+
+      <!-- Filter Sidebar -->
+      <aside class="filter-sidebar" aria-label="Filters">
+        <div class="filter-panel">
+          <div class="filter-panel-title">
+            <span>Category</span>
+            <i class="ri-arrow-down-s-line"></i>
+          </div>
+          <div class="filter-options">
+            <label class="filter-option"><input type="checkbox" value="blend-spices" class="cat-filter" checked> Blend Spices <span style="margin-left:auto;color:var(--muted);font-size:0.75rem">(23)</span></label>
+            <label class="filter-option"><input type="checkbox" value="ground-spices" class="cat-filter" checked> Ground Spices <span style="margin-left:auto;color:var(--muted);font-size:0.75rem">(11)</span></label>
+            <label class="filter-option"><input type="checkbox" value="whole-spices" class="cat-filter" checked> Whole Spices <span style="margin-left:auto;color:var(--muted);font-size:0.75rem">(7)</span></label>
+            <label class="filter-option"><input type="checkbox" value="instant-mix" class="cat-filter" checked> Instant Mix <span style="margin-left:auto;color:var(--muted);font-size:0.75rem">(6)</span></label>
+            <label class="filter-option"><input type="checkbox" value="salts" class="cat-filter" checked> Salts <span style="margin-left:auto;color:var(--muted);font-size:0.75rem">(2)</span></label>
+            <label class="filter-option"><input type="checkbox" value="flour" class="cat-filter" checked> Flour <span style="margin-left:auto;color:var(--muted);font-size:0.75rem">(2)</span></label>
+          </div>
+        </div>
+
+        <div class="filter-panel">
+          <div class="filter-panel-title"><span>Price Range</span></div>
+          <div class="price-range-inputs">
+            <input type="number" class="price-input" id="priceMin" placeholder="₹ Min" min="0" max="1000" value="0">
+            <span style="color:var(--muted)">—</span>
+            <input type="number" class="price-input" id="priceMax" placeholder="₹ Max" min="0" max="1000" value="1000">
+          </div>
+          <button class="btn btn-primary btn-sm" style="width:100%;margin-top:12px" onclick="applyPriceFilter()">Apply Filter</button>
+        </div>
+
+        <div class="filter-panel">
+          <div class="filter-panel-title"><span>Rating</span></div>
+          <div class="filter-options">
+            <label class="filter-option"><input type="radio" name="rating" value="4.5"> 4.5★ & Above</label>
+            <label class="filter-option"><input type="radio" name="rating" value="4.0"> 4.0★ & Above</label>
+            <label class="filter-option"><input type="radio" name="rating" value="all" checked> All Ratings</label>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary" style="width:100%" onclick="clearFilters()">
+          <i class="ri-refresh-line"></i> Clear All Filters
+        </button>
+      </aside>
+
+      <!-- Products Area -->
+      <div>
+        <!-- Controls -->
+        <div class="collection-controls">
+          <div class="filter-chips" id="filterChips" role="group" aria-label="Category filter">
+            <button class="filter-chip active" data-cat="all" onclick="setCatFilter(this,'all')">All (43)</button>
+            <button class="filter-chip" data-cat="blend-spices" onclick="setCatFilter(this,'blend-spices')">Blend (23)</button>
+            <button class="filter-chip" data-cat="ground-spices" onclick="setCatFilter(this,'ground-spices')">Ground (11)</button>
+            <button class="filter-chip" data-cat="whole-spices" onclick="setCatFilter(this,'whole-spices')">Whole (7)</button>
+            <button class="filter-chip" data-cat="instant-mix" onclick="setCatFilter(this,'instant-mix')">Instant Mix (6)</button>
+            <button class="filter-chip" data-cat="salts" onclick="setCatFilter(this,'salts')">Salts (2)</button>
+            <button class="filter-chip" data-cat="flour" onclick="setCatFilter(this,'flour')">Flour (2)</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--space-md)">
+            <span class="products-count" id="productsCount">Showing 16 products</span>
+            <select class="sort-select" id="sortSelect" onchange="applySortFilter()" aria-label="Sort products">
+              <option value="default">Sort: Featured</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+              <option value="discount">Best Discount</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="collectionGrid" role="list" aria-label="Products">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Load More -->
+        <div style="text-align:center;margin-top:var(--space-2xl)">
+          <button class="btn btn-secondary btn-lg" id="loadMoreBtn" onclick="loadMore()">
+            Load More Products <i class="ri-arrow-down-line"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-top">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-lg)">
+        <a href="index.html" class="header-logo">
+          <div class="logo-emblem">🌶️</div>
+          <div class="logo-text"><span class="logo-brand">Nirmal's Spices</span><span class="logo-tagline">Pure • Authentic • Harda, MP</span></div>
+        </a>
+        <div style="display:flex;gap:var(--space-md)">
+          <a href="index.html" class="footer-link">Home</a>
+          <a href="collection.html" class="footer-link">Products</a>
+          <a href="contact.html" class="footer-link">Contact</a>
+          <a href="login.html" class="footer-link">Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="footer-bottom">
+      <p class="footer-bottom-text">© 2025 Nirmal's Spices. All rights reserved.</p>
+      <div class="footer-payment-methods">
+        <span class="payment-badge">UPI</span>
+        <span class="payment-badge">Visa</span>
+        <span class="payment-badge">COD</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Cart Sidebar -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-sidebar" id="cartSidebar" aria-hidden="true">
+  <div class="cart-header">
+    <h2 class="cart-title"><i class="ri-shopping-bag-3-line"></i> My Cart <span class="cart-count" id="cartItemCount">0</span></h2>
+    <button class="cart-close" id="cartClose" aria-label="Close cart"><i class="ri-close-line"></i></button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty" id="cartEmpty">
+      <div class="cart-empty-icon">🛒</div><h3>Your cart is empty</h3><p>Add some delicious spices!</p>
+    </div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-coupon">
+      <input type="text" class="coupon-input" id="couponInput" placeholder="Coupon code" aria-label="Coupon">
+      <button class="btn btn-secondary btn-sm" onclick="applyCoupon()">Apply</button>
+    </div>
+    <div class="cart-summary">
+      <div class="cart-summary-row"><span>Subtotal</span><span id="cartSubtotal">₹0</span></div>
+      <div class="cart-summary-row"><span>Delivery</span><span id="cartDelivery">₹40</span></div>
+      <div class="cart-summary-row total"><span>Total</span><span class="amount" id="cartTotal">₹0</span></div>
+    </div>
+    <a href="checkout.html" class="cart-checkout-btn"><i class="ri-shield-check-line"></i> Proceed to Checkout</a>
+  </div>
+</aside>
+
+<!-- Quick View Modal -->
+<div class="modal-overlay" id="quickViewModal" aria-hidden="true">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose" aria-label="Close"><i class="ri-close-line"></i></button>
+    <div class="modal-product-grid">
+      <div class="modal-product-gallery"><img src="" alt="" class="modal-product-img" id="modalProductImg"></div>
+      <div class="modal-product-info" id="modalProductInfo"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<a href="https://wa.me/919770057005" class="whatsapp-float" aria-label="WhatsApp" target="_blank" rel="noopener"><i class="ri-whatsapp-fill"></i></a>
+
+<script src="app.js"></script>
+<script>
+// Collection page specific logic
+let currentCatFilter = 'all';
+let currentSort      = 'default';
+let displayLimit     = 12;
+let priceMin = 0;
+let priceMax = 10000;
+
+function setCatFilter(btn, cat) {
+  currentCatFilter = cat;
+  displayLimit = 12;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderCollection();
+}
+
+function applySortFilter() {
+  currentSort = document.getElementById('sortSelect').value;
+  renderCollection();
+}
+
+function applyPriceFilter() {
+  priceMin = parseInt(document.getElementById('priceMin')?.value || 0);
+  priceMax = parseInt(document.getElementById('priceMax')?.value || 10000);
+  renderCollection();
+}
+
+function clearFilters() {
+  currentCatFilter = 'all';
+  currentSort = 'default';
+  priceMin = 0;
+  priceMax = 10000;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  document.querySelector('[data-cat="all"]')?.classList.add('active');
+  const sortEl = document.getElementById('sortSelect');
+  if (sortEl) sortEl.value = 'default';
+  document.querySelectorAll('.cat-filter').forEach(c => c.checked = true);
+  renderCollection();
+}
+
+function loadMore() {
+  displayLimit += 8;
+  renderCollection();
+}
+
+function getFilteredProducts() {
+  let products = [...PRODUCTS];
+
+  // Category filter
+  if (currentCatFilter !== 'all') {
+    products = products.filter(p => p.category === currentCatFilter);
+  }
+
+  // Price filter
+  products = products.filter(p => p.price >= priceMin && p.price <= priceMax);
+
+  // Sort
+  switch (currentSort) {
+    case 'price-low':  products.sort((a, b) => a.price - b.price); break;
+    case 'price-high': products.sort((a, b) => b.price - a.price); break;
+    case 'rating':     products.sort((a, b) => b.rating - a.rating); break;
+    case 'discount':   products.sort((a, b) => (b.mrp - b.price) - (a.mrp - a.price)); break;
+  }
+
+  return products;
+}
+
+function renderCollection() {
+  const container = document.getElementById('collectionGrid');
+  const countEl   = document.getElementById('productsCount');
+  const loadBtn   = document.getElementById('loadMoreBtn');
+  if (!container) return;
+
+  const all = getFilteredProducts();
+  const shown = all.slice(0, displayLimit);
+
+  container.innerHTML = '';
+  shown.forEach((p, i) => {
+    const card = createProductCard(p);
+    card.classList.add('animate-on-scroll');
+    container.appendChild(card);
+  });
+
+  if (countEl) countEl.textContent = `Showing ${shown.length} of ${all.length} products`;
+  if (loadBtn) loadBtn.style.display = shown.length < all.length ? 'inline-flex' : 'none';
+
+  observeAnimations();
+}
+
+// Init from URL params
+function initCollection() {
+  const params = new URLSearchParams(window.location.search);
+  const cat    = params.get('cat');
+  const titleEl = document.getElementById('collectionTitle');
+  const breadEl = document.getElementById('breadcrumbCurrent');
+
+  if (cat) {
+    currentCatFilter = cat;
+    const catChip = document.querySelector(`[data-cat="${cat}"]`);
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    if (catChip) catChip.classList.add('active');
+
+    const label = window.CATEGORY_LABELS?.[cat] || cat;
+    if (titleEl) titleEl.textContent = label;
+    if (breadEl) breadEl.textContent = label;
+  }
+
+  renderCollection();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initCollection();
+  updateCartUI();
+
+  const cartToggle = document.getElementById('cartToggle');
+  const cartClose  = document.getElementById('cartClose');
+  const cartOverlay = document.getElementById('cartOverlay');
+  const modalClose = document.getElementById('modalClose');
+  const modal = document.getElementById('quickViewModal');
+  const menuToggle = document.getElementById('mobileMenuToggle');
+  const navClose = document.getElementById('mobileNavClose');
+  const navOverlay = document.getElementById('mobileNavOverlay');
+
+  if (cartToggle)  cartToggle.addEventListener('click', openCart);
+  if (cartClose)   cartClose.addEventListener('click', closeCart);
+  if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
+  if (modalClose)  modalClose.addEventListener('click', closeQuickView);
+  if (modal) modal.addEventListener('click', e => { if (e.target === modal) closeQuickView(); });
+  if (menuToggle)  menuToggle.addEventListener('click', openMobileNav);
+  if (navClose)    navClose.addEventListener('click', closeMobileNav);
+  if (navOverlay)  navOverlay.addEventListener('click', closeMobileNav);
+
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    let t;
+    searchInput.addEventListener('input', e => { clearTimeout(t); t = setTimeout(() => handleSearch(e.target.value), 250); });
+    document.addEventListener('click', e => { if (!e.target.closest('.header-search')) document.getElementById('searchDropdown')?.classList.remove('open'); });
+  }
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeCart(); closeQuickView(); closeMobileNav(); }
+  });
+});
+
+window.setCatFilter = setCatFilter;
+window.applySortFilter = applySortFilter;
+window.applyPriceFilter = applyPriceFilter;
+window.clearFilters = clearFilters;
+window.loadMore = loadMore;
+</script>
+</body>
+</html>

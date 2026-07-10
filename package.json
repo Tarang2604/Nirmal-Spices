@@ -1,0 +1,13 @@
+{
+  "name": "nirmals-spices-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:web": "npm run dev --prefix web",
+    "dev:api": "npm run dev --prefix api",
+    "dev": "npx concurrently \"npm run dev:web\" \"npm run dev:api\"",
+    "install:all": "npm install --prefix web && npm install --prefix api",
+    "build:web": "npm run build --prefix web",
+    "build:api": "npm run build --prefix api"
+  }
+}
