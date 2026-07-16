@@ -140,8 +140,14 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
     await session.commitTransaction();
     session.endSession();
 
-    // If COD, send confirmation email async immediately
+    // If COD, send confirmation email and clear cart immediately
     if (paymentMethod === 'cod') {
+      // Clear cart after successful COD order
+      const cartSelector = userId
+        ? { userId }
+        : { sessionId: req.headers['x-guest-session-id'] as string };
+      void Cart.findOneAndDelete(cartSelector);
+
       const email = userId ? req.user?.email : guestEmail;
       if (email) void sendOrderConfirmationEmail(email, order);
     }
@@ -382,4 +388,79 @@ export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
   }
 
   return sendSuccess(res, order, 'Order cancelled and stock restored successfully');
+});
+
+// ── GET GUEST ORDER (Public — verified by email or phone) ────────────
+export const getGuestOrder = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { email, phone } = req.query;
+
+  if (!email && !phone) {
+    throw ApiError.badRequest('Email or phone is required to verify guest order ownership');
+  }
+
+  const order = await Order.findById(id).lean();
+  if (!order) {
+    throw ApiError.notFound('Order not found');
+  }
+
+  // Guest orders only — if order has a user, deny guest lookup
+  if (order.user) {
+    throw ApiError.forbidden('This order is linked to a registered account. Please log in to view it.');
+  }
+
+  // Verify ownership via email or phone
+  const emailMatch = email && order.guestEmail === (email as string).toLowerCase();
+  const phoneMatch = phone && order.guestPhone === (phone as string);
+
+  if (!emailMatch && !phoneMatch) {
+    throw ApiError.forbidden('Email or phone does not match the order record');
+  }
+
+  return sendSuccess(res, order, 'Guest order fetched successfully');
+});
+
+// ── GET ALL ORDERS (Admin — with filters, sorting, pagination) ────────
+export const getAllOrders = asyncHandler(async (req: Request, res: Response) => {
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 20;
+  const skip = (page - 1) * limit;
+
+  const filter: Record<string, any> = {};
+
+  if (req.query.status) filter.status = req.query.status;
+  if (req.query.paymentMethod) filter.paymentMethod = req.query.paymentMethod;
+  if (req.query.paymentStatus) filter.paymentStatus = req.query.paymentStatus;
+
+  // Date range filter
+  if (req.query.from || req.query.to) {
+    filter.createdAt = {};
+    if (req.query.from) filter.createdAt.$gte = new Date(req.query.from as string);
+    if (req.query.to) filter.createdAt.$lte = new Date(req.query.to as string);
+  }
+
+  // Search by order ID prefix or guest email
+  if (req.query.search) {
+    const searchTerm = req.query.search as string;
+    filter.$or = [
+      { guestEmail: { $regex: searchTerm, $options: 'i' } },
+      { guestPhone: { $regex: searchTerm, $options: 'i' } },
+    ];
+    // Also try matching by ObjectId if it looks like one
+    if (/^[0-9a-fA-F]{24}$/.test(searchTerm)) {
+      filter.$or.push({ _id: searchTerm });
+    }
+  }
+
+  const total = await Order.countDocuments(filter);
+  const totalPages = Math.ceil(total / limit);
+
+  const orders = await Order.find(filter)
+    .populate('user', 'name email phone')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  return sendSuccess(res, orders, 'All orders fetched', 200, { page, limit, total, totalPages });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Heart, Star, ShoppingBag, Eye } from 'lucide-react';
@@ -9,13 +9,18 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import type { Product } from '@/data/catalog';
 
+import { useWishlistStore } from '@/store/wishlistStore';
+import { useAuthStore } from '@/store/authStore';
+
 interface ProductCardProps {
   product: Product;
   onQuickView?: (product: Product) => void;
 }
 
 export default function ProductCard({ product, onQuickView }: ProductCardProps) {
-  const [wishlisted, setWishlisted] = useState(false);
+  const { toggleWishlist, has } = useWishlistStore();
+  const { isLoggedIn } = useAuthStore();
+  const wishlisted = has(product._id);
   const { addItem } = useCartStore();
 
   const displayPrice = product.salePrice ?? product.price;
@@ -38,9 +43,9 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
     toast.success(`${product.name} added to cart!`);
   };
 
-  const handleWishlist = (e: React.MouseEvent) => {
+  const handleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
-    setWishlisted(w => !w);
+    await toggleWishlist(product._id, isLoggedIn);
     toast.success(wishlisted ? 'Removed from wishlist' : 'Added to wishlist ❤️');
   };
 

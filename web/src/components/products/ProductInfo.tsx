@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useWishlistStore } from '@/store/wishlistStore';
+import { useAuthStore } from '@/store/authStore';
 import { Heart, Star, ShoppingCart, ShieldCheck, Truck, RotateCcw, Package, Zap } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { cn } from '@/lib/utils';
@@ -13,7 +15,9 @@ interface ProductInfoProps {
 
 export default function ProductInfo({ product }: ProductInfoProps) {
   const [qty, setQty] = useState(1);
-  const [wishlisted, setWishlisted] = useState(false);
+  const { toggleWishlist, has } = useWishlistStore();
+  const { isLoggedIn } = useAuthStore();
+  const wishlisted = has(product._id);
 
   const { addItem } = useCartStore();
 
@@ -31,8 +35,8 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     toast.success(`${qty} × ${product.name} added to cart!`);
   };
 
-  const handleWishlist = () => {
-    setWishlisted(w => !w);
+  const handleWishlist = async () => {
+    await toggleWishlist(product._id, isLoggedIn);
     toast.success(wishlisted ? 'Removed from wishlist' : 'Added to wishlist ❤️');
   };
 

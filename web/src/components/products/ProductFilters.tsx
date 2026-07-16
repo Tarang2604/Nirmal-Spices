@@ -25,6 +25,7 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
     { label: "Whole Spices", value: "whole-spices" },
     { label: "Salts", value: "salts" },
     { label: "Instant Mix", value: "instant-mix" },
+    { label: "Flour", value: "flour" },
   ];
 
   const badges = [

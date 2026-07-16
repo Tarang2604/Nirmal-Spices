@@ -140,7 +140,12 @@ export default function CheckoutPage() {
 
       if (paymentMethod === 'cod') {
         toast.success("Order placed successfully! COD confirmed.");
+        // Store guest info for order confirmation page lookup
+        if (!isLoggedIn && guestEmail) {
+          localStorage.setItem('nirmal_guest_email', guestEmail);
+        }
         await clearCart();
+        setSubmittingOrder(false);
         router.push(`/order/${orderData.orderId}`);
       } else {
         // Trigger Razorpay SDK checkout flow

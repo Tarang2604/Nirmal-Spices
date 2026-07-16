@@ -1,8 +1,9 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
+import { useAuthStore } from '@/store/authStore';
 import { api } from '@/lib/api';
 import { 
   CheckCircle, 
@@ -10,9 +11,10 @@ import {
   CreditCard, 
   Truck, 
   ShoppingBag, 
-  Calendar,
   Loader2,
-  ChevronRight
+  ChevronRight,
+  XCircle,
+  PhoneCall
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -21,14 +23,36 @@ export default function OrderConfirmationPage() {
   const params = useParams();
   const router = useRouter();
   const orderId = params.id as string;
+  const { isLoggedIn } = useAuthStore();
 
-  // Query order details
+  // For guest orders we read stored email/phone from localStorage
+  const [guestEmail, setGuestEmail] = useState('');
+  const [guestPhone, setGuestPhone] = useState('');
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setGuestEmail(localStorage.getItem('nirmal_guest_email') || '');
+      setGuestPhone(localStorage.getItem('nirmal_guest_phone') || '');
+    }
+  }, [isLoggedIn]);
+
+  // Query: authenticated users use /orders/:id, guests use /orders/guest/:id
   const { data: order, isLoading, error } = useQuery({
-    queryKey: ['order-confirmation', orderId],
+    queryKey: ['order-confirmation', orderId, isLoggedIn, guestEmail, guestPhone],
     queryFn: async () => {
-      const res = await api.get(`/orders/${orderId}`);
+      if (isLoggedIn) {
+        const res = await api.get(`/orders/${orderId}`);
+        return res.data.data;
+      }
+      // Guest fallback — verify via stored email or phone
+      const params = new URLSearchParams();
+      if (guestEmail) params.set('email', guestEmail);
+      else if (guestPhone) params.set('phone', guestPhone);
+      const res = await api.get(`/orders/guest/${orderId}?${params.toString()}`);
       return res.data.data;
     },
+    enabled: isLoggedIn || !!guestEmail || !!guestPhone,
+    retry: 1,
   });
 
   if (isLoading) {
@@ -43,16 +67,27 @@ export default function OrderConfirmationPage() {
   if (error || !order) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 font-sans text-center px-4">
+        <div className="bg-red-50 p-4 rounded-full text-red-500 mb-2">
+          <XCircle size={36} />
+        </div>
         <h2 className="font-display font-bold text-xl text-charcoal">Order not found</h2>
         <p className="text-muted-foreground text-xs max-w-xs leading-normal">
-          We couldn&apos;t retrieve details for order ID #{orderId}. If you just placed it, please wait a moment.
+          We couldn&apos;t retrieve details for order ID #{orderId}. If you just placed it, please wait a moment or contact support.
         </p>
-        <button
-          onClick={() => router.push('/')}
-          className="bg-primary text-white text-xs font-semibold font-accent uppercase tracking-wider px-6 py-3 rounded-full mt-2"
-        >
-          Return Home
-        </button>
+        <div className="flex gap-3 mt-2 flex-wrap justify-center">
+          <button
+            onClick={() => router.push('/')}
+            className="bg-primary text-white text-xs font-semibold font-accent uppercase tracking-wider px-6 py-3 rounded-full"
+          >
+            Return Home
+          </button>
+          <a
+            href="tel:+919770057005"
+            className="border border-primary text-primary text-xs font-semibold font-accent uppercase tracking-wider px-6 py-3 rounded-full flex items-center gap-2"
+          >
+            <PhoneCall size={12} /> Call Support
+          </a>
+        </div>
       </div>
     );
   }

@@ -35,6 +35,8 @@
     "pino-http": "^10.3.0",
     "pino-pretty": "^11.2.2",
     "razorpay": "^2.9.4",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "resend": "^3.5.0",
     "slugify": "^1.6.9",
     "uuid": "^10.0.0",

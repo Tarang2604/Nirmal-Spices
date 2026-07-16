@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, sendOtpSchema, verifyOtpSchema } from '@/validators/auth.validator';
 import { useAuthStore } from '@/store/authStore';
 import { useCartStore } from '@/store/cartStore';
+import { useWishlistStore } from '@/store/wishlistStore';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
 import { KeyRound, Mail, Smartphone, Loader2, Lock, ArrowRight, RefreshCw } from 'lucide-react';
@@ -19,6 +20,7 @@ export default function LoginForm() {
 
   const { setUser } = useAuthStore();
   const { fetchCart } = useCartStore();
+  const { fetchWishlist } = useWishlistStore();
 
   const [loginMode, setLoginMode] = useState<'password' | 'otp'>('password');
   const [otpStep, setOtpStep] = useState<'send' | 'verify'>('send');
@@ -39,8 +41,9 @@ export default function LoginForm() {
     try {
       const res = await api.post('/auth/login', data);
       setUser(res.data.data);
-      // Fetch cart to sync guest/user items
+      // Fetch cart and wishlist to sync guest/user items
       await fetchCart();
+      void fetchWishlist();
       toast.success("Welcome back! 🌶️ Logged in successfully.");
       router.push(redirectUrl);
     } catch (err: any) {
@@ -85,6 +88,7 @@ export default function LoginForm() {
       });
       setUser(res.data.data);
       await fetchCart();
+      void fetchWishlist();
       toast.success("Welcome back! Logged in successfully.");
       router.push(redirectUrl);
     } catch (err: any) {
