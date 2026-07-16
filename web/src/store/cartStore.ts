@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { api } from '../lib/api';
+import { PRODUCTS } from '../data/catalog';
 
 export interface ICartItem {
   product: {
@@ -98,6 +99,35 @@ export const useCartStore = create<CartState>()(
             getRequestConfig(sid)
           );
           set({ items: res.data.data.items || [] });
+        } catch (error) {
+          console.warn('Backend cart sync failed, falling back to local cart state:', error);
+          
+          // Local fallback logic using the static catalog
+          const product = PRODUCTS.find((p) => p._id === productId);
+          if (product) {
+            const currentItems = [...get().items];
+            const existingIndex = currentItems.findIndex(
+              (item) => item.product._id === productId && item.weight === weight
+            );
+
+            if (existingIndex > -1) {
+              currentItems[existingIndex].qty += qty;
+            } else {
+              currentItems.push({
+                product: {
+                  _id: product._id,
+                  name: product.name,
+                  slug: product.slug,
+                  category: product.category,
+                  images: product.images,
+                  weights: product.weights,
+                },
+                weight,
+                qty,
+              });
+            }
+            set({ items: currentItems });
+          }
         } finally {
           set({ loading: false });
         }
@@ -115,6 +145,14 @@ export const useCartStore = create<CartState>()(
             getRequestConfig(sid)
           );
           set({ items: res.data.data.items || [] });
+        } catch (error) {
+          console.warn('Backend cart sync failed, falling back to local cart state:', error);
+          const updated = get().items.map((item) =>
+            item.product._id === productId && item.weight === weight
+              ? { ...item, qty }
+              : item
+          );
+          set({ items: updated });
         } finally {
           set({ loading: false });
         }
@@ -131,6 +169,12 @@ export const useCartStore = create<CartState>()(
             getRequestConfig(sid)
           );
           set({ items: res.data.data.items || [] });
+        } catch (error) {
+          console.warn('Backend cart sync failed, falling back to local cart state:', error);
+          const updated = get().items.filter(
+            (item) => !(item.product._id === productId && item.weight === weight)
+          );
+          set({ items: updated });
         } finally {
           set({ loading: false });
         }
@@ -143,6 +187,9 @@ export const useCartStore = create<CartState>()(
         set({ loading: true });
         try {
           await api.delete('/cart/clear', getRequestConfig(sid));
+          set({ items: [], coupon: null });
+        } catch (error) {
+          console.warn('Backend cart sync failed, falling back to local cart state:', error);
           set({ items: [], coupon: null });
         } finally {
           set({ loading: false });
@@ -159,8 +206,12 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'nirmal_cart_store',
-      // Only persist sessionId and coupon locally to avoid desyncs with cart items on multiple tabs
-      partialize: (state) => ({ sessionId: state.sessionId, coupon: state.coupon }),
+      // Persist items, sessionId, and coupon to keep shopping cart working offline
+      partialize: (state) => ({
+        sessionId: state.sessionId,
+        coupon: state.coupon,
+        items: state.items,
+      }),
     }
   )
 );
