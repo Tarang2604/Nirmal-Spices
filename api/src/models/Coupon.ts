@@ -19,7 +19,6 @@ const couponSchema = new Schema<ICoupon>(
     code: {
       type: String,
       required: true,
-      unique: true,
       uppercase: true,
       trim: true,
       maxlength: 20,

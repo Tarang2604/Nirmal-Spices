@@ -56,7 +56,6 @@ const productSchema = new Schema<IProduct>(
     name: { type: String, required: true, trim: true, maxlength: 200 },
     slug: {
       type: String,
-      unique: true,
       lowercase: true,
       trim: true,
     },

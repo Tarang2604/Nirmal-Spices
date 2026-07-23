@@ -7,6 +7,9 @@ import { api } from '@/lib/api';
 import { toast } from 'sonner';
 import { ArrowRight, Mail, Phone, MapPin } from 'lucide-react';
 
+// Evaluated once at module load — same value on server and client
+const CURRENT_YEAR = new Date().getFullYear();
+
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,8 +29,6 @@ export default function Footer() {
       setLoading(false);
     }
   };
-
-  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-charcoal text-cream pt-16 pb-8 border-t border-bark/20 mt-auto" aria-labelledby="footer-heading">
@@ -117,7 +118,7 @@ export default function Footer() {
 
         {/* Footer Bottom Bar */}
         <div className="border-t border-bark/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-muted-foreground">
-          <span>&copy; {currentYear} Nirmal Spices. All Rights Reserved.</span>
+          <span>&copy; {CURRENT_YEAR} Nirmal Spices. All Rights Reserved.</span>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">🌐 Designed for Luxury &amp; Purity</span>
           </div>

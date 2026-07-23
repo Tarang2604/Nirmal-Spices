@@ -102,12 +102,14 @@ export const useCartStore = create<CartState>()(
         } catch (error) {
           console.warn('Backend cart sync failed, falling back to local cart state:', error);
           
-          // Local fallback logic using the static catalog
-          const product = PRODUCTS.find((p) => p._id === productId);
+          // Local fallback using static catalog
+          // Note: backend uses MongoDB ObjectIds; catalog uses slug-based _id (e.g. 'p001')
+          // Try matching by _id first, then by slug embedded in productId (if applicable)
+          const product = PRODUCTS.find((p) => p._id === productId || p.slug === productId);
           if (product) {
             const currentItems = [...get().items];
             const existingIndex = currentItems.findIndex(
-              (item) => item.product._id === productId && item.weight === weight
+              (item) => (item.product._id === productId || item.product.slug === product.slug) && item.weight === weight
             );
 
             if (existingIndex > -1) {
@@ -127,6 +129,9 @@ export const useCartStore = create<CartState>()(
               });
             }
             set({ items: currentItems });
+          } else {
+            // If product not found in catalog either, still add with minimal info
+            console.warn('Product not found in local catalog for fallback:', productId);
           }
         } finally {
           set({ loading: false });

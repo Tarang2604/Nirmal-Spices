@@ -15,7 +15,9 @@ export function validate<T>(schema: ZodSchema<T>, target: ValidateTarget = 'body
 
     if (!result.success) {
       const errors = formatZodErrors(result.error);
-      throw ApiError.badRequest('Validation failed', errors);
+      // Must call next(err) — synchronous throw won't reach async error handler
+      next(ApiError.badRequest('Validation failed', errors));
+      return;
     }
 
     // Replace with parsed/coerced value (e.g. trimmed strings, converted numbers)

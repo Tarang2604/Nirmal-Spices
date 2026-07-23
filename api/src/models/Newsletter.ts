@@ -13,7 +13,6 @@ const newsletterSchema = new Schema<INewsletter>(
     email: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true,
       match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -21,7 +20,6 @@ const newsletterSchema = new Schema<INewsletter>(
     unsubToken: {
       type: String,
       default: () => crypto.randomBytes(32).toString('hex'),
-      unique: true,
     },
     isActive: { type: Boolean, default: true },
     subscribedAt: { type: Date, default: Date.now },

@@ -106,10 +106,12 @@ export const requireAdmin = (
   next: NextFunction,
 ): void => {
   if (!req.user) {
-    throw ApiError.unauthorized('Authentication required');
+    next(ApiError.unauthorized('Authentication required'));
+    return;
   }
   if (req.user.role !== 'admin') {
-    throw ApiError.forbidden('Admin access required');
+    next(ApiError.forbidden('Admin access required'));
+    return;
   }
   next();
 };

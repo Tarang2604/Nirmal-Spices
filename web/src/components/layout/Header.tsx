@@ -213,11 +213,14 @@ export default function Header() {
           <nav className="flex flex-col gap-3 font-sans font-semibold tracking-wide uppercase text-sm">
             <Link href="/" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🏠 Home</Link>
             <Link href="/shop" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>All Products</Link>
-            <Link href="/shop?cat=blend-spices" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🧂 Blend Spices</Link>
+            <Link href="/shop?cat=blended-masalas" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🧂 Blended Masalas</Link>
             <Link href="/shop?cat=ground-spices" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🌶️ Ground Spices</Link>
             <Link href="/shop?cat=whole-spices" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🌿 Whole Spices</Link>
+            <Link href="/shop?cat=instant-mix" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>⚡ Instant Mix</Link>
+            <Link href="/shop?cat=flour" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🌾 Flour</Link>
             <Link href="/contact" className="hover:text-primary py-1" onClick={() => setMobileMenuOpen(false)}>📞 Contact Us</Link>
           </nav>
+
         </div>
       )}
     </header>

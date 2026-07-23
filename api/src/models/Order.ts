@@ -101,7 +101,7 @@ const addressSnapshotSchema = new Schema(
 
 const orderSchema = new Schema<IOrder>(
   {
-    user: { type: Schema.Types.ObjectId, ref: 'User', index: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
     guestEmail: { type: String, lowercase: true },
     guestPhone: String,
     items: { type: [orderItemSchema], required: true },
@@ -116,10 +116,10 @@ const orderSchema = new Schema<IOrder>(
       enum: ['pending', 'paid', 'failed', 'refunded'],
       default: 'pending',
     },
-    razorpayOrderId: { type: String, index: true },
+    razorpayOrderId: { type: String },
     razorpayPaymentId: String,
     razorpaySignature: String,
-    idempotencyKey: { type: String, unique: true, required: true },
+    idempotencyKey: { type: String, required: true },
     isWebhookConfirmed: { type: Boolean, default: false },
     couponCode: String,
     subtotal: { type: Number, required: true, min: 0 },

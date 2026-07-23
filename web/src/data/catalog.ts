@@ -2509,7 +2509,10 @@ export function filterAndSortProducts(params: {
     const q = params.search.toLowerCase();
     result = result.filter(p =>
       p.name.toLowerCase().includes(q) ||
-      p.tags.some(t => t.includes(q))
+      p.category.toLowerCase().includes(q) ||
+      p.shortDescription.toLowerCase().includes(q) ||
+      p.ingredients.toLowerCase().includes(q) ||
+      p.tags.some(t => t.toLowerCase().includes(q))
     );
   }
 
