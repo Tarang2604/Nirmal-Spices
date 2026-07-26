@@ -4,7 +4,7 @@ export default function AnnouncementBar() {
   const announcements = [
     "🌶️ FREE DELIVERY on orders above ₹499",
     "📞 Customer Support: +91 9770057005",
-    "⭐ 43 Varieties of Authentic Indian Spices",
+    "⭐ 58+ Varieties of Authentic Indian Spices",
     "🏭 Processed hygienically in Harda, MP",
     "🍃 100% Pure, Organic & Zero Additives"
   ];

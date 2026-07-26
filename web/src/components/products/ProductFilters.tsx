@@ -79,10 +79,10 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
                 if (onCloseMobile) onCloseMobile();
               }}
               className={cn(
-                "text-left text-xs font-medium py-1.5 px-3 rounded-lg transition-colors outline-none",
+                "text-left text-xs font-medium py-1.5 px-3 rounded-lg transition-all duration-200 outline-none",
                 activeCategory === cat.value
-                  ? "bg-secondary text-primary font-bold"
-                  : "text-muted-foreground hover:bg-muted"
+                  ? "bg-secondary text-primary font-bold pl-4"
+                  : "text-muted-foreground hover:bg-primary/5 hover:text-primary hover:pl-4"
               )}
             >
               {cat.label}
@@ -103,10 +103,10 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
                 if (onCloseMobile) onCloseMobile();
               }}
               className={cn(
-                "text-left text-xs font-medium py-1.5 px-3 rounded-lg transition-colors outline-none",
+                "text-left text-xs font-medium py-1.5 px-3 rounded-lg transition-all duration-200 outline-none",
                 activeBadge === b.value
-                  ? "bg-secondary text-primary font-bold"
-                  : "text-muted-foreground hover:bg-muted"
+                  ? "bg-secondary text-primary font-bold pl-4"
+                  : "text-muted-foreground hover:bg-primary/5 hover:text-primary hover:pl-4"
               )}
             >
               {b.label}

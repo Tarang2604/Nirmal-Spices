@@ -12,6 +12,7 @@ export default function CategoryNav() {
 
   const links = [
     { label: "🏠 Home", href: "/" },
+    { label: "✨ About Us", href: "/about" },
     { label: "All Products", href: "/shop" },
     { label: "🧂 Blend Spices", href: "/shop?cat=blended-masalas", slug: "blended-masalas" },
     { label: "🌶️ Ground Spices", href: "/shop?cat=ground-spices", slug: "ground-spices" },

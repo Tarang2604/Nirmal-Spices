@@ -14,10 +14,10 @@ export default function AuthLayout({
       <div className="sm:mx-auto sm:w-full sm:max-w-md flex justify-center mb-6">
         <Link href="/" className="flex items-center gap-2 group">
           <Image
-            src="/nirmal_logo.png"
+            src="/nirmal_logo (2).png"
             alt="Nirmal's Spices"
-            width={64}
-            height={64}
+            width={72}
+            height={72}
             className="object-contain drop-shadow"
           />
           <div className="flex flex-col text-left">

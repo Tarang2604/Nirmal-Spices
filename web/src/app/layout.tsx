@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     template: "%s | Nirmal's Spices",
   },
   description:
-    "Discover 43 varieties of authentic, premium Indian spices sourced directly from local farmers in Harda, Madhya Pradesh. Purity guaranteed, hygienically processed, eco-friendly packaging.",
+    "Discover 58+ varieties of authentic, premium Indian spices sourced directly from local farmers in Harda, Madhya Pradesh. Purity guaranteed, hygienically processed, eco-friendly packaging.",
   keywords: [
     "Nirmal spices",
     "pure spices India",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Nirmal's Spices | Pure & Authentic Indian Spices",
     description:
-      "Direct from local farmers in Harda, MP to your kitchen. Explore our 43 premium spice varieties.",
+      "Direct from local farmers in Harda, MP to your kitchen. Explore our 58+ premium spice varieties.",
     url: "https://nirmalspices.in",
     siteName: "Nirmal's Spices",
     locale: "en_IN",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Nirmal's Spices | Pure & Authentic Indian Spices",
     description:
-      "Direct from local farmers in Harda, MP to your kitchen. Explore our 43 premium spice varieties.",
+      "Direct from local farmers in Harda, MP to your kitchen. Explore our 58+ premium spice varieties.",
   },
   alternates: {
     canonical: "/",

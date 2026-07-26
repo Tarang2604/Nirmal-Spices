@@ -97,10 +97,10 @@ export default function Header() {
           {/* Logo Brand */}
           <Link href="/" className="flex items-center gap-1 group shrink-0">
             <Image
-              src="/nirmal_logo.png"
+              src="/nirmal_logo (2).png"
               alt="Nirmal's Spices"
-              width={52}
-              height={52}
+              width={60}
+              height={60}
               className="object-contain drop-shadow-sm"
               priority
             />
@@ -212,6 +212,7 @@ export default function Header() {
           </form>
           <nav className="flex flex-col gap-3 font-sans font-semibold tracking-wide uppercase text-sm">
             <Link href="/" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🏠 Home</Link>
+            <Link href="/about" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>✨ About Us</Link>
             <Link href="/shop" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>All Products</Link>
             <Link href="/shop?cat=blended-masalas" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🧂 Blended Masalas</Link>
             <Link href="/shop?cat=ground-spices" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🌶️ Ground Spices</Link>
