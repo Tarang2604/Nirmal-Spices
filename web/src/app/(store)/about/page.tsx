@@ -92,6 +92,7 @@ export default function AboutPage() {
               src="/masala_collection.png"
               alt="Premium Masala Collection"
               fill
+              sizes="(max-width: 1024px) 100vw, 400px"
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
           </div>

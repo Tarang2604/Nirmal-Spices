@@ -23,8 +23,9 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
     throw ApiError.badRequest('Guest checkout requires email and phone number');
   }
 
-  // Idempotency key from header
+  // Idempotency key and guest session ID from headers
   const idempotencyKey = req.headers['x-idempotency-key'] as string;
+  const guestSessionId = req.headers['x-guest-session-id'] as string | undefined;
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -111,6 +112,7 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
           user: userId ? new mongoose.Types.ObjectId(userId) : undefined,
           guestEmail,
           guestPhone,
+          guestSessionId,
           items: orderItems,
           address,
           paymentMethod,
@@ -199,7 +201,9 @@ export const verifyPayment = asyncHandler(async (req: Request, res: Response) =>
     await order.save();
 
     // Clear cart
-    const userCartSelector = order.user ? { userId: order.user } : { sessionId: req.headers['x-guest-session-id'] as string };
+    const userCartSelector = order.user
+      ? { userId: order.user }
+      : (order.guestSessionId ? { sessionId: order.guestSessionId } : { sessionId: req.headers['x-guest-session-id'] as string });
     await Cart.findOneAndDelete(userCartSelector);
 
     // Send confirmation email
@@ -262,8 +266,12 @@ export const handleRazorpayWebhook = asyncHandler(async (req: Request, res: Resp
       await order.save();
 
       // Clear cart
-      const cartSelector = order.user ? { userId: order.user } : { guestEmail: order.guestEmail };
-      await Cart.findOneAndDelete(cartSelector);
+      const cartSelector = order.user 
+        ? { userId: order.user } 
+        : (order.guestSessionId ? { sessionId: order.guestSessionId } : null);
+      if (cartSelector) {
+        await Cart.findOneAndDelete(cartSelector);
+      }
 
       // Email confirmation
       const email = order.user ? (await mongoose.model('User').findById(order.user).select('email').lean() as any)?.email : order.guestEmail;

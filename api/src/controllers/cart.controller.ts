@@ -19,6 +19,14 @@ const getCartSelector = (req: Request) => {
 
 // ── GET CART ─────────────────────────────────────────────────────────
 export const getCart = asyncHandler(async (req: Request, res: Response) => {
+  // Merge guest cart to user cart on login if x-guest-session-id is present
+  if (req.user) {
+    const sessionId = req.headers['x-guest-session-id'] as string | undefined;
+    if (sessionId) {
+      await mergeGuestCart(sessionId, req.user._id.toString());
+    }
+  }
+
   const selector = getCartSelector(req);
 
   let cart = await Cart.findOne(selector).populate({

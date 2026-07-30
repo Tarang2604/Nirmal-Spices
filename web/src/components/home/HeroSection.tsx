@@ -127,18 +127,16 @@ export default function HeroSection() {
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
           >
             {/* Main image card */}
-            <div className="relative w-full max-w-md lg:max-w-full aspect-[4/4.5] rounded-3xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.14)] border-4 border-white">
+            <div className="relative w-full max-w-md lg:max-w-full aspect-[4/4.5]">
               <Image
-                src="/hero_spices.png"
-                alt="Premium Indian Spices Flatlay - Nirmal's Spices"
+                src="/hero_product_showcase.png"
+                alt="Nirmal's Spices – Premium Quality Masala Product Range"
                 fill
                 priority
                 loading="eager"
-                className="object-cover object-center"
+                className="object-contain object-center drop-shadow-2xl"
                 sizes="(max-width: 768px) 100vw, 550px"
               />
-              {/* Subtle gradient overlay at bottom */}
-              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-charcoal/30 to-transparent" />
             </div>
 
             {/* Floating product count badge */}
@@ -164,6 +162,7 @@ export default function HeroSection() {
                 alt="Nirmal's Spices"
                 width={42}
                 height={42}
+                style={{ width: 'auto', height: 'auto' }}
                 className="object-contain"
               />
               <div className="flex flex-col leading-tight pr-1">

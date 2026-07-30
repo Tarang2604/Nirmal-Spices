@@ -101,6 +101,7 @@ export default function Header() {
               alt="Nirmal's Spices"
               width={60}
               height={60}
+              style={{ width: 'auto', height: 'auto' }}
               className="object-contain drop-shadow-sm"
               priority
             />

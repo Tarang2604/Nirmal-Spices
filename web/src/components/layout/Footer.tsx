@@ -59,6 +59,7 @@ export default function Footer() {
                 alt="Nirmal's Spices"
                 width={60}
                 height={60}
+                style={{ width: 'auto', height: 'auto' }}
                 className="object-contain"
               />
               <span className="font-display font-bold text-xl tracking-tight text-cream">

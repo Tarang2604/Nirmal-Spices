@@ -35,6 +35,7 @@ export interface IOrder extends Document {
   user?: mongoose.Types.ObjectId;   // null for guest orders
   guestEmail?: string;
   guestPhone?: string;
+  guestSessionId?: string;
   items: IOrderItem[];
   address: IAddress;
   paymentMethod: PaymentMethod;
@@ -104,6 +105,7 @@ const orderSchema = new Schema<IOrder>(
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     guestEmail: { type: String, lowercase: true },
     guestPhone: String,
+    guestSessionId: String,
     items: { type: [orderItemSchema], required: true },
     address: { type: addressSnapshotSchema, required: true },
     paymentMethod: {
@@ -151,7 +153,10 @@ orderSchema.index({ status: 1 });
 // Auto-push to timeline when status changes
 orderSchema.pre('save', function (next) {
   if (this.isModified('status')) {
-    this.timeline.push({ status: this.status, timestamp: new Date() });
+    const lastEntry = this.timeline[this.timeline.length - 1];
+    if (!lastEntry || lastEntry.status !== this.status) {
+      this.timeline.push({ status: this.status, timestamp: new Date() });
+    }
   }
   next();
 });

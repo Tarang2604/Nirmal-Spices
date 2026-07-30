@@ -18,6 +18,7 @@ export default function AuthLayout({
             alt="Nirmal's Spices"
             width={72}
             height={72}
+            style={{ width: 'auto', height: 'auto' }}
             className="object-contain drop-shadow"
           />
           <div className="flex flex-col text-left">
