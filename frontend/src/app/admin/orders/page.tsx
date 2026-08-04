@@ -83,7 +83,7 @@ export default function AdminOrdersPage() {
       <div>
         <h1 className="font-display font-bold text-2xl text-charcoal">Manage Orders</h1>
         <p className="text-muted-foreground text-xs mt-1">
-          Change status from the dropdown — customers see it instantly on Track Order.
+          Change status from the dropdown — customers see it on Track Order in real time.
         </p>
       </div>
 
