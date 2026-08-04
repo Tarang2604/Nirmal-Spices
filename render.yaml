@@ -4,6 +4,7 @@ services:
     name: nirmal-spices-api
     env: node
     plan: free
+    rootDir: backend
     buildCommand: npm install --legacy-peer-deps && npm run build
     startCommand: npm run start
     envVars:

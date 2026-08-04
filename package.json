@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev:web": "npm run dev --prefix web",
-    "dev:api": "npm run dev --prefix api",
-    "dev": "npx concurrently \"npm run dev:web\" \"npm run dev:api\"",
-    "install:all": "npm install --prefix web && npm install --prefix api",
-    "build:web": "npm run build --prefix web",
-    "build:api": "npm run build --prefix api"
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev": "npx concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "install:all": "npm install --prefix frontend && npm install --prefix backend --legacy-peer-deps",
+    "build:frontend": "npm run build --prefix frontend",
+    "build:backend": "npm run build --prefix backend"
   }
 }

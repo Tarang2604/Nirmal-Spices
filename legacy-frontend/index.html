@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nirmal's Spices | Pure & Authentic Indian Spices from Harda, Madhya Pradesh</title>
+  <meta name="description" content="Nirmal's Spices – Bringing tradition, flavor, and purity to your table. Explore 43 varieties of authentic Indian spices, sourced from trusted farmers and hygienically processed in Harda, Madhya Pradesh. Shop pure, locally made spices online.">
+  <meta name="keywords" content="Nirmal's Spices, Indian spices, pure spices, Harda spices, authentic masala, Madhya Pradesh spices, blended masalas, ground spices, organic spices, natural Indian masalas, buy spices online">
+  <meta name="author" content="Nirmal's Spices">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#C0392B">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Nirmal's Spices | Pure & Authentic Indian Spices from Harda, MP">
+  <meta property="og:description" content="Explore 43 varieties of authentic, locally sourced Indian spices – hygienically processed for freshness, purity, and unmatched flavor.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Nirmal's Spices">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Nirmal's Spices | Authentic Indian Masalas & Pure Spices">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <!-- Remix Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============================================================
+     ANNOUNCEMENT BAR
+     ============================================================ -->
+<div class="announcement-bar" role="banner" aria-label="Promotional announcements">
+  <div style="overflow:hidden;width:100%;">
+    <div class="announcement-ticker" aria-live="off">
+      <span>🌶️ FREE DELIVERY on orders above ₹499 &nbsp;|&nbsp;</span>
+      <span>🧂 100% Pure & Hygienic Spices from Harda, MP &nbsp;|&nbsp;</span>
+      <span>🌿 Locally Sourced from Trusted Farmers &nbsp;|&nbsp;</span>
+      <span>📦 Eco-Friendly Packaging &nbsp;|&nbsp;</span>
+      <span>⭐ 43 Varieties of Authentic Indian Spices &nbsp;|&nbsp;</span>
+      <span>📲 Download Our App for Exclusive Offers &nbsp;|&nbsp;</span>
+      <!-- Duplicate for seamless loop -->
+      <span>🌶️ FREE DELIVERY on orders above ₹499 &nbsp;|&nbsp;</span>
+      <span>🧂 100% Pure & Hygienic Spices from Harda, MP &nbsp;|&nbsp;</span>
+      <span>🌿 Locally Sourced from Trusted Farmers &nbsp;|&nbsp;</span>
+      <span>📦 Eco-Friendly Packaging &nbsp;|&nbsp;</span>
+      <span>⭐ 43 Varieties of Authentic Indian Spices &nbsp;|&nbsp;</span>
+      <span>📲 Download Our App for Exclusive Offers &nbsp;|&nbsp;</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header id="header" role="banner">
+  <div class="header-main">
+    <div class="container">
+      <div class="flex-between gap-md">
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open navigation menu" aria-expanded="false">
+          <i class="ri-menu-line"></i>
+        </button>
+
+        <!-- Logo -->
+        <a href="index.html" class="header-logo" aria-label="Nirmal's Spices - Home">
+          <div class="logo-emblem" aria-hidden="true">🌶️</div>
+          <div class="logo-text">
+            <span class="logo-brand">Nirmal's Spices</span>
+            <span class="logo-tagline">Pure • Authentic • Harda, MP</span>
+          </div>
+        </a>
+
+        <!-- Search Bar -->
+        <div class="header-search" role="search">
+          <div class="search-input-wrap">
+            <input type="search" id="searchInput" placeholder="Search spices, masalas..." aria-label="Search products" autocomplete="off">
+            <button class="search-btn" aria-label="Search" id="searchBtn">
+              <i class="ri-search-line" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="search-dropdown" id="searchDropdown" role="listbox" aria-label="Search suggestions">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Header Actions -->
+        <nav class="header-actions" aria-label="Account and cart">
+          <a href="login.html" class="header-action-btn" id="accountBtn" aria-label="Login or account">
+            <span class="icon" aria-hidden="true"><i class="ri-user-3-line"></i></span>
+            <span>Account</span>
+          </a>
+          <button class="header-action-btn" id="wishlistBtn" aria-label="Wishlist (0 items)">
+            <span class="icon" aria-hidden="true"><i class="ri-heart-line"></i></span>
+            <span>Wishlist</span>
+            <span class="header-badge" id="wishlistBadge" aria-live="polite" style="display:none">0</span>
+          </button>
+          <button class="header-action-btn" id="cartToggle" aria-label="Shopping cart (0 items)">
+            <span class="icon" aria-hidden="true"><i class="ri-shopping-bag-3-line"></i></span>
+            <span>Cart</span>
+            <span class="header-badge" id="cartBadge" aria-live="polite" style="display:none">0</span>
+          </button>
+        </nav>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Nav -->
+  <nav class="category-nav" aria-label="Product categories">
+    <div class="container">
+      <ul class="category-nav-list" role="menubar">
+        <li class="category-nav-item active" role="none">
+          <a href="index.html" role="menuitem">🏠 Home</a>
+        </li>
+        <li class="category-nav-item" role="none" style="position:relative">
+          <a href="collection.html" role="menuitem" aria-haspopup="true">
+            Categories <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+          </a>
+          <div class="nav-dropdown" role="menu" aria-label="Category submenu">
+            <div class="nav-dropdown-item" role="none"><a href="collection.html?cat=ground-spices" role="menuitem">🌶️ Ground Spices (11)</a></div>
+            <div class="nav-dropdown-item" role="none"><a href="collection.html?cat=blend-spices" role="menuitem">🧂 Blend Spices (23)</a></div>
+            <div class="nav-dropdown-item" role="none"><a href="collection.html?cat=whole-spices" role="menuitem">🌿 Whole Spices (7)</a></div>
+            <div class="nav-dropdown-item" role="none"><a href="collection.html?cat=instant-mix" role="menuitem">⚡ Instant Mix Products (6)</a></div>
+            <div class="nav-dropdown-item" role="none"><a href="collection.html?cat=flour" role="menuitem">🌾 Flour (2)</a></div>
+            <div class="nav-dropdown-item" role="none"><a href="collection.html?cat=salts" role="menuitem">🧂 Salts (2)</a></div>
+          </div>
+        </li>
+        <li class="category-nav-item" role="none"><a href="collection.html?cat=blend-spices" role="menuitem">🧂 Blend Spices</a></li>
+        <li class="category-nav-item" role="none"><a href="collection.html?cat=ground-spices" role="menuitem">🌶️ Ground Spices</a></li>
+        <li class="category-nav-item" role="none"><a href="collection.html?cat=whole-spices" role="menuitem">🌿 Whole Spices</a></li>
+        <li class="category-nav-item" role="none"><a href="collection.html?cat=instant-mix" role="menuitem">⚡ Instant Mix</a></li>
+        <li class="category-nav-item" role="none"><a href="collection.html?cat=salts" role="menuitem">🧂 Salts</a></li>
+        <li class="category-nav-item" role="none"><a href="collection.html?cat=flour" role="menuitem">🌾 Flour</a></li>
+        <li class="category-nav-item" role="none"><a href="contact.html" role="menuitem">📞 Contact Us</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<!-- Mobile Navigation Drawer -->
+<div class="mobile-nav" id="mobileNav" role="dialog" aria-label="Navigation menu" aria-modal="true">
+  <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+  <div class="mobile-nav-drawer">
+    <div class="mobile-nav-header">
+      <div class="header-logo">
+        <div class="logo-emblem" style="width:36px;height:36px;font-size:1rem;" aria-hidden="true">🌶️</div>
+        <div class="logo-text">
+          <span class="logo-brand" style="font-size:1.1rem;">Nirmal's Spices</span>
+        </div>
+      </div>
+      <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close navigation">
+        <i class="ri-close-line" aria-hidden="true"></i>
+      </button>
+    </div>
+    <nav class="mobile-nav-links" aria-label="Mobile navigation">
+      <a href="index.html" class="mobile-nav-link active"><i class="ri-home-5-line" aria-hidden="true"></i> Home</a>
+      <a href="collection.html" class="mobile-nav-link"><i class="ri-apps-line" aria-hidden="true"></i> All Categories</a>
+      <a href="collection.html?cat=blend-spices" class="mobile-nav-link"><i class="ri-restaurant-line" aria-hidden="true"></i> Blend Spices</a>
+      <a href="collection.html?cat=ground-spices" class="mobile-nav-link"><i class="ri-fire-line" aria-hidden="true"></i> Ground Spices</a>
+      <a href="collection.html?cat=whole-spices" class="mobile-nav-link"><i class="ri-leaf-line" aria-hidden="true"></i> Whole Spices</a>
+      <a href="collection.html?cat=instant-mix" class="mobile-nav-link"><i class="ri-timer-flash-line" aria-hidden="true"></i> Instant Mix</a>
+      <a href="collection.html?cat=salts" class="mobile-nav-link"><i class="ri-droplet-line" aria-hidden="true"></i> Salts</a>
+      <a href="collection.html?cat=flour" class="mobile-nav-link"><i class="ri-seedling-line" aria-hidden="true"></i> Flour</a>
+      <a href="login.html" class="mobile-nav-link"><i class="ri-user-3-line" aria-hidden="true"></i> Login / Register</a>
+      <a href="contact.html" class="mobile-nav-link"><i class="ri-phone-line" aria-hidden="true"></i> Contact Us</a>
+    </nav>
+    <div class="mobile-nav-footer">
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:8px;">📞 +91 9770057005</p>
+      <p style="font-size:0.8rem;color:var(--muted);">📍 Harda, Madhya Pradesh, India</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<main id="main">
+
+<!-- ============================================================
+     HERO SECTION
+     ============================================================ -->
+<section class="hero" aria-label="Hero banner">
+  <!-- Floating Particles -->
+  <div class="hero-particles" aria-hidden="true" id="heroParticles"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <span>🌶️</span>
+      From Harda, Madhya Pradesh &nbsp;|&nbsp; Est. Since Heritage
+    </div>
+
+    <h1 class="hero-title">
+      Pure Spices,<br>
+      <em class="highlight">Real Flavor</em><br>
+      Every Day.
+    </h1>
+
+    <p class="hero-desc">
+      43 varieties of authentic Indian spices — hygienically processed in Harda, MP, 
+      sourced from trusted local farmers, and delivered fresh to your doorstep 
+      across all of India.
+    </p>
+
+    <div class="hero-stats" aria-label="Key statistics">
+      <div class="hero-stat">
+        <span class="hero-stat-num" aria-label="43 varieties">43+</span>
+        <span class="hero-stat-label">Spice Varieties</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num" aria-label="10000 plus customers">10K+</span>
+        <span class="hero-stat-label">Happy Customers</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num" aria-label="100 percent pure">100%</span>
+        <span class="hero-stat-label">Pure & Natural</span>
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <a href="collection.html" class="btn btn-primary btn-lg">
+        <i class="ri-shopping-bag-3-line" aria-hidden="true"></i> Shop Now
+      </a>
+      <a href="collection.html?cat=blend-spices" class="btn btn-ghost btn-lg">
+        <i class="ri-restaurant-line" aria-hidden="true"></i> Best Sellers
+      </a>
+    </div>
+
+    <div class="hero-trust" aria-label="Trust indicators">
+      <div class="hero-trust-badge">
+        <span class="icon">✅</span> Free Delivery ₹499+
+      </div>
+      <div class="hero-trust-badge">
+        <span class="icon">✅</span> 7-Day Returns
+      </div>
+      <div class="hero-trust-badge">
+        <span class="icon">✅</span> 100% Pure Spices
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual" aria-hidden="true">
+    <img src="https://nirmalspices.in/admin/images/media_gallery/104e6f290231ec3f9e256ef6ebb5d65c.jpg"
+         alt="Nirmal's Spices - Colorful Indian Spices Collection"
+         loading="eager"
+         width="700" height="600">
+
+    <!-- Floating Product Card -->
+    <div class="hero-float-card" aria-hidden="true">
+      <img src="https://nirmalspices.in/admin/images/media_gallery/thumb/b486b7b4c7f8d6026543aff732e0114f.png"
+           class="float-card-img" alt="Chicken Masala">
+      <div class="float-card-content">
+        <div class="float-card-name">Chicken Masala</div>
+        <div class="float-card-price">₹80 <span style="text-decoration:line-through;font-size:0.8rem;color:var(--muted)">₹96</span></div>
+        <div class="float-card-rating">
+          <span>★★★★★</span> <span style="color:var(--muted)">4.9 (238)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TRUST BAR
+     ============================================================ -->
+<div class="trust-bar" role="complementary" aria-label="Why shop with us">
+  <div style="overflow:hidden;">
+    <div class="trust-bar-track">
+      <div class="trust-item"><span class="icon">🚚</span> Free Delivery Above ₹499</div>
+      <div class="trust-item"><span class="icon">🌿</span> 100% Natural & Pure</div>
+      <div class="trust-item"><span class="icon">🏭</span> Hygienically Processed</div>
+      <div class="trust-item"><span class="icon">👨‍🌾</span> Locally Sourced Farmers</div>
+      <div class="trust-item"><span class="icon">📦</span> Eco-Friendly Packaging</div>
+      <div class="trust-item"><span class="icon">🔄</span> 7-Day Easy Returns</div>
+      <div class="trust-item"><span class="icon">⚡</span> Pan-India Delivery</div>
+      <div class="trust-item"><span class="icon">🛡️</span> Quality Guaranteed</div>
+      <!-- Duplicate for loop -->
+      <div class="trust-item"><span class="icon">🚚</span> Free Delivery Above ₹499</div>
+      <div class="trust-item"><span class="icon">🌿</span> 100% Natural & Pure</div>
+      <div class="trust-item"><span class="icon">🏭</span> Hygienically Processed</div>
+      <div class="trust-item"><span class="icon">👨‍🌾</span> Locally Sourced Farmers</div>
+      <div class="trust-item"><span class="icon">📦</span> Eco-Friendly Packaging</div>
+      <div class="trust-item"><span class="icon">🔄</span> 7-Day Easy Returns</div>
+      <div class="trust-item"><span class="icon">⚡</span> Pan-India Delivery</div>
+      <div class="trust-item"><span class="icon">🛡️</span> Quality Guaranteed</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     CATEGORIES SECTION
+     ============================================================ -->
+<section class="categories-section" aria-labelledby="cat-heading">
+  <div class="container">
+    <div class="section-header animate-on-scroll">
+      <p class="section-eyebrow">Browse by Category</p>
+      <h2 class="section-title" id="cat-heading">Our Spice Collections</h2>
+      <p class="section-subtitle" style="margin:0 auto">From everyday kitchen staples to exotic blends — explore our complete range of 43 authentic Indian spices</p>
+    </div>
+
+    <div class="category-grid" role="list" aria-label="Product categories">
+      <div class="category-card animate-on-scroll delay-1" onclick="window.location.href='collection.html?cat=ground-spices'" role="listitem" tabindex="0" aria-label="Ground Spices - 11 products">
+        <div class="category-icon-wrap">
+          <img src="https://nirmalspices.in/admin/images/media_gallery/thumb/9a4e37aaa0230393899e7ca28d4ff971.png" alt="Ground Spices" loading="lazy">
+        </div>
+        <div class="category-name">Ground Spices</div>
+        <div class="category-count">11 Products</div>
+      </div>
+
+      <div class="category-card animate-on-scroll delay-2" onclick="window.location.href='collection.html?cat=blend-spices'" role="listitem" tabindex="0" aria-label="Blend Spices - 23 products">
+        <div class="category-icon-wrap">
+          <img src="https://nirmalspices.in/admin/images/media_gallery/thumb/4ae95f37adff78ab085e194389a78745.png" alt="Blend Spices" loading="lazy">
+        </div>
+        <div class="category-name">Blend Spices</div>
+        <div class="category-count">23 Products</div>
+      </div>
+
+      <div class="category-card animate-on-scroll delay-3" onclick="window.location.href='collection.html?cat=whole-spices'" role="listitem" tabindex="0" aria-label="Whole Spices - 7 products">
+        <div class="category-icon-wrap">
+          <img src="https://nirmalspices.in/admin/images/media_gallery/thumb/2d427e289b3a9c27a69c630d743d247a.png" alt="Whole Spices" loading="lazy">
+        </div>
+        <div class="category-name">Whole Spices</div>
+        <div class="category-count">7 Products</div>
+      </div>
+
+      <div class="category-card animate-on-scroll delay-4" onclick="window.location.href='collection.html?cat=instant-mix'" role="listitem" tabindex="0" aria-label="Instant Mix Products - 6 products">
+        <div class="category-icon-wrap">
+          <img src="https://nirmalspices.in/admin/images/media_gallery/thumb/a9150c3b74745d83c732decda13d87c1.png" alt="Instant Mix" loading="lazy">
+        </div>
+        <div class="category-name">Instant Mix</div>
+        <div class="category-count">6 Products</div>
+      </div>
+
+      <div class="category-card animate-on-scroll delay-2" onclick="window.location.href='collection.html?cat=flour'" role="listitem" tabindex="0" aria-label="Flour - 2 products">
+        <div class="category-icon-wrap">
+          <img src="https://nirmalspices.in/admin/images/media_gallery/thumb/b7097a6ec22faa18a94e50b3e6157da3.png" alt="Flour" loading="lazy">
+        </div>
+        <div class="category-name">Flour</div>
+        <div class="category-count">2 Products</div>
+      </div>
+
+      <div class="category-card animate-on-scroll delay-3" onclick="window.location.href='collection.html?cat=salts'" role="listitem" tabindex="0" aria-label="Salts - 2 products">
+        <div class="category-icon-wrap">
+          <img src="https://nirmalspices.in/admin/images/media_gallery/thumb/de2a8510da3dba5764268aedbc03aab7.png" alt="Salts" loading="lazy">
+        </div>
+        <div class="category-name">Salts</div>
+        <div class="category-count">2 Products</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TRENDING PRODUCTS SECTION
+     ============================================================ -->
+<section class="products-section" aria-labelledby="trending-heading">
+  <div class="container">
+    <div class="section-header-alt animate-on-scroll">
+      <div>
+        <p class="section-eyebrow">Hot Right Now</p>
+        <h2 class="section-title" id="trending-heading">Trending Products</h2>
+      </div>
+      <a href="collection.html" class="view-all-link" aria-label="View all products">
+        View All <i class="ri-arrow-right-line" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <!-- Product Filter Tabs -->
+    <div class="product-tabs" role="tablist" aria-label="Product filter tabs">
+      <button class="product-tab-btn active" role="tab" aria-selected="true" data-tab="all" id="tab-all">All Products</button>
+      <button class="product-tab-btn" role="tab" aria-selected="false" data-tab="new" id="tab-new">New Arrivals</button>
+      <button class="product-tab-btn" role="tab" aria-selected="false" data-tab="featured" id="tab-featured">Featured</button>
+      <button class="product-tab-btn" role="tab" aria-selected="false" data-tab="bestseller" id="tab-bestseller">Best Sellers</button>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-grid" id="productsGrid" role="list" aria-label="Product listing">
+      <!-- Products rendered by JS -->
+    </div>
+
+    <div style="text-align:center;margin-top:var(--space-2xl)">
+      <a href="collection.html" class="btn btn-secondary btn-lg animate-on-scroll">
+        View All 43 Spices <i class="ri-arrow-right-line" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PROMO BANNER
+     ============================================================ -->
+<section class="promo-banner" aria-label="Promotional offer">
+  <div class="container">
+    <div class="promo-banner-content">
+      <p class="promo-banner-eyebrow">Limited Time Offer</p>
+      <h2 class="promo-banner-title">Get 20% Off Your First Order!</h2>
+      <p class="promo-banner-desc">
+        New to Nirmal's Spices? Use code <strong>NIRMAL20</strong> at checkout 
+        and enjoy 20% off on your first purchase. Taste the tradition!
+      </p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <a href="collection.html" class="btn btn-ghost btn-lg">
+          <i class="ri-shopping-bag-3-line" aria-hidden="true"></i> Shop Now
+        </a>
+        <button class="btn btn-gold btn-lg" id="copyCouponBtn" onclick="copyCoupon()">
+          <i class="ri-coupon-3-line" aria-hidden="true"></i> Copy Code: NIRMAL20
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FEATURES / WHY NIRMAL'S
+     ============================================================ -->
+<section class="features-section" aria-labelledby="features-heading">
+  <div class="container">
+    <div class="section-header animate-on-scroll" style="color:white;">
+      <p class="section-eyebrow" style="color:var(--saffron-light)">Why Choose Us</p>
+      <h2 class="section-title" id="features-heading" style="color:white">The Nirmal's Promise</h2>
+      <p class="section-subtitle" style="color:rgba(255,255,255,0.65);margin:0 auto">
+        Decades of tradition, modern hygiene standards, and an unwavering commitment to purity
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card animate-on-scroll delay-1">
+        <div class="feature-icon" aria-hidden="true">🌶️</div>
+        <div class="feature-title">43 Spice Varieties</div>
+        <p class="feature-desc">Discover an extensive collection of 43 authentic Indian spices — from everyday essentials to rare regional blends, all crafted to bring flavor and aroma to your kitchen.</p>
+      </div>
+
+      <div class="feature-card animate-on-scroll delay-2">
+        <div class="feature-icon" aria-hidden="true">🛡️</div>
+        <div class="feature-title">Pure & Hygienic Processing</div>
+        <p class="feature-desc">Each spice is cleaned, sterilized, and processed in modern automated machines to maintain purity, safety, and unmatched quality in every pack.</p>
+      </div>
+
+      <div class="feature-card animate-on-scroll delay-3">
+        <div class="feature-icon" aria-hidden="true">👨‍🌾</div>
+        <div class="feature-title">Locally Sourced Ingredients</div>
+        <p class="feature-desc">We partner with trusted local farmers in Harda, MP to source the finest raw materials, supporting rural communities while ensuring natural freshness.</p>
+      </div>
+
+      <div class="feature-card animate-on-scroll delay-4">
+        <div class="feature-icon" aria-hidden="true">🚚</div>
+        <div class="feature-title">Fast & Secure Delivery</div>
+        <p class="feature-desc">Enjoy doorstep delivery across India with safe, eco-friendly packaging that preserves aroma and ensures every product reaches you in perfect condition.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     BEST SELLERS
+     ============================================================ -->
+<section class="products-section bg-cream" aria-labelledby="bestsellers-heading">
+  <div class="container">
+    <div class="section-header-alt animate-on-scroll">
+      <div>
+        <p class="section-eyebrow">Customer Favorites</p>
+        <h2 class="section-title" id="bestsellers-heading">Best Sellers</h2>
+      </div>
+      <a href="collection.html?filter=bestseller" class="view-all-link">
+        View All <i class="ri-arrow-right-line" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <div class="products-grid" id="bestSellersGrid" role="list" aria-label="Best selling products">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TESTIMONIALS
+     ============================================================ -->
+<section class="testimonials-section" aria-labelledby="reviews-heading">
+  <div class="container">
+    <div class="section-header animate-on-scroll">
+      <p class="section-eyebrow">Customer Stories</p>
+      <h2 class="section-title" id="reviews-heading">What Our Customers Say</h2>
+      <p class="section-subtitle" style="margin:0 auto">Real stories from real customers who've made Nirmal's Spices part of their kitchen tradition</p>
+    </div>
+
+    <div class="testimonials-grid">
+      <article class="testimonial-card animate-on-scroll delay-1" aria-label="Customer review by Priya Sharma">
+        <div class="testimonial-stars" aria-label="5 out of 5 stars">★★★★★</div>
+        <p class="testimonial-text">"The Biryani Masala from Nirmal's has completely transformed my cooking! The aroma is so authentic and the flavor is incredible. I've tried many brands but nothing compares to this. Highly recommend to everyone!"</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" aria-hidden="true">P</div>
+          <div>
+            <div class="testimonial-name">Priya Sharma</div>
+            <div class="testimonial-location">📍 Bhopal, MP</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="testimonial-card animate-on-scroll delay-2" aria-label="Customer review by Rajesh Kumar">
+        <div class="testimonial-stars" aria-label="5 out of 5 stars">★★★★★</div>
+        <p class="testimonial-text">"I've been ordering from Nirmal's Spices for over 2 years now. The quality is consistently excellent. The Garam Masala and Turmeric are my favorites. Great packaging too — eco-friendly and smell-proof!"</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" aria-hidden="true">R</div>
+          <div>
+            <div class="testimonial-name">Rajesh Kumar</div>
+            <div class="testimonial-location">📍 Indore, MP</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="testimonial-card animate-on-scroll delay-3" aria-label="Customer review by Anita Verma">
+        <div class="testimonial-stars" aria-label="5 out of 5 stars">★★★★★</div>
+        <p class="testimonial-text">"The Chana Masala and Dal Tadka Masala are absolutely amazing! My family loves the authentic flavors. The delivery was super fast and the packaging was intact. Will definitely order again!"</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" aria-hidden="true">A</div>
+          <div>
+            <div class="testimonial-name">Anita Verma</div>
+            <div class="testimonial-location">📍 Nagpur, Maharashtra</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     NEWSLETTER
+     ============================================================ -->
+<section class="newsletter-section" aria-labelledby="newsletter-heading">
+  <div class="container">
+    <div class="newsletter-card">
+      <div class="newsletter-content">
+        <p class="section-eyebrow" style="color:var(--saffron-light)">Stay Connected</p>
+        <h2 class="newsletter-title" id="newsletter-heading">Get Exclusive Offers & Recipes</h2>
+        <p class="newsletter-desc">Subscribe to our newsletter for seasonal deals, new spice arrivals, traditional Indian recipes, and cooking tips from our expert chefs.</p>
+        <form class="newsletter-form" id="newsletterForm" onsubmit="handleNewsletter(event)" aria-label="Newsletter signup">
+          <input type="email" class="newsletter-input" placeholder="Enter your email address" required aria-label="Email address" id="newsletterEmail">
+          <button type="submit" class="btn btn-primary">Subscribe <i class="ri-send-plane-fill" aria-hidden="true"></i></button>
+        </form>
+        <p class="newsletter-note">🔒 We respect your privacy. Unsubscribe anytime. No spam, ever.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer role="contentinfo">
+  <div class="footer-top">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Brand -->
+        <div class="footer-brand">
+          <a href="index.html" class="header-logo" style="margin-bottom:var(--space-md)">
+            <div class="logo-emblem" aria-hidden="true">🌶️</div>
+            <div class="logo-text">
+              <span class="logo-brand">Nirmal's Spices</span>
+              <span class="logo-tagline">Pure • Authentic • Harda, MP</span>
+            </div>
+          </a>
+          <p class="footer-desc">
+            Bringing tradition, flavor, and purity to your table since our founding in Harda, Madhya Pradesh. 
+            Explore 43 varieties of authentic Indian spices, sourced from trusted local farmers and hygienically processed for your family.
+          </p>
+          <div class="footer-social" aria-label="Social media links">
+            <a href="https://wa.me/919770057005" class="social-btn" aria-label="WhatsApp" target="_blank" rel="noopener">
+              <i class="ri-whatsapp-fill" aria-hidden="true"></i>
+            </a>
+            <a href="#" class="social-btn" aria-label="Facebook">
+              <i class="ri-facebook-fill" aria-hidden="true"></i>
+            </a>
+            <a href="#" class="social-btn" aria-label="Instagram">
+              <i class="ri-instagram-fill" aria-hidden="true"></i>
+            </a>
+            <a href="#" class="social-btn" aria-label="YouTube">
+              <i class="ri-youtube-fill" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h3 class="footer-heading">Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="index.html" class="footer-link">Home</a></li>
+            <li><a href="collection.html" class="footer-link">All Products</a></li>
+            <li><a href="collection.html?cat=blend-spices" class="footer-link">Blend Spices</a></li>
+            <li><a href="collection.html?cat=ground-spices" class="footer-link">Ground Spices</a></li>
+            <li><a href="collection.html?cat=whole-spices" class="footer-link">Whole Spices</a></li>
+            <li><a href="collection.html?cat=instant-mix" class="footer-link">Instant Mix</a></li>
+            <li><a href="login.html" class="footer-link">My Account</a></li>
+          </ul>
+        </div>
+
+        <!-- Customer Support -->
+        <div>
+          <h3 class="footer-heading">Customer Support</h3>
+          <ul class="footer-links">
+            <li><a href="contact.html" class="footer-link">Contact Us</a></li>
+            <li><a href="#" class="footer-link">Track My Order</a></li>
+            <li><a href="#" class="footer-link">Return Policy</a></li>
+            <li><a href="#" class="footer-link">Shipping Policy</a></li>
+            <li><a href="#" class="footer-link">Privacy Policy</a></li>
+            <li><a href="#" class="footer-link">Terms of Service</a></li>
+            <li><a href="#" class="footer-link">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+          <h3 class="footer-heading">Contact Info</h3>
+          <div class="footer-contact-item">
+            <span class="icon">📍</span>
+            <span>Harda, Madhya Pradesh, India – 461331</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="icon">📞</span>
+            <a href="tel:+919770057005" style="color:inherit">+91 9770057005</a>
+          </div>
+          <div class="footer-contact-item">
+            <span class="icon">📧</span>
+            <a href="mailto:info@nirmalspices.in" style="color:inherit">info@nirmalspices.in</a>
+          </div>
+          <div class="footer-contact-item">
+            <span class="icon">⏰</span>
+            <span>Mon–Sat: 9:00 AM – 7:00 PM</span>
+          </div>
+          <div style="margin-top:var(--space-md)">
+            <a href="https://play.google.com/store/apps/details?id=com.nirmalspicesapp.nirmalspicesapp"
+               target="_blank" rel="noopener"
+               style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:10px 16px;border-radius:8px;font-size:0.8rem;font-weight:600;text-decoration:none;">
+              📲 Download Our App
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="footer-bottom">
+      <p class="footer-bottom-text">
+        © 2025 Nirmal's Spices. All rights reserved. Made with ❤️ in Harda, Madhya Pradesh.
+      </p>
+      <div class="footer-payment-methods" aria-label="Accepted payment methods">
+        <span class="payment-badge">UPI</span>
+        <span class="payment-badge">Visa</span>
+        <span class="payment-badge">Mastercard</span>
+        <span class="payment-badge">Net Banking</span>
+        <span class="payment-badge">COD</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     CART SIDEBAR
+     ============================================================ -->
+<div class="cart-overlay" id="cartOverlay" aria-hidden="true"></div>
+<aside class="cart-sidebar" id="cartSidebar" role="complementary" aria-label="Shopping cart" aria-hidden="true">
+  <div class="cart-header">
+    <h2 class="cart-title">
+      <i class="ri-shopping-bag-3-line" aria-hidden="true"></i>
+      My Cart
+      <span class="cart-count" id="cartItemCount" aria-live="polite">0</span>
+    </h2>
+    <button class="cart-close" id="cartClose" aria-label="Close cart">
+      <i class="ri-close-line" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div class="cart-items" id="cartItems" aria-live="polite">
+    <!-- Cart items rendered by JS -->
+    <div class="cart-empty" id="cartEmpty">
+      <div class="cart-empty-icon" aria-hidden="true">🛒</div>
+      <h3>Your cart is empty</h3>
+      <p>Add some delicious spices to get started!</p>
+      <a href="collection.html" class="btn btn-primary" style="margin-top:var(--space-lg)">Shop Now</a>
+    </div>
+  </div>
+
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-coupon">
+      <input type="text" class="coupon-input" id="couponInput" placeholder="Enter coupon code" aria-label="Coupon code">
+      <button class="btn btn-secondary btn-sm" onclick="applyCoupon()" aria-label="Apply coupon">Apply</button>
+    </div>
+    <div class="cart-summary" aria-label="Cart summary">
+      <div class="cart-summary-row">
+        <span>Subtotal</span>
+        <span id="cartSubtotal">₹0</span>
+      </div>
+      <div class="cart-summary-row" id="couponRow" style="display:none">
+        <span>Coupon Discount</span>
+        <span id="couponDiscount" style="color:var(--success)">-₹0</span>
+      </div>
+      <div class="cart-summary-row">
+        <span>Delivery</span>
+        <span id="cartDelivery">₹40</span>
+      </div>
+      <div class="cart-summary-row total">
+        <span>Total</span>
+        <span class="amount" id="cartTotal">₹0</span>
+      </div>
+    </div>
+    <a href="checkout.html" class="cart-checkout-btn" id="checkoutBtn">
+      <i class="ri-shield-check-line" aria-hidden="true"></i> Proceed to Checkout
+    </a>
+  </div>
+</aside>
+
+<!-- ============================================================
+     QUICK VIEW MODAL
+     ============================================================ -->
+<div class="modal-overlay" id="quickViewModal" role="dialog" aria-modal="true" aria-label="Quick view product" aria-hidden="true">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose" aria-label="Close quick view">
+      <i class="ri-close-line" aria-hidden="true"></i>
+    </button>
+    <div class="modal-product-grid">
+      <div class="modal-product-gallery">
+        <img src="" alt="" class="modal-product-img" id="modalProductImg">
+      </div>
+      <div class="modal-product-info" id="modalProductInfo">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer" role="status" aria-live="assertive"></div>
+
+<!-- WhatsApp Float -->
+<a href="https://wa.me/919770057005?text=Hi%20Nirmal's%20Spices!%20I%20want%20to%20order%20some%20spices."
+   class="whatsapp-float"
+   aria-label="Chat on WhatsApp"
+   target="_blank"
+   rel="noopener noreferrer">
+  <i class="ri-whatsapp-fill" aria-hidden="true"></i>
+</a>
+
+<!-- Back to Top -->
+<button id="backToTop" aria-label="Back to top" style="
+  position:fixed;bottom:100px;right:28px;z-index:300;
+  width:44px;height:44px;border-radius:var(--radius-full);
+  background:var(--crimson);color:white;font-size:1.2rem;
+  display:none;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-md);transition:all var(--transition-base);
+">
+  <i class="ri-arrow-up-line" aria-hidden="true"></i>
+</button>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script src="app.js"></script>
+</body>
+</html>

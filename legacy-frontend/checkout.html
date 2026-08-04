@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | Nirmal's Spices – Secure Checkout</title>
+  <meta name="description" content="Secure checkout at Nirmal's Spices. Fast delivery across India with multiple payment options including UPI, cards, and Cash on Delivery.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .checkout-header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: var(--space-md) 0;
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+    }
+    .checkout-header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .checkout-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .checkout-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      font-family: var(--font-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .checkout-step.active { color: var(--crimson); }
+    .checkout-step.done  { color: var(--success); }
+    .step-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 2px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+    }
+    .step-sep { width: 32px; height: 2px; background: var(--border); margin: 0 var(--space-sm); }
+    .step-sep.done { background: var(--success); }
+
+    .address-cards { display: flex; flex-direction: column; gap: var(--space-md); }
+    .address-card {
+      border: 2px solid var(--border); border-radius: var(--radius-md);
+      padding: var(--space-md) var(--space-lg); cursor: pointer;
+      transition: all var(--transition-fast); position: relative;
+    }
+    .address-card:hover { border-color: var(--crimson); }
+    .address-card.selected { border-color: var(--crimson); background: var(--cream); }
+    .address-card.selected::after {
+      content: '✓'; position: absolute; top: var(--space-md); right: var(--space-md);
+      width: 24px; height: 24px; border-radius: 50%; background: var(--crimson);
+      color: white; font-size: 0.75rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .address-tag {
+      display: inline-block; padding: 2px 10px; border-radius: var(--radius-full);
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      background: var(--crimson); color: white; margin-bottom: 8px;
+    }
+    .address-tag.work { background: var(--info); }
+    .address-name { font-weight: 700; font-size: 0.9rem; color: var(--charcoal); margin-bottom: 4px; }
+    .address-text { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .address-phone { font-size: 0.8rem; color: var(--slate); margin-top: 4px; font-weight: 500; }
+
+    .add-address-btn {
+      border: 2px dashed var(--border); border-radius: var(--radius-md);
+      padding: var(--space-md) var(--space-lg); cursor: pointer;
+      display: flex; align-items: center; gap: var(--space-sm);
+      color: var(--crimson); font-weight: 600; font-size: 0.9rem;
+      transition: all var(--transition-fast); background: none; width: 100%;
+    }
+    .add-address-btn:hover { border-color: var(--crimson); background: var(--cream); }
+
+    .shipping-options { display: flex; flex-direction: column; gap: var(--space-md); }
+    .shipping-option {
+      display: flex; align-items: center; gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg); border: 2px solid var(--border);
+      border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast);
+    }
+    .shipping-option:hover { border-color: var(--crimson); }
+    .shipping-option.selected { border-color: var(--crimson); background: var(--cream); }
+    .shipping-option input[type="radio"] { accent-color: var(--crimson); width: 18px; height: 18px; }
+    .shipping-option-info { flex: 1; }
+    .shipping-option-name { font-weight: 700; font-size: 0.9rem; color: var(--charcoal); }
+    .shipping-option-eta { font-size: 0.8rem; color: var(--muted); }
+    .shipping-option-price { font-weight: 700; color: var(--crimson); }
+    .shipping-option-price.free { color: var(--success); }
+
+    .upi-input-wrap { display: flex; gap: var(--space-sm); }
+    .upi-input { flex: 1; }
+    .upi-verify-btn { flex-shrink: 0; }
+
+    .card-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--space-md); }
+
+    .checkout-section-sep {
+      border: none; border-top: 1px solid var(--border);
+      margin: var(--space-xl) 0;
+    }
+
+    .coupon-row {
+      display: flex; gap: var(--space-sm); align-items: center;
+      margin-bottom: var(--space-lg);
+    }
+    .coupon-row .form-input { flex: 1; }
+
+    .summary-item-list { max-height: 260px; overflow-y: auto; padding-right: 4px; }
+    .summary-item-list::-webkit-scrollbar { width: 4px; }
+    .summary-item-list::-webkit-scrollbar-track { background: var(--border); border-radius: 2px; }
+    .summary-item-list::-webkit-scrollbar-thumb { background: var(--crimson); border-radius: 2px; }
+
+    .promo-applied {
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(39,174,96,0.1); border: 1px solid rgba(39,174,96,0.3);
+      border-radius: var(--radius-md); padding: 10px 16px;
+      font-size: 0.85rem; color: var(--success); margin-bottom: var(--space-md);
+    }
+
+    @media (max-width: 640px) {
+      .checkout-steps { display: none; }
+      .card-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body style="background:var(--parchment)">
+
+<!-- Checkout Header -->
+<header class="checkout-header" role="banner">
+  <div class="container">
+    <div class="checkout-header-inner">
+      <a href="index.html" class="header-logo" aria-label="Nirmal's Spices Home">
+        <div class="logo-emblem" style="width:40px;height:40px;font-size:1.1rem" aria-hidden="true">🌶️</div>
+        <div class="logo-text">
+          <span class="logo-brand">Nirmal's Spices</span>
+          <span class="logo-tagline">Secure Checkout</span>
+        </div>
+      </a>
+
+      <div class="checkout-steps" aria-label="Checkout progress">
+        <div class="checkout-step done" id="step1" aria-current="false">
+          <div class="step-num">✓</div>
+          <span class="d-sm">Cart</span>
+        </div>
+        <div class="step-sep done"></div>
+        <div class="checkout-step active" id="step2" aria-current="step">
+          <div class="step-num">2</div>
+          <span>Delivery</span>
+        </div>
+        <div class="step-sep" id="sep2"></div>
+        <div class="checkout-step" id="step3" aria-current="false">
+          <div class="step-num">3</div>
+          <span>Payment</span>
+        </div>
+        <div class="step-sep" id="sep3"></div>
+        <div class="checkout-step" id="step4" aria-current="false">
+          <div class="step-num">4</div>
+          <span>Review</span>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--success);font-weight:600">
+        <i class="ri-shield-check-fill" aria-hidden="true"></i>
+        <span>100% Secure</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<div class="container" style="padding-top:var(--space-xl);padding-bottom:var(--space-3xl)">
+
+  <!-- Empty Cart Guard -->
+  <div id="emptyCartMsg" style="display:none;text-align:center;padding:var(--space-3xl) 0">
+    <div style="font-size:4rem;margin-bottom:var(--space-md)" aria-hidden="true">🛒</div>
+    <h2 style="color:var(--charcoal);margin-bottom:var(--space-sm)">Your cart is empty</h2>
+    <p style="color:var(--muted);margin-bottom:var(--space-xl)">Add some delicious spices before proceeding to checkout</p>
+    <a href="collection.html" class="btn btn-primary btn-lg">Shop Now</a>
+  </div>
+
+  <div id="checkoutContent">
+    <div class="checkout-grid">
+
+      <!-- ======================================================
+           LEFT: FORM SECTIONS
+           ====================================================== -->
+      <div id="checkoutForms">
+
+        <!-- STEP: DELIVERY ADDRESS -->
+        <div class="checkout-form-section" id="addressSection">
+          <div class="checkout-step-header">
+            <div class="checkout-step-number" aria-hidden="true">1</div>
+            <h2 class="checkout-step-title">Delivery Address</h2>
+          </div>
+
+          <!-- Saved addresses -->
+          <div class="address-cards" id="addressCards" aria-label="Saved addresses">
+            <div class="address-card selected" data-id="1" onclick="selectAddress(this)" role="radio" aria-checked="true" tabindex="0">
+              <span class="address-tag">Home</span>
+              <div class="address-name">Ramesh Sharma</div>
+              <div class="address-text">42, Subhash Nagar, Near Bus Stand<br>Harda, Madhya Pradesh – 461331</div>
+              <div class="address-phone">📞 +91 9770057005</div>
+            </div>
+            <div class="address-card" data-id="2" onclick="selectAddress(this)" role="radio" aria-checked="false" tabindex="0">
+              <span class="address-tag work">Work</span>
+              <div class="address-name">Ramesh Sharma</div>
+              <div class="address-text">Plot 12, Industrial Area<br>Indore, Madhya Pradesh – 452001</div>
+              <div class="address-phone">📞 +91 9770057005</div>
+            </div>
+          </div>
+
+          <button class="add-address-btn" onclick="toggleNewAddressForm()" aria-expanded="false" id="addAddressBtn">
+            <i class="ri-add-circle-line" aria-hidden="true"></i> Add New Address
+          </button>
+
+          <!-- New Address Form (hidden by default) -->
+          <div id="newAddressForm" style="display:none;margin-top:var(--space-lg);padding:var(--space-lg);background:var(--cream);border-radius:var(--radius-md);border:1px solid var(--border)">
+            <h3 style="font-size:1rem;font-weight:700;color:var(--charcoal);margin-bottom:var(--space-lg)">New Delivery Address</h3>
+            <form id="addressForm" onsubmit="saveNewAddress(event)" novalidate aria-label="New address form">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="addrFirstName">First Name <span>*</span></label>
+                  <input type="text" id="addrFirstName" class="form-input" placeholder="Ramesh" required autocomplete="given-name">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="addrLastName">Last Name <span>*</span></label>
+                  <input type="text" id="addrLastName" class="form-input" placeholder="Sharma" required autocomplete="family-name">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="addrPhone">Mobile Number <span>*</span></label>
+                <input type="tel" id="addrPhone" class="form-input" placeholder="+91 9XXXXXXXXX" required autocomplete="tel">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="addrLine1">Address Line 1 <span>*</span></label>
+                <input type="text" id="addrLine1" class="form-input" placeholder="House/Flat No., Building, Street" required autocomplete="address-line1">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="addrLine2">Address Line 2</label>
+                <input type="text" id="addrLine2" class="form-input" placeholder="Area, Landmark (optional)" autocomplete="address-line2">
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="addrCity">City <span>*</span></label>
+                  <input type="text" id="addrCity" class="form-input" placeholder="Harda" required autocomplete="address-level2">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="addrPincode">PIN Code <span>*</span></label>
+                  <input type="text" id="addrPincode" class="form-input" placeholder="461331" required maxlength="6" pattern="[0-9]{6}" oninput="lookupPincode(this.value)" autocomplete="postal-code">
+                </div>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="addrState">State <span>*</span></label>
+                  <select id="addrState" class="form-input" required autocomplete="address-level1">
+                    <option value="">Select State</option>
+                    <option value="MP" selected>Madhya Pradesh</option>
+                    <option value="MH">Maharashtra</option>
+                    <option value="UP">Uttar Pradesh</option>
+                    <option value="RJ">Rajasthan</option>
+                    <option value="GJ">Gujarat</option>
+                    <option value="DL">Delhi</option>
+                    <option value="KA">Karnataka</option>
+                    <option value="TN">Tamil Nadu</option>
+                    <option value="WB">West Bengal</option>
+                    <option value="AP">Andhra Pradesh</option>
+                    <option value="TS">Telangana</option>
+                    <option value="OD">Odisha</option>
+                    <option value="CG">Chhattisgarh</option>
+                    <option value="JH">Jharkhand</option>
+                    <option value="HR">Haryana</option>
+                    <option value="PB">Punjab</option>
+                    <option value="UK">Uttarakhand</option>
+                    <option value="HP">Himachal Pradesh</option>
+                    <option value="GA">Goa</option>
+                    <option value="others">Others</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="addrType">Address Type</label>
+                  <select id="addrType" class="form-input">
+                    <option value="home">Home</option>
+                    <option value="work">Work</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:flex;gap:var(--space-md)">
+                <button type="submit" class="btn btn-primary">
+                  <i class="ri-save-line"></i> Save Address
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="toggleNewAddressForm()">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div style="margin-top:var(--space-xl)">
+            <button class="btn btn-primary" onclick="goToShipping()" style="width:100%">
+              Continue to Shipping <i class="ri-arrow-right-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <hr class="checkout-section-sep">
+
+        <!-- STEP: SHIPPING METHOD -->
+        <div class="checkout-form-section" id="shippingSection" style="opacity:0.5;pointer-events:none">
+          <div class="checkout-step-header">
+            <div class="checkout-step-number" aria-hidden="true">2</div>
+            <h2 class="checkout-step-title">Shipping Method</h2>
+          </div>
+
+          <div class="shipping-options" id="shippingOptions" role="radiogroup" aria-label="Shipping options">
+            <label class="shipping-option selected" for="ship1">
+              <input type="radio" name="shipping" id="ship1" value="standard" checked>
+              <div class="shipping-option-info">
+                <div class="shipping-option-name">🚚 Standard Delivery</div>
+                <div class="shipping-option-eta">Delivered in 3–5 business days</div>
+              </div>
+              <span class="shipping-option-price" id="standardPrice">₹40</span>
+            </label>
+            <label class="shipping-option" for="ship2">
+              <input type="radio" name="shipping" id="ship2" value="express">
+              <div class="shipping-option-info">
+                <div class="shipping-option-name">⚡ Express Delivery</div>
+                <div class="shipping-option-eta">Delivered in 1–2 business days</div>
+              </div>
+              <span class="shipping-option-price">₹99</span>
+            </label>
+            <label class="shipping-option" for="ship3">
+              <input type="radio" name="shipping" id="ship3" value="free" id="ship3">
+              <div class="shipping-option-info">
+                <div class="shipping-option-name">🎁 Free Delivery</div>
+                <div class="shipping-option-eta">On orders above ₹499 · 3–5 business days</div>
+              </div>
+              <span class="shipping-option-price free" id="freePrice">FREE</span>
+            </label>
+          </div>
+
+          <div style="margin-top:var(--space-xl)">
+            <button class="btn btn-primary" onclick="goToPayment()" style="width:100%">
+              Continue to Payment <i class="ri-arrow-right-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <hr class="checkout-section-sep">
+
+        <!-- STEP: PAYMENT -->
+        <div class="checkout-form-section" id="paymentSection" style="opacity:0.5;pointer-events:none">
+          <div class="checkout-step-header">
+            <div class="checkout-step-number" aria-hidden="true">3</div>
+            <h2 class="checkout-step-title">Payment Method</h2>
+          </div>
+
+          <div class="payment-options" id="paymentOptions" role="radiogroup" aria-label="Payment methods">
+
+            <!-- UPI -->
+            <div class="payment-option selected" id="pay-upi" onclick="selectPayment('upi')">
+              <input type="radio" name="payment" value="upi" checked id="payUPI" aria-label="UPI payment">
+              <span class="payment-option-icon" aria-hidden="true">📱</span>
+              <div class="payment-option-label">
+                <div class="payment-option-name">UPI / BHIM</div>
+                <div class="payment-option-desc">PhonePe, GPay, Paytm, BHIM & more</div>
+              </div>
+            </div>
+
+            <div id="upiDetails" style="padding:var(--space-md);background:var(--cream);border-radius:var(--radius-md);margin-top:-12px;margin-bottom:var(--space-sm)">
+              <div class="upi-input-wrap">
+                <input type="text" class="form-input upi-input" id="upiId" placeholder="yourname@upi or yourname@paytm" aria-label="UPI ID">
+                <button class="btn btn-secondary upi-verify-btn" onclick="verifyUPI()" aria-label="Verify UPI ID">Verify</button>
+              </div>
+              <div id="upiVerifyMsg" style="font-size:0.8rem;margin-top:8px;display:none"></div>
+            </div>
+
+            <!-- Credit/Debit Card -->
+            <div class="payment-option" id="pay-card" onclick="selectPayment('card')">
+              <input type="radio" name="payment" value="card" id="payCard" aria-label="Credit or debit card">
+              <span class="payment-option-icon" aria-hidden="true">💳</span>
+              <div class="payment-option-label">
+                <div class="payment-option-name">Credit / Debit Card</div>
+                <div class="payment-option-desc">Visa, Mastercard, RuPay accepted</div>
+              </div>
+            </div>
+
+            <div id="cardDetails" style="display:none;padding:var(--space-md);background:var(--cream);border-radius:var(--radius-md);margin-top:-12px;margin-bottom:var(--space-sm)">
+              <div class="form-group">
+                <label class="form-label" for="cardNumber">Card Number <span>*</span></label>
+                <input type="text" id="cardNumber" class="form-input" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)" autocomplete="cc-number">
+              </div>
+              <div class="card-row">
+                <div class="form-group">
+                  <label class="form-label" for="cardName">Cardholder Name <span>*</span></label>
+                  <input type="text" id="cardName" class="form-input" placeholder="As on card" autocomplete="cc-name">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="cardExpiry">Expiry <span>*</span></label>
+                  <input type="text" id="cardExpiry" class="form-input" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)" autocomplete="cc-exp">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="cardCVV">CVV <span>*</span></label>
+                  <input type="password" id="cardCVV" class="form-input" placeholder="•••" maxlength="4" autocomplete="cc-csc">
+                </div>
+              </div>
+              <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--slate);cursor:pointer">
+                <input type="checkbox" style="accent-color:var(--crimson)"> Save this card for future purchases
+              </label>
+            </div>
+
+            <!-- Net Banking -->
+            <div class="payment-option" id="pay-netbanking" onclick="selectPayment('netbanking')">
+              <input type="radio" name="payment" value="netbanking" id="payNetBanking" aria-label="Net Banking">
+              <span class="payment-option-icon" aria-hidden="true">🏦</span>
+              <div class="payment-option-label">
+                <div class="payment-option-name">Net Banking</div>
+                <div class="payment-option-desc">All major banks supported</div>
+              </div>
+            </div>
+
+            <div id="netbankingDetails" style="display:none;padding:var(--space-md);background:var(--cream);border-radius:var(--radius-md);margin-top:-12px;margin-bottom:var(--space-sm)">
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label" for="bankSelect">Select Your Bank</label>
+                <select id="bankSelect" class="form-input">
+                  <option value="">-- Choose Bank --</option>
+                  <option>State Bank of India</option>
+                  <option>HDFC Bank</option>
+                  <option>ICICI Bank</option>
+                  <option>Axis Bank</option>
+                  <option>Bank of Baroda</option>
+                  <option>Punjab National Bank</option>
+                  <option>Canara Bank</option>
+                  <option>Kotak Mahindra Bank</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- COD -->
+            <div class="payment-option" id="pay-cod" onclick="selectPayment('cod')">
+              <input type="radio" name="payment" value="cod" id="payCOD" aria-label="Cash on Delivery">
+              <span class="payment-option-icon" aria-hidden="true">💵</span>
+              <div class="payment-option-label">
+                <div class="payment-option-name">Cash on Delivery</div>
+                <div class="payment-option-desc">Pay when your order arrives · ₹20 extra charge</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:var(--space-xl);padding:var(--space-md);background:var(--cream);border-radius:var(--radius-md);display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--slate)">
+            <i class="ri-shield-keyhole-line" style="color:var(--success);font-size:1.2rem" aria-hidden="true"></i>
+            Your payment info is encrypted with 256-bit SSL. We never store your card details.
+          </div>
+
+          <div style="margin-top:var(--space-xl)">
+            <button class="btn btn-primary" onclick="goToReview()" style="width:100%">
+              Review Order <i class="ri-arrow-right-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <hr class="checkout-section-sep">
+
+        <!-- STEP: REVIEW & PLACE ORDER -->
+        <div class="checkout-form-section" id="reviewSection" style="opacity:0.5;pointer-events:none">
+          <div class="checkout-step-header">
+            <div class="checkout-step-number" aria-hidden="true">4</div>
+            <h2 class="checkout-step-title">Review & Place Order</h2>
+          </div>
+
+          <div id="reviewContent" style="color:var(--muted);font-size:0.9rem;padding:var(--space-lg) 0">
+            Complete steps above to review your order.
+          </div>
+
+          <div style="margin-top:var(--space-lg)">
+            <div style="padding:var(--space-md);background:rgba(39,174,96,0.08);border:1px solid rgba(39,174,96,0.25);border-radius:var(--radius-md);font-size:0.8rem;color:var(--success);margin-bottom:var(--space-md)">
+              ✅ By placing this order you agree to Nirmal's Spices <a href="#" style="color:var(--crimson)">Terms of Service</a> & <a href="#" style="color:var(--crimson)">Return Policy</a>.
+            </div>
+            <button class="btn btn-primary btn-lg" onclick="placeOrder()" style="width:100%;font-size:1.1rem" id="placeOrderBtn" disabled>
+              <i class="ri-shield-check-line"></i> Place Order Securely
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ======================================================
+           RIGHT: ORDER SUMMARY
+           ====================================================== -->
+      <div>
+        <div class="order-summary-card">
+          <h2 class="order-summary-title">
+            <i class="ri-shopping-bag-3-line" aria-hidden="true" style="color:var(--crimson)"></i>
+            Order Summary
+          </h2>
+
+          <!-- Cart Items -->
+          <div class="summary-item-list" id="summaryItems" role="list" aria-label="Cart items">
+            <!-- Rendered by JS -->
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--border);margin:var(--space-md) 0">
+
+          <!-- Coupon -->
+          <div class="coupon-row">
+            <input type="text" class="form-input" id="checkoutCouponInput" placeholder="🎫 Coupon Code" aria-label="Coupon code">
+            <button class="btn btn-secondary btn-sm" onclick="applyCheckoutCoupon()" aria-label="Apply coupon">Apply</button>
+          </div>
+
+          <div class="promo-applied" id="couponApplied" style="display:none">
+            <span id="couponAppliedText">🎉 NIRMAL20 applied! 20% off</span>
+            <button onclick="removeCoupon()" style="background:none;border:none;cursor:pointer;color:var(--error);font-size:0.8rem" aria-label="Remove coupon">✕ Remove</button>
+          </div>
+
+          <!-- Price Breakdown -->
+          <div aria-label="Price summary">
+            <div class="cart-summary-row">
+              <span>Subtotal (<span id="itemCount">0</span> items)</span>
+              <span id="summarySubtotal">₹0</span>
+            </div>
+            <div class="cart-summary-row" id="discountRow" style="display:none;color:var(--success)">
+              <span>Coupon Discount</span>
+              <span id="summaryDiscount">-₹0</span>
+            </div>
+            <div class="cart-summary-row">
+              <span>Shipping</span>
+              <span id="summaryShipping">₹40</span>
+            </div>
+            <div class="cart-summary-row" id="codRow" style="display:none;color:var(--muted)">
+              <span>COD Charge</span>
+              <span>₹20</span>
+            </div>
+            <div class="cart-summary-row" style="font-size:1.1rem;font-weight:700;color:var(--charcoal);padding-top:var(--space-sm);border-top:1px solid var(--border)">
+              <span>Total</span>
+              <span style="color:var(--crimson)" id="summaryTotal">₹0</span>
+            </div>
+          </div>
+
+          <!-- Trust signals -->
+          <div style="margin-top:var(--space-lg);display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:0.78rem;color:var(--muted)">
+              <i class="ri-shield-check-line" style="color:var(--success)" aria-hidden="true"></i> Secure 256-bit SSL checkout
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:0.78rem;color:var(--muted)">
+              <i class="ri-truck-line" style="color:var(--success)" aria-hidden="true"></i> Free delivery on orders ₹499+
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:0.78rem;color:var(--muted)">
+              <i class="ri-arrow-go-back-line" style="color:var(--success)" aria-hidden="true"></i> 7-day easy returns
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:0.78rem;color:var(--muted)">
+              <i class="ri-24-hours-line" style="color:var(--success)" aria-hidden="true"></i> 24/7 customer support
+            </div>
+          </div>
+
+          <!-- Payment icons -->
+          <div style="margin-top:var(--space-lg);display:flex;gap:8px;flex-wrap:wrap" aria-label="Accepted payment methods">
+            <span class="payment-badge" style="color:rgba(255,255,255,0.7)">UPI</span>
+            <span class="payment-badge" style="color:rgba(255,255,255,0.7)">Visa</span>
+            <span class="payment-badge" style="color:rgba(255,255,255,0.7)">Mastercard</span>
+            <span class="payment-badge" style="color:rgba(255,255,255,0.7)">RuPay</span>
+            <span class="payment-badge" style="color:rgba(255,255,255,0.7)">COD</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end .checkout-grid -->
+  </div><!-- end #checkoutContent -->
+
+</div><!-- end .container -->
+</main>
+
+<div class="toast-container" id="toastContainer" role="status" aria-live="assertive"></div>
+
+<script src="app.js"></script>
+<script>
+// ================================================================
+// CHECKOUT STATE
+// ================================================================
+let checkoutState = {
+  selectedAddressId: '1',
+  selectedShipping: 'standard',
+  selectedPayment: 'upi',
+  couponCode: null,
+  couponDiscount: 0,
+  shippingCost: 40,
+};
+
+const COUPON_CODES = { 'NIRMAL20': 20, 'FIRST10': 10, 'HARDA15': 15 };
+
+// ================================================================
+// INIT
+// ================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const cartData = JSON.parse(localStorage.getItem('nirmal_cart') || '[]');
+
+  if (cartData.length === 0) {
+    document.getElementById('emptyCartMsg').style.display = 'block';
+    document.getElementById('checkoutContent').style.display = 'none';
+    return;
+  }
+
+  renderSummaryItems(cartData);
+  updateSummaryTotals(cartData);
+  checkFreeShipping(cartData);
+
+  // shipping option toggle
+  document.querySelectorAll('input[name="shipping"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      document.querySelectorAll('.shipping-option').forEach(o => o.classList.remove('selected'));
+      e.target.closest('.shipping-option')?.classList.add('selected');
+      checkoutState.selectedShipping = e.target.value;
+      const shippingCosts = { standard: 40, express: 99, free: 0 };
+      checkoutState.shippingCost = shippingCosts[e.target.value] ?? 40;
+      updateSummaryTotals(cartData);
+    });
+  });
+});
+
+// ================================================================
+// RENDER SUMMARY
+// ================================================================
+function renderSummaryItems(cartData) {
+  const container = document.getElementById('summaryItems');
+  if (!container) return;
+  container.innerHTML = cartData.map(item => `
+    <div class="order-item" role="listitem">
+      <img src="${item.img}" class="order-item-img" alt="${item.name}" width="60" height="60" loading="lazy">
+      <div style="flex:1">
+        <div class="order-item-name">${item.name}</div>
+        <div class="order-item-meta">${item.weight} · Qty: ${item.qty}</div>
+      </div>
+      <div class="order-item-price">₹${(item.price * item.qty).toLocaleString('en-IN')}</div>
+    </div>
+  `).join('');
+  const countEl = document.getElementById('itemCount');
+  if (countEl) countEl.textContent = cartData.reduce((s, i) => s + i.qty, 0);
+}
+
+function updateSummaryTotals(cartData) {
+  const subtotal  = cartData.reduce((s, i) => s + i.price * i.qty, 0);
+  const discount  = Math.floor(subtotal * checkoutState.couponDiscount / 100);
+  const shipping  = subtotal >= 499 ? 0 : checkoutState.shippingCost;
+  const codCharge = checkoutState.selectedPayment === 'cod' ? 20 : 0;
+  const total     = subtotal - discount + shipping + codCharge;
+
+  setText('summarySubtotal', `₹${subtotal.toLocaleString('en-IN')}`);
+  setText('summaryShipping', shipping === 0 ? '🎉 FREE' : `₹${shipping}`);
+  setText('summaryTotal', `₹${total.toLocaleString('en-IN')}`);
+
+  const discRow = document.getElementById('discountRow');
+  if (discRow) discRow.style.display = discount > 0 ? 'flex' : 'none';
+  setText('summaryDiscount', `-₹${discount.toLocaleString('en-IN')}`);
+
+  const codRow = document.getElementById('codRow');
+  if (codRow) codRow.style.display = checkoutState.selectedPayment === 'cod' ? 'flex' : 'none';
+}
+
+function setText(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+
+function checkFreeShipping(cartData) {
+  const subtotal = cartData.reduce((s, i) => s + i.price * i.qty, 0);
+  const standardPrice = document.getElementById('standardPrice');
+  if (subtotal >= 499 && standardPrice) {
+    standardPrice.textContent = 'FREE';
+    standardPrice.className = 'shipping-option-price free';
+    checkoutState.shippingCost = 0;
+  }
+}
+
+// ================================================================
+// ADDRESS
+// ================================================================
+function selectAddress(card) {
+  document.querySelectorAll('.address-card').forEach(c => {
+    c.classList.remove('selected');
+    c.setAttribute('aria-checked', 'false');
+  });
+  card.classList.add('selected');
+  card.setAttribute('aria-checked', 'true');
+  checkoutState.selectedAddressId = card.dataset.id;
+}
+
+function toggleNewAddressForm() {
+  const form = document.getElementById('newAddressForm');
+  const btn  = document.getElementById('addAddressBtn');
+  if (!form) return;
+  const isOpen = form.style.display !== 'none';
+  form.style.display = isOpen ? 'none' : 'block';
+  if (btn) btn.setAttribute('aria-expanded', (!isOpen).toString());
+}
+
+function saveNewAddress(e) {
+  e.preventDefault();
+  const firstName = document.getElementById('addrFirstName')?.value.trim();
+  const line1     = document.getElementById('addrLine1')?.value.trim();
+  const city      = document.getElementById('addrCity')?.value.trim();
+  const pincode   = document.getElementById('addrPincode')?.value.trim();
+
+  if (!firstName || !line1 || !city || !pincode) {
+    showToast('Please fill all required address fields', 'error'); return;
+  }
+
+  if (!/^\d{6}$/.test(pincode)) {
+    showToast('Please enter a valid 6-digit PIN code', 'error'); return;
+  }
+
+  showToast('Address saved successfully! ✅', 'success');
+  toggleNewAddressForm();
+}
+
+function lookupPincode(val) {
+  if (val.length !== 6) return;
+  // Simulate pincode lookup
+  const pincodeMap = {
+    '461331': { city: 'Harda', state: 'MP' },
+    '462001': { city: 'Bhopal', state: 'MP' },
+    '452001': { city: 'Indore', state: 'MP' },
+  };
+  const info = pincodeMap[val];
+  if (info) {
+    const cityEl = document.getElementById('addrCity');
+    const stateEl = document.getElementById('addrState');
+    if (cityEl && !cityEl.value)   cityEl.value  = info.city;
+    if (stateEl && !stateEl.value) stateEl.value = info.state;
+    showToast(`📍 Auto-filled: ${info.city}, ${info.state}`, 'info', 2000);
+  }
+}
+
+// ================================================================
+// STEP NAVIGATION
+// ================================================================
+function activateSection(sectionId) {
+  ['addressSection','shippingSection','paymentSection','reviewSection'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.cssText = id === sectionId ? '' : 'opacity:0.5;pointer-events:none';
+  });
+  const sectionMap = { addressSection: 1, shippingSection: 2, paymentSection: 3, reviewSection: 4 };
+  updateStepIndicator(sectionMap[sectionId] || 1);
+  document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function updateStepIndicator(activeStep) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById(`step${i}`);
+    if (!el) continue;
+    const numEl = el.querySelector('.step-num');
+    if (i < activeStep) {
+      el.className = 'checkout-step done';
+      if (numEl) numEl.textContent = '✓';
+      el.setAttribute('aria-current', 'false');
+    } else if (i === activeStep) {
+      el.className = 'checkout-step active';
+      if (numEl) numEl.textContent = i;
+      el.setAttribute('aria-current', 'step');
+    } else {
+      el.className = 'checkout-step';
+      if (numEl) numEl.textContent = i;
+      el.setAttribute('aria-current', 'false');
+    }
+    const sep = document.getElementById(`sep${i}`);
+    if (sep) sep.className = i < activeStep ? 'step-sep done' : 'step-sep';
+  }
+}
+
+function goToShipping() {
+  activateSection('shippingSection');
+}
+
+function goToPayment() {
+  activateSection('paymentSection');
+}
+
+function goToReview() {
+  const cartData = JSON.parse(localStorage.getItem('nirmal_cart') || '[]');
+  const subtotal = cartData.reduce((s, i) => s + i.price * i.qty, 0);
+  const discount = Math.floor(subtotal * checkoutState.couponDiscount / 100);
+  const shipping = subtotal >= 499 ? 0 : checkoutState.shippingCost;
+  const total    = subtotal - discount + shipping + (checkoutState.selectedPayment === 'cod' ? 20 : 0);
+
+  const paymentLabels = { upi: '📱 UPI', card: '💳 Card', netbanking: '🏦 Net Banking', cod: '💵 Cash on Delivery' };
+  const shippingLabels = { standard: '🚚 Standard (3–5 days)', express: '⚡ Express (1–2 days)', free: '🎁 Free' };
+
+  const reviewContent = document.getElementById('reviewContent');
+  if (reviewContent) {
+    reviewContent.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:var(--space-md)">
+        <div style="display:flex;justify-content:space-between;padding:var(--space-md);background:var(--cream);border-radius:var(--radius-md)">
+          <span style="font-weight:600;color:var(--charcoal)">📍 Delivery Address</span>
+          <button onclick="activateSection('addressSection')" style="background:none;border:none;cursor:pointer;color:var(--crimson);font-size:0.8rem;font-weight:600">Change</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:var(--space-md);background:var(--cream);border-radius:var(--radius-md)">
+          <span style="font-weight:600;color:var(--charcoal)">🚚 Shipping</span>
+          <span style="font-weight:600;color:var(--slate)">${shippingLabels[checkoutState.selectedShipping] || 'Standard'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:var(--space-md);background:var(--cream);border-radius:var(--radius-md)">
+          <span style="font-weight:600;color:var(--charcoal)">💳 Payment</span>
+          <span style="font-weight:600;color:var(--slate)">${paymentLabels[checkoutState.selectedPayment] || 'UPI'}</span>
+        </div>
+        <div style="padding:var(--space-md);background:var(--parchment);border-radius:var(--radius-md);border:2px solid var(--saffron-light)">
+          <div style="display:flex;justify-content:space-between;font-size:1.2rem;font-weight:700;color:var(--crimson)">
+            <span>Order Total</span>
+            <span>₹${total.toLocaleString('en-IN')}</span>
+          </div>
+          ${discount > 0 ? `<div style="font-size:0.8rem;color:var(--success);margin-top:4px">🎉 You saved ₹${discount} with coupon!</div>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  const placeBtn = document.getElementById('placeOrderBtn');
+  if (placeBtn) placeBtn.disabled = false;
+
+  activateSection('reviewSection');
+}
+
+// ================================================================
+// PAYMENT
+// ================================================================
+function selectPayment(type) {
+  checkoutState.selectedPayment = type;
+  document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+  document.getElementById(`pay-${type}`)?.classList.add('selected');
+
+  ['upi','card','netbanking'].forEach(t => {
+    const el = document.getElementById(`${t}Details`);
+    if (el) el.style.display = t === type ? 'block' : 'none';
+  });
+
+  const radio = document.querySelector(`input[value="${type}"]`);
+  if (radio) radio.checked = true;
+
+  const cartData = JSON.parse(localStorage.getItem('nirmal_cart') || '[]');
+  updateSummaryTotals(cartData);
+}
+
+function verifyUPI() {
+  const upiId = document.getElementById('upiId')?.value.trim();
+  const msg   = document.getElementById('upiVerifyMsg');
+  if (!upiId || !msg) return;
+
+  if (!/^[\w.]+@[\w]+$/.test(upiId)) {
+    msg.innerHTML = '<span style="color:var(--error)">❌ Invalid UPI ID format</span>';
+    msg.style.display = 'block';
+    return;
+  }
+
+  msg.innerHTML = '<span style="color:var(--muted)">⏳ Verifying...</span>';
+  msg.style.display = 'block';
+
+  setTimeout(() => {
+    msg.innerHTML = '<span style="color:var(--success)">✅ UPI ID verified!</span>';
+  }, 1200);
+}
+
+function formatCardNumber(input) {
+  let val = input.value.replace(/\D/g, '').substring(0, 16);
+  input.value = val.replace(/(.{4})/g, '$1 ').trim();
+}
+
+function formatExpiry(input) {
+  let val = input.value.replace(/\D/g, '').substring(0, 4);
+  if (val.length >= 2) val = val.substring(0, 2) + '/' + val.substring(2);
+  input.value = val;
+}
+
+// ================================================================
+// COUPON
+// ================================================================
+function applyCheckoutCoupon() {
+  const input = document.getElementById('checkoutCouponInput');
+  if (!input) return;
+  const code     = input.value.trim().toUpperCase();
+  const discount = COUPON_CODES[code];
+
+  if (!discount) { showToast('❌ Invalid coupon code! Try NIRMAL20', 'error'); return; }
+
+  checkoutState.couponCode     = code;
+  checkoutState.couponDiscount = discount;
+
+  const appliedEl = document.getElementById('couponApplied');
+  const appliedText = document.getElementById('couponAppliedText');
+  if (appliedEl)   appliedEl.style.display = 'flex';
+  if (appliedText) appliedText.textContent = `🎉 ${code} applied! ${discount}% off`;
+
+  input.value = '';
+  const cartData = JSON.parse(localStorage.getItem('nirmal_cart') || '[]');
+  updateSummaryTotals(cartData);
+  showToast(`Coupon ${code} applied! ${discount}% off 🎉`, 'success');
+}
+
+function removeCoupon() {
+  checkoutState.couponCode     = null;
+  checkoutState.couponDiscount = 0;
+  const appliedEl = document.getElementById('couponApplied');
+  if (appliedEl) appliedEl.style.display = 'none';
+  const cartData = JSON.parse(localStorage.getItem('nirmal_cart') || '[]');
+  updateSummaryTotals(cartData);
+  showToast('Coupon removed', 'info');
+}
+
+// ================================================================
+// PLACE ORDER
+// ================================================================
+function placeOrder() {
+  const btn = document.getElementById('placeOrderBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ri-loader-4-line" style="animation:spin 1s linear infinite"></i> Processing Securely...'; }
+
+  // Duplicate order prevention — store idempotency key
+  const orderId = 'NS' + Date.now();
+  const pendingKey = 'nirmal_pending_order';
+  if (localStorage.getItem(pendingKey)) {
+    showToast('A previous order is being processed. Please wait.', 'error');
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ri-shield-check-line"></i> Place Order Securely'; }
+    return;
+  }
+  localStorage.setItem(pendingKey, orderId);
+
+  // Simulate payment gateway
+  setTimeout(() => {
+    const cartData = JSON.parse(localStorage.getItem('nirmal_cart') || '[]');
+    const subtotal = cartData.reduce((s, i) => s + i.price * i.qty, 0);
+    const discount = Math.floor(subtotal * checkoutState.couponDiscount / 100);
+    const shipping = subtotal >= 499 ? 0 : checkoutState.shippingCost;
+    const total    = subtotal - discount + shipping + (checkoutState.selectedPayment === 'cod' ? 20 : 0);
+
+    const order = {
+      id: orderId,
+      items: cartData,
+      subtotal, discount, shipping, total,
+      payment: checkoutState.selectedPayment,
+      coupon:  checkoutState.couponCode,
+      date:    new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }),
+      eta:     new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }),
+      status:  'confirmed',
+    };
+
+    // Save order, clear cart
+    const orders = JSON.parse(localStorage.getItem('nirmal_orders') || '[]');
+    orders.unshift(order);
+    localStorage.setItem('nirmal_orders', JSON.stringify(orders));
+    localStorage.removeItem('nirmal_cart');
+    localStorage.removeItem(pendingKey);
+
+    window.location.href = `order-confirmation.html?orderId=${orderId}`;
+  }, 2500);
+}
+
+// Spinner CSS
+const style = document.createElement('style');
+style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+document.head.appendChild(style);
+
+window.selectAddress       = selectAddress;
+window.toggleNewAddressForm = toggleNewAddressForm;
+window.saveNewAddress      = saveNewAddress;
+window.lookupPincode       = lookupPincode;
+window.goToShipping        = goToShipping;
+window.goToPayment         = goToPayment;
+window.goToReview          = goToReview;
+window.activateSection     = activateSection;
+window.selectPayment       = selectPayment;
+window.verifyUPI           = verifyUPI;
+window.formatCardNumber    = formatCardNumber;
+window.formatExpiry        = formatExpiry;
+window.applyCheckoutCoupon = applyCheckoutCoupon;
+window.removeCoupon        = removeCoupon;
+window.placeOrder          = placeOrder;
+</script>
+</body>
+</html>
