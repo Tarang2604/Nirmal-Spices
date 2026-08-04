@@ -39,7 +39,7 @@ export default function CheckoutPage() {
   const [selectedAddressIdx, setSelectedAddressIdx] = useState<number | null>(null);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [shippingMethod, setShippingMethod] = useState<'standard'>('standard');
-  const [paymentMethod] = useState<'razorpay'>('razorpay');
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
   const [idempotencyKey, setIdempotencyKey] = useState('');
   const [submittingOrder, setSubmittingOrder] = useState(false);
   const [couponInput, setCouponInput] = useState('');
@@ -274,10 +274,20 @@ export default function CheckoutPage() {
 
       const orderData = res.data.data;
 
-      // Open Razorpay test/live checkout (uses key from backend .env)
-      if (!orderData.razorpayOrderId || !orderData.key) {
-        throw new Error('Razorpay order was not created. Check Razorpay test keys in backend .env');
-      }
+      if (paymentMethod === 'cod') {
+        toast.success("Order placed successfully! COD confirmed.");
+        if (!isLoggedIn && guestEmail) {
+          localStorage.setItem('nirmal_guest_email', guestEmail);
+        }
+        await clearCart();
+        setSubmittingOrder(false);
+        const q = !isLoggedIn && guestEmail ? `?email=${encodeURIComponent(guestEmail)}` : '';
+        router.push(`/order/${orderData.orderId}${q}`);
+      } else {
+        // Open Razorpay test/live checkout (uses key from backend .env)
+        if (!orderData.razorpayOrderId || !orderData.key) {
+          throw new Error('Razorpay order was not created. Check Razorpay test keys in backend .env');
+        }
       if (typeof window === 'undefined' || !(window as any).Razorpay) {
         toast.error('Razorpay failed to load. Refresh and try again.');
         setSubmittingOrder(false);
@@ -331,7 +341,7 @@ export default function CheckoutPage() {
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
       setSubmittingOrder(false);
-
+      }
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to create order. Please try again.");
       setSubmittingOrder(false);

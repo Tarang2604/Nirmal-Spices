@@ -8,6 +8,24 @@ import { api } from '@/lib/api';
 import { toast } from 'sonner';
 import { ArrowRight, Mail, Phone, MapPin } from 'lucide-react';
 
+const YoutubeIcon = ({ size = 18 }: { size?: number }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-youtube">
+    <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17z"/>
+    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
+  </svg>
+);
+
+const InstagramIcon = ({ size = 18 }: { size?: number }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram">
+    <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+  </svg>
+);
+
+// Evaluated once at module load — same value on server and client
+const CURRENT_YEAR = new Date().getFullYear();
+
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -33,14 +51,13 @@ export default function Footer() {
       await api.post('/contact/newsletter/subscribe', { email });
       toast.success("Subscribed successfully! 🌶️ Check your inbox.");
       setEmail('');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Subscription failed. Try again.");
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || "Subscription failed. Try again.");
     } finally {
       setLoading(false);
     }
   };
-
-  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-charcoal text-cream pt-16 pb-8 border-t border-bark/20 mt-auto" aria-labelledby="footer-heading">
@@ -52,10 +69,11 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center gap-2">
               <Image
-                src="/nirmal_logo.png"
+                src="/nirmal_logo (2).png"
                 alt="Nirmal's Spices"
-                width={52}
-                height={52}
+                width={60}
+                height={60}
+                style={{ width: 'auto', height: 'auto' }}
                 className="object-contain"
               />
               <span className="font-display font-bold text-xl tracking-tight text-cream">
@@ -63,14 +81,14 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-muted-foreground text-xs leading-relaxed max-w-xs font-sans">
-              Supplying, manufacturing, and exporting 43 varieties of authentic Indian spices 
+              Supplying, manufacturing, and exporting 58+ varieties of authentic Indian spices 
               from Harda, Madhya Pradesh. Committed to 100% purity, local sourcing, hygienic 
               processing, and eco-friendly packaging.
             </p>
             <div className="flex flex-col gap-2 mt-2 text-xs font-sans text-muted-foreground">
               <span className="flex items-center gap-2"><MapPin size={14} className="text-primary" /> Harda, Madhya Pradesh, India</span>
               <span className="flex items-center gap-2"><Phone size={14} className="text-primary" /> +91 9770057005</span>
-              <span className="flex items-center gap-2"><Mail size={14} className="text-primary" /> info@nirmalspices.in</span>
+              <span className="flex items-center gap-2"><Mail size={14} className="text-primary" /> info.nirmalspices@gmail.com</span>
             </div>
           </div>
 
@@ -78,16 +96,17 @@ export default function Footer() {
           <div className="flex flex-col gap-3 font-sans">
             <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Explore</h3>
             <ul className="flex flex-col gap-2 text-xs text-muted-foreground">
-              <li><Link href="/" className="hover:text-primary transition-colors">Home</Link></li>
-              <li><Link href="/shop" className="hover:text-primary transition-colors">Shop Spices</Link></li>
+              <li><Link href="/" className="hover:text-primary transition-colors">🏠 Home</Link></li>
+              <li><Link href="/shop" className="hover:text-primary transition-colors">🌶️ Shop Spices</Link></li>
               {(categories || []).map((c) => (
                 <li key={c.slug}>
                   <Link href={`/shop?cat=${c.slug}`} className="hover:text-primary transition-colors">
-                    {c.name}
+                    🏷️ {c.name}
                   </Link>
                 </li>
               ))}
-              <li><Link href="/contact" className="hover:text-primary transition-colors">Contact & Support</Link></li>
+              <li><Link href="/about" className="hover:text-primary transition-colors">✨ About Us</Link></li>
+              <li><Link href="/contact" className="hover:text-primary transition-colors">📞 Contact & Support</Link></li>
             </ul>
           </div>
 
@@ -111,6 +130,7 @@ export default function Footer() {
             <form onSubmit={handleSubscribe} className="flex flex-col gap-2 mt-2">
               <div className="relative">
                 <input
+                  suppressHydrationWarning
                   type="email"
                   required
                   placeholder="Enter your email..."
@@ -120,6 +140,7 @@ export default function Footer() {
                   className="w-full bg-charcoal-mid border border-bark/30 text-cream px-4 py-2 pr-10 text-xs rounded-lg outline-none focus:border-primary transition-colors"
                 />
                 <button
+                  suppressHydrationWarning
                   type="submit"
                   disabled={loading}
                   className="absolute right-2.5 top-2 text-primary hover:text-white transition-colors"
@@ -135,9 +156,27 @@ export default function Footer() {
 
         {/* Footer Bottom Bar */}
         <div className="border-t border-bark/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-sans text-muted-foreground">
-          <span>&copy; {currentYear} Nirmal Spices. All Rights Reserved.</span>
+          <span>&copy; {CURRENT_YEAR} Nirmal Spices. All Rights Reserved.</span>
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1">🌐 Designed for Luxury &amp; Purity</span>
+            <a 
+              href="https://youtube.com/@nirmalsspices_timarni?feature=shared" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:text-red-500 transition-colors" 
+              aria-label="YouTube Channel"
+            >
+              <YoutubeIcon size={18} />
+            </a>
+            <a 
+              href="https://www.instagram.com/nirmals_spices/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:text-pink-500 transition-colors" 
+              aria-label="Instagram Page"
+            >
+              <InstagramIcon size={18} />
+            </a>
+            <span className="flex items-center gap-1 border-l border-bark/20 pl-4">🌐 Designed for Luxury &amp; Purity</span>
           </div>
         </div>
       </div>

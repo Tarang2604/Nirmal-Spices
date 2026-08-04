@@ -24,8 +24,8 @@ const cartItemSchema = new Schema<ICartItem>(
 
 const cartSchema = new Schema<ICart>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', index: true },
-    sessionId: { type: String, index: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User' },
+    sessionId: { type: String },
     items: { type: [cartItemSchema], default: [] },
     // TTL index — MongoDB auto-deletes stale carts after 7 days
     expiresAt: {

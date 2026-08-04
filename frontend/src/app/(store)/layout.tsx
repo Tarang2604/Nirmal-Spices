@@ -5,6 +5,7 @@ import AnnouncementBar from '@/components/layout/AnnouncementBar';
 import CategoryNav from '@/components/layout/CategoryNav';
 import CartSheet from '@/components/cart/CartSheet';
 import RouteKeyedContent from '@/components/providers/RouteKeyedContent';
+import WhatsAppButton from '@/components/common/WhatsAppButton';
 
 export default function StoreLayout({
   children,
@@ -23,6 +24,7 @@ export default function StoreLayout({
       </main>
       <Footer />
       <CartSheet />
+      <WhatsAppButton />
     </div>
   );
 }

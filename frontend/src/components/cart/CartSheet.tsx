@@ -175,6 +175,7 @@ export default function CartSheet() {
                         src={item.product?.images?.[0] || '/hero_spices.png'}
                         alt={item.product?.name || 'Spice item'}
                         fill
+                        sizes="64px"
                         className="object-cover"
                       />
                     </div>
@@ -253,7 +254,7 @@ export default function CartSheet() {
                   <AvailableCouponsStrip
                     mode="pick"
                     compact
-                    selectedCode={coupon?.code}
+                    selectedCode={undefined}
                     onSelect={(code) => {
                       setCouponCode(code);
                       void (async () => {

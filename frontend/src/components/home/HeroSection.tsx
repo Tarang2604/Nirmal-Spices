@@ -71,7 +71,7 @@ export default function HeroSection() {
               variants={itemVariants}
               className="text-slate/80 text-base sm:text-lg leading-relaxed max-w-lg mb-8 font-sans"
             >
-              Nirmal&apos;s Spices brings you <strong className="text-charcoal/90 font-semibold">43 varieties</strong> of handpicked, hygienically processed, 
+              Nirmal&apos;s Spices brings you <strong className="text-charcoal/90 font-semibold">58+ varieties</strong> of handpicked, hygienically processed, 
               eco-packed Indian spices — straight from the heartland of MP to your kitchen.
             </motion.p>
 
@@ -127,18 +127,16 @@ export default function HeroSection() {
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
           >
             {/* Main image card */}
-            <div className="relative w-full max-w-md lg:max-w-full aspect-[4/4.5] rounded-3xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.14)] border-4 border-white">
+            <div className="relative w-full max-w-md lg:max-w-full aspect-[4/4.5]">
               <Image
-                src="/hero_spices.png"
-                alt="Premium Indian Spices Flatlay - Nirmal's Spices"
+                src="/hero_product_showcase.png"
+                alt="Nirmal's Spices – Premium Quality Masala Product Range"
                 fill
                 priority
                 loading="eager"
-                className="object-cover object-center"
+                className="object-contain object-center drop-shadow-2xl"
                 sizes="(max-width: 768px) 100vw, 550px"
               />
-              {/* Subtle gradient overlay at bottom */}
-              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-charcoal/30 to-transparent" />
             </div>
 
             {/* Floating product count badge */}
@@ -148,7 +146,7 @@ export default function HeroSection() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6, type: "spring" as const, stiffness: 200 }}
             >
-              <span className="font-extrabold text-2xl leading-none">43</span>
+              <span className="font-extrabold text-2xl leading-none">58+</span>
               <span className="text-[9px] font-accent uppercase tracking-widest opacity-90">Varieties</span>
             </motion.div>
 
@@ -160,10 +158,11 @@ export default function HeroSection() {
               transition={{ delay: 0.7, type: "spring" as const, stiffness: 180 }}
             >
               <Image
-                src="/nirmal_logo.png"
+                src="/nirmal_logo (2).png"
                 alt="Nirmal's Spices"
-                width={36}
-                height={36}
+                width={42}
+                height={42}
+                style={{ width: 'auto', height: 'auto' }}
                 className="object-contain"
               />
               <div className="flex flex-col leading-tight pr-1">

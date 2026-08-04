@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import type { Product } from '@/data/catalog';
 
+import { useAuthStore } from '@/store/authStore';
+
 interface ProductCardProps {
   product: Product;
   onQuickView?: (product: Product) => void;
@@ -18,6 +20,7 @@ interface ProductCardProps {
 export default function ProductCard({ product, onQuickView }: ProductCardProps) {
   const { addItem } = useCartStore();
   const { toggleWishlist, has } = useWishlistStore();
+  const { isLoggedIn } = useAuthStore();
   const wishlisted = has(product._id);
 
   const displayPrice = product.salePrice ?? product.price;
@@ -40,11 +43,10 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
     toast.success(`${product.name} added to cart!`);
   };
 
-  const handleWishlist = (e: React.MouseEvent) => {
+  const handleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
-    const was = has(product._id);
-    void toggleWishlist(product._id);
-    toast.success(was ? 'Removed from wishlist' : 'Added to wishlist');
+    await toggleWishlist(product._id);
+    toast.success(wishlisted ? 'Removed from wishlist' : 'Added to wishlist ❤️');
   };
 
   return (

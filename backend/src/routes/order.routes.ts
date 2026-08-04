@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as orderController from '../controllers/order.controller';
-import { verifyAuth, optionalAuth } from '../middleware/auth';
+import { verifyAuth, optionalAuth, requireAdmin } from '../middleware/auth';
 import { validate } from '../middleware/validate';
 import { idempotency } from '../middleware/idempotency';
 import { createOrderSchema, verifyPaymentSchema } from '../validators/order.validator';
@@ -30,9 +30,13 @@ router.post(
 // Guest can view order with ?email= matching guestEmail
 router.get('/:id', optionalAuth, orderController.getOrderById);
 
+// Strictly protected user routes
 router.use(verifyAuth);
 
 router.get('/', orderController.getMyOrders);
 router.put('/:id/cancel', orderController.cancelOrder);
+
+// Admin-only: list all orders with filters
+router.get('/admin/all', requireAdmin, orderController.getAllOrders);
 
 export default router;
