@@ -15,6 +15,7 @@ export function validate<T>(schema: ZodSchema<T>, target: ValidateTarget = 'body
 
     if (!result.success) {
       const errors = formatZodErrors(result.error);
+      // Must call next(err) — synchronous throw won't reach async error handler
       next(ApiError.badRequest('Validation failed', errors));
       return;
     }

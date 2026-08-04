@@ -2262,6 +2262,7 @@ footer {
   box-shadow: 0 4px 20px rgba(37,211,102,0.4);
   transition: all var(--transition-base);
   text-decoration: none;
+  cursor: pointer;
 }
 
 .whatsapp-float:hover {
@@ -2277,6 +2278,8 @@ footer {
   border-radius: var(--radius-full);
   background: #25D366;
   animation: pulse-ring 2s infinite;
+  pointer-events: none; /* Allow clicks to pass through the pulse ring to the anchor */
+  z-index: -1; /* Keep ring behind the icon */
 }
 
 @keyframes pulse-ring {

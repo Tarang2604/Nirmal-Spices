@@ -3,7 +3,11 @@ import { z } from 'zod';
 export const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   email: z.string().email('Invalid email address'),
-  phone: z.string().regex(/^[6-9]\d{9}$/, 'Invalid Indian mobile number').optional().or(z.literal('')),
+  phone: z.string()
+    .regex(/^[6-9]\d{9}$/, 'Invalid Indian mobile number')
+    .optional()
+    .or(z.literal(''))
+    .transform((val) => (val === '' ? undefined : val)),
   password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
@@ -46,8 +50,15 @@ export const resetPasswordSchema = z.object({
 });
 
 export const updateProfileSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters').optional().or(z.literal('')),
-  phone: z.string().regex(/^[6-9]\d{9}$/, 'Invalid Indian mobile number').optional().or(z.literal('')),
+  name: z.string().min(2, 'Name must be at least 2 characters')
+    .optional()
+    .or(z.literal(''))
+    .transform((val) => (val === '' ? undefined : val)),
+  phone: z.string()
+    .regex(/^[6-9]\d{9}$/, 'Invalid Indian mobile number')
+    .optional()
+    .or(z.literal(''))
+    .transform((val) => (val === '' ? undefined : val)),
 });
 
 export const addressSchema = z.object({

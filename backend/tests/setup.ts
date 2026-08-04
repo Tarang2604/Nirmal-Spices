@@ -77,3 +77,39 @@ jest.mock('cloudinary', () => ({
     },
   },
 }));
+
+// Mock Mongoose startSession to prevent transaction timeouts when no DB is connected
+jest.mock('mongoose', () => {
+  const original = jest.requireActual('mongoose');
+  const mockStartSession = async () => ({
+    startTransaction: jest.fn(),
+    commitTransaction: jest.fn(),
+    abortTransaction: jest.fn(),
+    endSession: jest.fn(),
+  });
+
+  const mockMongooseDefault = new Proxy(original.default || original, {
+    get(target, prop) {
+      if (prop === 'startSession') {
+        return mockStartSession;
+      }
+      return (target as any)[prop];
+    }
+  });
+
+  const mockMongoose = new Proxy(original, {
+    get(target, prop) {
+      if (prop === 'startSession') {
+        return mockStartSession;
+      }
+      if (prop === 'default') {
+        return mockMongooseDefault;
+      }
+      return (target as any)[prop];
+    }
+  });
+
+  return mockMongoose;
+});
+
+

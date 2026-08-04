@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
+import { useAuthStore } from '@/store/authStore';
 import { cn } from '@/lib/utils';
 import { Star, ShoppingCart, Heart, X, ArrowRight } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -38,6 +39,7 @@ export default function QuickViewModal({ product, open, onClose }: QuickViewModa
 
   const { addItem } = useCartStore();
   const { toggleWishlist, has } = useWishlistStore();
+  const { isLoggedIn } = useAuthStore();
 
   // Reset local state on product swap/open
   useEffect(() => {
@@ -71,9 +73,9 @@ export default function QuickViewModal({ product, open, onClose }: QuickViewModa
     }
   };
 
-  const handleWishlistToggle = () => {
-    void toggleWishlist(product._id);
-    toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
+  const handleWishlistToggle = async () => {
+    await toggleWishlist(product._id, isLoggedIn);
+    toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist ❤️");
   };
 
   return (

@@ -56,7 +56,6 @@ const userSchema = new Schema<IUser, IUserModel>(
     email: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true,
       match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -64,7 +63,6 @@ const userSchema = new Schema<IUser, IUserModel>(
     phone: {
       type: String,
       trim: true,
-      sparse: true,
       match: /^[6-9]\d{9}$/,
     },
     password: { type: String, required: true, minlength: 8, select: false },

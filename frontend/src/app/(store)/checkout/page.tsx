@@ -274,10 +274,20 @@ export default function CheckoutPage() {
 
       const orderData = res.data.data;
 
-      // Open Razorpay test/live checkout (uses key from backend .env)
-      if (!orderData.razorpayOrderId || !orderData.key) {
-        throw new Error('Razorpay order was not created. Check Razorpay test keys in backend .env');
-      }
+      if (paymentMethod === 'cod') {
+        toast.success("Order placed successfully! COD confirmed.");
+        if (!isLoggedIn && guestEmail) {
+          localStorage.setItem('nirmal_guest_email', guestEmail);
+        }
+        await clearCart();
+        setSubmittingOrder(false);
+        const q = !isLoggedIn && guestEmail ? `?email=${encodeURIComponent(guestEmail)}` : '';
+        router.push(`/order/${orderData.orderId}${q}`);
+      } else {
+        // Open Razorpay test/live checkout (uses key from backend .env)
+        if (!orderData.razorpayOrderId || !orderData.key) {
+          throw new Error('Razorpay order was not created. Check Razorpay test keys in backend .env');
+        }
       if (typeof window === 'undefined' || !(window as any).Razorpay) {
         toast.error('Razorpay failed to load. Refresh and try again.');
         setSubmittingOrder(false);

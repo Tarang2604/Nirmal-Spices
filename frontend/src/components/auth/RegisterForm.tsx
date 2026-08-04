@@ -78,7 +78,7 @@ export default function RegisterForm() {
       <div className="text-center">
         <h2 className="font-display font-bold text-2xl text-charcoal font-accent">Create Account</h2>
         <p className="text-muted-foreground text-xs mt-1">
-          Join us to explore authentic Indian spices. Your details are saved securely.
+          Join us to explore 58+ varieties of authentic Indian spices. Your details are saved securely.
         </p>
       </div>
 
