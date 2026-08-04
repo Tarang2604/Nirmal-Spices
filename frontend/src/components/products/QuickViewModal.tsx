@@ -74,7 +74,7 @@ export default function QuickViewModal({ product, open, onClose }: QuickViewModa
   };
 
   const handleWishlistToggle = async () => {
-    await toggleWishlist(product._id, isLoggedIn);
+    await toggleWishlist(product._id);
     toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist ❤️");
   };
 

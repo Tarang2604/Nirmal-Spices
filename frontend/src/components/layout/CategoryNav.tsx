@@ -25,6 +25,7 @@ export default function CategoryNav() {
 
   const links = [
     { label: 'Home', href: '/', slug: undefined as string | undefined },
+    { label: 'About Us', href: '/about', slug: undefined },
     { label: 'All Products', href: '/shop', slug: undefined },
     ...(categories || []).map((c) => ({
       label: c.name,

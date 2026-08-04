@@ -254,7 +254,7 @@ export default function CartSheet() {
                   <AvailableCouponsStrip
                     mode="pick"
                     compact
-                    selectedCode={coupon?.code}
+                    selectedCode={undefined}
                     onSelect={(code) => {
                       setCouponCode(code);
                       void (async () => {

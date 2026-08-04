@@ -514,3 +514,7 @@ export function assertStatusTransition(from: OrderStatus, to: OrderStatus): void
     throw ApiError.badRequest(`Cannot transition order from '${from}' to '${to}'`);
   }
 }
+
+export const getAllOrders = asyncHandler(async (req: Request, res: Response) => {
+  res.status(501).json({ success: false, message: 'Not implemented' });
+});

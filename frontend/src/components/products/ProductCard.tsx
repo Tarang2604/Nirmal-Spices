@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import type { Product } from '@/data/catalog';
 
-import { useWishlistStore } from '@/store/wishlistStore';
 import { useAuthStore } from '@/store/authStore';
 
 interface ProductCardProps {
@@ -46,7 +45,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
 
   const handleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
-    await toggleWishlist(product._id, isLoggedIn);
+    await toggleWishlist(product._id);
     toast.success(wishlisted ? 'Removed from wishlist' : 'Added to wishlist ❤️');
   };
 
