@@ -52,7 +52,7 @@ export default function Header() {
   // Fetch cart on mount
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [fetchCart]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,10 +76,10 @@ export default function Header() {
   return (
     <header 
       className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300 border-b",
+        "sticky top-[30px] z-50 w-full transition-all duration-300 border-b",
         isScrolled 
-          ? "bg-white/95 backdrop-blur-md shadow-sm border-border" 
-          : "bg-background border-transparent"
+          ? "bg-white shadow-md border-border/60" 
+          : "bg-white/98 shadow-sm border-border/20"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,6 +87,7 @@ export default function Header() {
           
           {/* Mobile Menu Button */}
           <button 
+            suppressHydrationWarning
             className="md:hidden p-2 text-foreground hover:bg-muted/50 rounded-full"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle mobile menu"
@@ -106,10 +107,10 @@ export default function Header() {
               priority
             />
             <div className="flex flex-col">
-              <span className="font-display font-bold text-lg leading-tight tracking-tight text-primary">
+              <span className="font-display font-bold text-lg md:text-xl leading-tight tracking-tight text-primary">
                 Nirmal&apos;s Spices
               </span>
-              <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-semibold font-accent">
+              <span className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-semibold font-accent">
                 Harda, Madhya Pradesh
               </span>
             </div>
@@ -183,6 +184,7 @@ export default function Header() {
             {/* Shopping Cart Button */}
             <button 
               onClick={toggleCart}
+              suppressHydrationWarning
               className="flex items-center gap-2 p-2 hover:bg-muted/50 rounded-full relative text-foreground outline-none"
               aria-label="Open Cart"
             >
@@ -198,9 +200,9 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Menu Drawer — rendered below header, solid bg to prevent bleed */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-background border-b border-border p-4 animate-fade-down duration-200">
+        <div className="md:hidden bg-white border-b border-border shadow-lg p-4 animate-fade-down duration-200">
           <form onSubmit={handleSearchSubmit} className="mb-4 relative w-full">
             <input
               type="search"
@@ -214,7 +216,7 @@ export default function Header() {
           <nav className="flex flex-col gap-3 font-sans font-semibold tracking-wide uppercase text-sm">
             <Link href="/" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🏠 Home</Link>
             <Link href="/about" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>✨ About Us</Link>
-            <Link href="/shop" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>All Products</Link>
+            <Link href="/shop" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🛍️ All Products</Link>
             <Link href="/shop?cat=blended-masalas" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🧂 Blended Masalas</Link>
             <Link href="/shop?cat=ground-spices" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🌶️ Ground Spices</Link>
             <Link href="/shop?cat=whole-spices" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🌿 Whole Spices</Link>
@@ -222,7 +224,6 @@ export default function Header() {
             <Link href="/shop?cat=flour" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🌾 Flour</Link>
             <Link href="/contact" className="hover:text-primary py-1" onClick={() => setMobileMenuOpen(false)}>📞 Contact Us</Link>
           </nav>
-
         </div>
       )}
     </header>

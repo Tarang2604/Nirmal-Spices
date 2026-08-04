@@ -1,9 +1,9 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Filter, X } from 'lucide-react';
+import { Filter } from 'lucide-react';
 
 interface ProductFiltersProps {
   onCloseMobile?: () => void;
@@ -17,6 +17,14 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
   const activeBadge = searchParams.get('badge') || '';
   const minPrice = searchParams.get('minPrice') || '';
   const maxPrice = searchParams.get('maxPrice') || '';
+
+  // Local state so typing doesn't trigger router.push on every keystroke
+  const [localMin, setLocalMin] = useState(minPrice);
+  const [localMax, setLocalMax] = useState(maxPrice);
+
+  // Keep local state in sync when URL params change externally (e.g. Clear All)
+  useEffect(() => { setLocalMin(minPrice); }, [minPrice]);
+  useEffect(() => { setLocalMax(maxPrice); }, [maxPrice]);
 
   const categories = [
     { label: "All Spices", value: "" },
@@ -46,14 +54,32 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
     router.push(`/shop?${params.toString()}`);
   };
 
+  // Apply price filter only when user is done typing (blur or Enter)
+  const applyPriceFilter = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (localMin) { params.set('minPrice', localMin); } else { params.delete('minPrice'); }
+    if (localMax) { params.set('maxPrice', localMax); } else { params.delete('maxPrice'); }
+    params.set('page', '1');
+    router.push(`/shop?${params.toString()}`);
+  };
+
+  const handlePriceKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      applyPriceFilter();
+      (e.target as HTMLInputElement).blur();
+    }
+  };
+
   const handleClearAll = () => {
+    setLocalMin('');
+    setLocalMax('');
     router.push('/shop');
     if (onCloseMobile) onCloseMobile();
   };
 
   return (
     <aside className="w-full flex flex-col gap-8 font-sans">
-      
+
       {/* Sidebar Header */}
       <div className="flex items-center justify-between pb-4 border-b border-border-spice">
         <h2 className="text-sm font-bold uppercase tracking-wider text-charcoal flex items-center gap-2">
@@ -122,19 +148,26 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
           <input
             type="number"
             placeholder="Min"
-            value={minPrice}
-            onChange={(e) => updateParam('minPrice', e.target.value)}
+            value={localMin}
+            onChange={(e) => setLocalMin(e.target.value)}
+            onBlur={applyPriceFilter}
+            onKeyDown={handlePriceKeyDown}
+            min={0}
             className="w-full bg-cream-dark/30 border border-border focus:border-primary rounded-lg px-3 py-2 text-xs outline-none"
           />
-          <span className="text-muted-foreground text-xs font-bold">-</span>
+          <span className="text-muted-foreground text-xs font-bold">–</span>
           <input
             type="number"
             placeholder="Max"
-            value={maxPrice}
-            onChange={(e) => updateParam('maxPrice', e.target.value)}
+            value={localMax}
+            onChange={(e) => setLocalMax(e.target.value)}
+            onBlur={applyPriceFilter}
+            onKeyDown={handlePriceKeyDown}
+            min={0}
             className="w-full bg-cream-dark/30 border border-border focus:border-primary rounded-lg px-3 py-2 text-xs outline-none"
           />
         </div>
+        <p className="text-[10px] text-muted-foreground italic">Press Enter or click away to apply</p>
       </div>
 
     </aside>

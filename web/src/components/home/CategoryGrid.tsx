@@ -10,39 +10,39 @@ export default function CategoryGrid() {
   const categories = [
     {
       title: "Blended Masalas",
-      subtitle: "18 authentic masala blends",
+      subtitle: "26 authentic masala blends",
       categorySlug: "blended-masalas",
-      image: "/masala_collection.png",
+      image: "/blended_masala_collection.jpg",
       color: "bg-saffron/10",
       border: "border-saffron/20",
       accent: "text-saffron",
-      count: 18,
+      count: 26,
     },
     {
       title: "Ground Spices",
-      subtitle: "Pure stone-ground powders",
+      subtitle: "11 pure stone-ground powders",
       categorySlug: "ground-spices",
       image: "/spices_flatlay.png",
       color: "bg-crimson/10",
       border: "border-crimson/20",
       accent: "text-crimson",
-      count: 4,
+      count: 11,
     },
     {
       title: "Whole Spices",
-      subtitle: "Naturally dried aromatic seeds",
+      subtitle: "7 naturally dried aromatic seeds",
       categorySlug: "whole-spices",
-      image: "/hero_spices.png",
+      image: "/whole_spices_collection.jpg",
       color: "bg-amber-500/10",
       border: "border-amber-500/20",
       accent: "text-amber-600",
-      count: 2,
+      count: 7,
     },
     {
       title: "Salts",
       subtitle: "Sendha Namak & Kala Namak",
       categorySlug: "salts",
-      image: "/hero_spices.png",
+      image: "/salt_banner_v2.png",
       color: "bg-slate-400/10",
       border: "border-slate-400/20",
       accent: "text-slate-600",
@@ -50,13 +50,23 @@ export default function CategoryGrid() {
     },
     {
       title: "Instant Mix",
-      subtitle: "Idli Mix & Gulab Jamun Mix",
+      subtitle: "8 ready-to-cook mixes",
       categorySlug: "instant-mix",
-      image: "/masala_collection.png",
+      image: "/instant_mix_banner_v2.png",
       color: "bg-green-500/10",
       border: "border-green-500/20",
       accent: "text-green-700",
-      count: 2,
+      count: 8,
+    },
+    {
+      title: "Fasting Flours",
+      subtitle: "Singhada, Rajgira & Fariyali Atta",
+      categorySlug: "flour",
+      image: "/flour_catalog.jpg",
+      color: "bg-amber-100/60",
+      border: "border-amber-300/40",
+      accent: "text-amber-700",
+      count: 4,
     },
   ];
 
@@ -96,9 +106,9 @@ export default function CategoryGrid() {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
-          {categories.map((cat, idx) => (
+          {categories.map((cat) => (
             <motion.div
-              key={idx}
+              key={cat.categorySlug}
               variants={cardVariants}
               whileHover={{ y: -8 }}
               className={`group flex flex-col rounded-2xl border ${cat.border} ${cat.color} overflow-hidden transition-all duration-300`}
@@ -111,7 +121,7 @@ export default function CategoryGrid() {
                   alt={cat.title}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  sizes="(max-w-768px) 100vw, 350px"
+                  sizes="(max-width: 768px) 100vw, 350px"
                 />
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors" />
               </div>

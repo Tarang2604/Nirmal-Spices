@@ -1,6 +1,7 @@
 import React from 'react';
 import HeroSection from '@/components/home/HeroSection';
 import CategoryGrid from '@/components/home/CategoryGrid';
+import FlourCatalog from '@/components/home/FlourCatalog';
 import TrendingProducts from '@/components/home/TrendingProducts';
 import FeaturesGrid from '@/components/home/FeaturesGrid';
 import TestimonialsCarousel from '@/components/home/TestimonialsCarousel';
@@ -17,6 +18,9 @@ export default function HomePage() {
 
       {/* Category Grid Section */}
       <CategoryGrid />
+
+      {/* Flour Catalog Section */}
+      <FlourCatalog />
 
       {/* Trending / Bestseller tabbed items */}
       <TrendingProducts />

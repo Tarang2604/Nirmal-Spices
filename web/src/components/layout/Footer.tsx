@@ -38,8 +38,9 @@ export default function Footer() {
       await api.post('/contact/newsletter/subscribe', { email });
       toast.success("Subscribed successfully! 🌶️ Check your inbox.");
       setEmail('');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Subscription failed. Try again.");
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || "Subscription failed. Try again.");
     } finally {
       setLoading(false);
     }
@@ -109,6 +110,7 @@ export default function Footer() {
             <form onSubmit={handleSubscribe} className="flex flex-col gap-2 mt-2">
               <div className="relative">
                 <input
+                  suppressHydrationWarning
                   type="email"
                   required
                   placeholder="Enter your email..."
@@ -118,6 +120,7 @@ export default function Footer() {
                   className="w-full bg-charcoal-mid border border-bark/30 text-cream px-4 py-2 pr-10 text-xs rounded-lg outline-none focus:border-primary transition-colors"
                 />
                 <button
+                  suppressHydrationWarning
                   type="submit"
                   disabled={loading}
                   className="absolute right-2.5 top-2 text-primary hover:text-white transition-colors"

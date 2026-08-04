@@ -81,6 +81,7 @@ export default function TestimonialsCarousel() {
         <div className="flex items-center justify-center gap-4 mt-8">
           <button 
             onClick={scrollPrev}
+            suppressHydrationWarning
             className="p-2 border border-bark/20 hover:bg-cream-dark rounded-full text-charcoal transition-colors outline-none"
             aria-label="Previous testimonial"
           >
@@ -88,6 +89,7 @@ export default function TestimonialsCarousel() {
           </button>
           <button 
             onClick={scrollNext}
+            suppressHydrationWarning
             className="p-2 border border-bark/20 hover:bg-cream-dark rounded-full text-charcoal transition-colors outline-none"
             aria-label="Next testimonial"
           >

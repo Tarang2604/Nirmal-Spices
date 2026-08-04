@@ -53,6 +53,7 @@ export default function TrendingProducts() {
             <button
               key={tab.value}
               onClick={() => setActiveTab(tab.value)}
+              suppressHydrationWarning
               className={[
                 "px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider font-accent transition-all duration-200 outline-none",
                 activeTab === tab.value
@@ -88,7 +89,7 @@ export default function TrendingProducts() {
               )}
 
               {/* Wishlist */}
-              <button className="absolute top-2.5 right-2.5 z-10 w-7 h-7 bg-white/90 border border-border/50 rounded-full flex items-center justify-center text-muted-foreground hover:text-crimson hover:border-crimson/30 transition-colors duration-150">
+              <button suppressHydrationWarning className="absolute top-2.5 right-2.5 z-10 w-7 h-7 bg-white/90 border border-border/50 rounded-full flex items-center justify-center text-muted-foreground hover:text-crimson hover:border-crimson/30 transition-colors duration-150">
                 <Heart size={12} />
               </button>
 
@@ -141,6 +142,7 @@ export default function TrendingProducts() {
 
                   <button
                     onClick={() => handleAddToCart(product)}
+                    suppressHydrationWarning
                     className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-primary text-white hover:bg-crimson-dark shadow-sm hover:shadow-md hover:scale-110 transition-all duration-200"
                     aria-label={`Add ${product.name} to cart`}
                   >

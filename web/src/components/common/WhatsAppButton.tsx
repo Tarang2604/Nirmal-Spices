@@ -73,7 +73,7 @@ export default function WhatsAppButton() {
       {/* Pulse ring animation */}
       <span
         className={`
-          absolute bottom-0 right-0 w-14 h-14 rounded-full bg-[#25D366] opacity-30 animate-ping
+          absolute bottom-0 right-0 w-14 h-14 rounded-full bg-[#25D366] opacity-30 animate-ping pointer-events-none
           ${visible ? 'block' : 'hidden'}
         `}
         aria-hidden="true"
