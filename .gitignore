@@ -26,6 +26,9 @@ yarn-error.log*
 .pnpm-debug.log*
 *.log
 
+# Local uploads (Cloudinary fallback)
+backend/uploads/
+
 # Editor & OS files
 .DS_Store
 Thumbs.db

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Nirmal's Spices – Sign in to Your Account</title>
+  <meta name="description" content="Login or create your Nirmal's Spices account to track orders, manage wishlist, and enjoy exclusive member benefits.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1C1C1E 0%, #2D1810 50%, var(--crimson-dark) 100%);
+      display: flex;
+      flex-direction: column;
+    }
+    .auth-nav {
+      padding: var(--space-lg) var(--space-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .auth-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-xl);
+    }
+    .auth-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+      width: 100%;
+      max-width: 460px;
+      box-shadow: var(--shadow-xl);
+      animation: hero-fade-in 0.6s ease;
+    }
+    .auth-tabs {
+      display: flex;
+      background: var(--cream);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: var(--space-xl);
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--muted);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+    .auth-tab.active {
+      background: var(--white);
+      color: var(--crimson);
+      box-shadow: var(--shadow-sm);
+    }
+    .auth-panel { display: none; }
+    .auth-panel.active { display: block; animation: fade-up 0.3s ease; }
+    .password-wrap { position: relative; }
+    .password-toggle {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+    .password-toggle:hover { color: var(--charcoal); }
+    .form-submit { width: 100%; margin-top: var(--space-md); }
+    .strength-bar { height: 4px; border-radius: 2px; background: var(--border); margin-top: 8px; overflow: hidden; }
+    .strength-fill { height: 100%; border-radius: 2px; transition: all var(--transition-base); width: 0; }
+    .otp-inputs { display: flex; gap: 10px; justify-content: center; }
+    .otp-input {
+      width: 52px; height: 52px; text-align: center; font-size: 1.2rem; font-weight: 700;
+      border: 2px solid var(--border); border-radius: var(--radius-md); outline: none;
+      transition: all var(--transition-fast);
+    }
+    .otp-input:focus { border-color: var(--crimson); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
+  </style>
+</head>
+<body>
+
+<div class="auth-page">
+  <!-- Auth Nav -->
+  <nav class="auth-nav" aria-label="Authentication navigation">
+    <a href="index.html" class="header-logo">
+      <div class="logo-emblem">🌶️</div>
+      <div class="logo-text">
+        <span class="logo-brand" style="color:white">Nirmal's Spices</span>
+        <span class="logo-tagline" style="color:rgba(255,255,255,0.5)">Pure • Authentic • Harda, MP</span>
+      </div>
+    </a>
+    <a href="index.html" class="btn btn-ghost btn-sm">
+      <i class="ri-arrow-left-line"></i> Back to Store
+    </a>
+  </nav>
+
+  <!-- Auth Body -->
+  <div class="auth-body">
+    <div class="auth-card" id="authCard">
+
+      <!-- Logo -->
+      <div class="auth-logo">
+        <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--crimson),var(--saffron));border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto var(--space-md)">🌶️</div>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="auth-tabs" id="authTabs" role="tablist" aria-label="Login or Register">
+        <button class="auth-tab active" onclick="switchAuthTab('login')" id="loginTab" role="tab" aria-selected="true">Sign In</button>
+        <button class="auth-tab" onclick="switchAuthTab('register')" id="registerTab" role="tab" aria-selected="false">Create Account</button>
+      </div>
+
+      <!-- LOGIN PANEL -->
+      <div class="auth-panel active" id="loginPanel" role="tabpanel" aria-labelledby="loginTab">
+        <h1 class="auth-title" style="font-size:1.5rem">Welcome Back! 👋</h1>
+        <p class="auth-subtitle">Sign in to your Nirmal's Spices account</p>
+
+        <form id="loginForm" onsubmit="handleLogin(event)" novalidate aria-label="Login form">
+          <div class="form-group">
+            <label class="form-label" for="loginPhone">Mobile Number / Email <span>*</span></label>
+            <input type="text" id="loginPhone" class="form-input" placeholder="+91 9XXXXXXXXX or email@example.com" autocomplete="tel" required aria-required="true">
+            <div class="form-error" id="loginPhoneError" role="alert" style="display:none">
+              <i class="ri-error-warning-line"></i> Please enter a valid mobile number or email
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="loginPassword">Password <span>*</span></label>
+            <div class="password-wrap">
+              <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" autocomplete="current-password" required aria-required="true">
+              <span class="password-toggle" onclick="togglePassword('loginPassword', this)" aria-label="Toggle password visibility" role="button" tabindex="0">
+                <i class="ri-eye-off-line"></i>
+              </span>
+            </div>
+            <div class="form-error" id="loginPasswordError" role="alert" style="display:none">
+              <i class="ri-error-warning-line"></i> Password must be at least 6 characters
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-lg)">
+            <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;cursor:pointer;color:var(--slate)">
+              <input type="checkbox" id="rememberMe" style="accent-color:var(--crimson)"> Remember me
+            </label>
+            <button type="button" class="auth-link" onclick="switchAuthTab('forgot')" style="color:var(--crimson);font-weight:600;font-size:0.85rem;background:none;border:none;cursor:pointer">
+              Forgot Password?
+            </button>
+          </div>
+
+          <button type="submit" class="btn btn-primary form-submit btn-lg" id="loginBtn">
+            <i class="ri-login-circle-line"></i> Sign In
+          </button>
+        </form>
+
+        <div class="auth-divider"><span>or continue with</span></div>
+
+        <div class="social-auth">
+          <button class="social-auth-btn" onclick="socialLogin('google')">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Google
+          </button>
+          <button class="social-auth-btn" onclick="socialLogin('phone')">
+            <i class="ri-smartphone-line" style="color:var(--crimson)"></i> OTP Login
+          </button>
+        </div>
+
+        <p class="auth-link">Don't have an account? <a href="#" onclick="switchAuthTab('register');return false">Create one free</a></p>
+      </div>
+
+      <!-- REGISTER PANEL -->
+      <div class="auth-panel" id="registerPanel" role="tabpanel" aria-labelledby="registerTab">
+        <h1 class="auth-title" style="font-size:1.5rem">Join Nirmal's Family! 🌶️</h1>
+        <p class="auth-subtitle">Create your account and get 10% off your first order</p>
+
+        <form id="registerForm" onsubmit="handleRegister(event)" novalidate aria-label="Registration form">
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label" for="regFirstName">First Name <span>*</span></label>
+              <input type="text" id="regFirstName" class="form-input" placeholder="Ramesh" required aria-required="true" autocomplete="given-name">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="regLastName">Last Name <span>*</span></label>
+              <input type="text" id="regLastName" class="form-input" placeholder="Sharma" required aria-required="true" autocomplete="family-name">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regEmail">Email Address <span>*</span></label>
+            <input type="email" id="regEmail" class="form-input" placeholder="you@example.com" required aria-required="true" autocomplete="email">
+            <div class="form-error" id="regEmailError" role="alert" style="display:none">
+              <i class="ri-error-warning-line"></i> Please enter a valid email address
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regPhone">Mobile Number <span>*</span></label>
+            <input type="tel" id="regPhone" class="form-input" placeholder="+91 9XXXXXXXXX" required aria-required="true" autocomplete="tel" pattern="[0-9+\-\s]{10,15}">
+            <div class="form-error" id="regPhoneError" role="alert" style="display:none">
+              <i class="ri-error-warning-line"></i> Please enter a valid 10-digit mobile number
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regPassword">Password <span>*</span></label>
+            <div class="password-wrap">
+              <input type="password" id="regPassword" class="form-input" placeholder="Create a strong password" required aria-required="true" autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
+              <span class="password-toggle" onclick="togglePassword('regPassword', this)" role="button" tabindex="0" aria-label="Toggle password">
+                <i class="ri-eye-off-line"></i>
+              </span>
+            </div>
+            <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-top:4px" id="strengthLabel">Min. 8 characters with uppercase, number & symbol</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regConfirmPassword">Confirm Password <span>*</span></label>
+            <div class="password-wrap">
+              <input type="password" id="regConfirmPassword" class="form-input" placeholder="Repeat your password" required aria-required="true" autocomplete="new-password">
+              <span class="password-toggle" onclick="togglePassword('regConfirmPassword', this)" role="button" tabindex="0" aria-label="Toggle password">
+                <i class="ri-eye-off-line"></i>
+              </span>
+            </div>
+            <div class="form-error" id="regConfirmError" role="alert" style="display:none">
+              <i class="ri-error-warning-line"></i> Passwords do not match
+            </div>
+          </div>
+
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:0.8rem;color:var(--slate);cursor:pointer;margin-bottom:var(--space-lg)">
+            <input type="checkbox" id="agreeTerms" required style="margin-top:2px;accent-color:var(--crimson)" aria-required="true">
+            <span>I agree to the <a href="#" style="color:var(--crimson)">Terms of Service</a> and <a href="#" style="color:var(--crimson)">Privacy Policy</a>. I consent to receive order and promotional communications.</span>
+          </label>
+
+          <button type="submit" class="btn btn-primary form-submit btn-lg" id="registerBtn">
+            <i class="ri-user-add-line"></i> Create Account
+          </button>
+        </form>
+
+        <p class="auth-link">Already have an account? <a href="#" onclick="switchAuthTab('login');return false">Sign in</a></p>
+      </div>
+
+      <!-- FORGOT PASSWORD PANEL -->
+      <div class="auth-panel" id="forgotPanel" role="tabpanel">
+        <button onclick="switchAuthTab('login')" style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:0.85rem;margin-bottom:var(--space-lg);background:none;border:none;cursor:pointer">
+          <i class="ri-arrow-left-line"></i> Back to Sign In
+        </button>
+
+        <h1 class="auth-title" style="font-size:1.5rem">Reset Password 🔑</h1>
+        <p class="auth-subtitle">Enter your registered email or mobile. We'll send a reset link.</p>
+
+        <form id="forgotForm" onsubmit="handleForgotPassword(event)" novalidate aria-label="Password reset form">
+          <div class="form-group">
+            <label class="form-label" for="forgotEmail">Email or Mobile <span>*</span></label>
+            <input type="text" id="forgotEmail" class="form-input" placeholder="you@example.com or +91 9XXXXXXXXX" required aria-required="true">
+            <div class="form-error" id="forgotEmailError" role="alert" style="display:none">
+              <i class="ri-error-warning-line"></i> Please enter a valid email or mobile number
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary form-submit btn-lg" id="forgotBtn">
+            <i class="ri-mail-send-line"></i> Send Reset Link
+          </button>
+        </form>
+      </div>
+
+      <!-- OTP PANEL -->
+      <div class="auth-panel" id="otpPanel" role="tabpanel">
+        <button onclick="switchAuthTab('login')" style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:0.85rem;margin-bottom:var(--space-lg);background:none;border:none;cursor:pointer">
+          <i class="ri-arrow-left-line"></i> Back
+        </button>
+
+        <h1 class="auth-title" style="font-size:1.5rem">Enter OTP 📱</h1>
+        <p class="auth-subtitle" id="otpDesc">We've sent a 6-digit OTP to your mobile number</p>
+
+        <form id="otpForm" onsubmit="handleOTPVerify(event)" novalidate aria-label="OTP verification form">
+          <div class="form-group" style="text-align:center">
+            <div class="otp-inputs" aria-label="Enter 6-digit OTP">
+              <input type="text" maxlength="1" class="otp-input" id="otp1" oninput="handleOTPInput(this, 'otp2')" onkeydown="handleOTPKeydown(event, null, 'otp1')" aria-label="OTP digit 1">
+              <input type="text" maxlength="1" class="otp-input" id="otp2" oninput="handleOTPInput(this, 'otp3')" onkeydown="handleOTPKeydown(event, 'otp1', 'otp2')" aria-label="OTP digit 2">
+              <input type="text" maxlength="1" class="otp-input" id="otp3" oninput="handleOTPInput(this, 'otp4')" onkeydown="handleOTPKeydown(event, 'otp2', 'otp3')" aria-label="OTP digit 3">
+              <input type="text" maxlength="1" class="otp-input" id="otp4" oninput="handleOTPInput(this, 'otp5')" onkeydown="handleOTPKeydown(event, 'otp3', 'otp4')" aria-label="OTP digit 4">
+              <input type="text" maxlength="1" class="otp-input" id="otp5" oninput="handleOTPInput(this, 'otp6')" onkeydown="handleOTPKeydown(event, 'otp4', 'otp5')" aria-label="OTP digit 5">
+              <input type="text" maxlength="1" class="otp-input" id="otp6" oninput="handleOTPInput(this, null)" onkeydown="handleOTPKeydown(event, 'otp5', 'otp6')" aria-label="OTP digit 6">
+            </div>
+          </div>
+
+          <div style="text-align:center;margin-bottom:var(--space-lg)">
+            <span id="otpTimer" style="color:var(--muted);font-size:0.85rem">Resend in <strong id="timerCount">30</strong>s</span>
+            <button type="button" id="resendOTPBtn" onclick="resendOTP()" style="display:none;color:var(--crimson);font-weight:600;font-size:0.85rem;background:none;border:none;cursor:pointer">
+              Resend OTP
+            </button>
+          </div>
+
+          <button type="submit" class="btn btn-primary form-submit btn-lg">
+            <i class="ri-shield-check-line"></i> Verify OTP
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer" role="status" aria-live="assertive"></div>
+
+<script src="app.js"></script>
+<script>
+// ============================================================
+// AUTH TABS
+// ============================================================
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+
+  const panel = document.getElementById(tab + 'Panel');
+  if (panel) panel.classList.add('active');
+
+  const tabBtn = document.getElementById(tab + 'Tab');
+  if (tabBtn) { tabBtn.classList.add('active'); tabBtn.setAttribute('aria-selected','true'); }
+
+  // Hide tabs for forgot/otp
+  const authTabs = document.getElementById('authTabs');
+  if (authTabs) authTabs.style.display = (tab === 'forgot' || tab === 'otp') ? 'none' : 'flex';
+}
+
+// ============================================================
+// PASSWORD TOGGLE
+// ============================================================
+function togglePassword(inputId, toggleBtn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  if (toggleBtn) toggleBtn.innerHTML = `<i class="${isHidden ? 'ri-eye-line' : 'ri-eye-off-line'}"></i>`;
+}
+
+// ============================================================
+// PASSWORD STRENGTH
+// ============================================================
+function checkPasswordStrength(val) {
+  const fill = document.getElementById('strengthFill');
+  const label = document.getElementById('strengthLabel');
+  if (!fill || !label) return;
+
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+
+  const levels = [
+    { width: '0%',   color: '#e0e0e0', label: 'Min. 8 characters with uppercase, number & symbol' },
+    { width: '25%',  color: '#e74c3c', label: '⚠️ Weak – add uppercase, numbers and symbols' },
+    { width: '50%',  color: '#e67e22', label: '⚠️ Fair – add more complexity' },
+    { width: '75%',  color: '#f39c12', label: '👍 Good – almost there!' },
+    { width: '100%', color: '#27ae60', label: '✅ Strong password!' },
+  ];
+
+  const lvl = levels[score];
+  fill.style.width = lvl.width;
+  fill.style.background = lvl.color;
+  label.textContent = lvl.label;
+  label.style.color = lvl.color;
+}
+
+// ============================================================
+// FORM VALIDATION HELPERS
+// ============================================================
+function showFieldError(fieldId, errorId) {
+  const field = document.getElementById(fieldId);
+  const error = document.getElementById(errorId);
+  if (field)  field.classList.add('error');
+  if (error)  error.style.display = 'flex';
+  if (field)  field.setAttribute('aria-invalid', 'true');
+}
+
+function clearFieldError(fieldId, errorId) {
+  const field = document.getElementById(fieldId);
+  const error = document.getElementById(errorId);
+  if (field)  field.classList.remove('error');
+  if (error)  error.style.display = 'none';
+  if (field)  field.removeAttribute('aria-invalid');
+}
+
+function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+function isValidPhone(phone) { return /^[+]?[\d\s\-]{10,15}$/.test(phone); }
+
+// ============================================================
+// LOGIN
+// ============================================================
+function handleLogin(e) {
+  e.preventDefault();
+  let valid = true;
+
+  const phone = document.getElementById('loginPhone')?.value.trim();
+  const pass  = document.getElementById('loginPassword')?.value;
+
+  clearFieldError('loginPhone', 'loginPhoneError');
+  clearFieldError('loginPassword', 'loginPasswordError');
+
+  if (!phone || (!isValidEmail(phone) && !isValidPhone(phone))) {
+    showFieldError('loginPhone', 'loginPhoneError'); valid = false;
+  }
+  if (!pass || pass.length < 6) {
+    showFieldError('loginPassword', 'loginPasswordError'); valid = false;
+  }
+
+  if (!valid) return;
+
+  const btn = document.getElementById('loginBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ri-loader-4-line" style="animation:spin 1s linear infinite"></i> Signing in...'; }
+
+  // Simulate API login
+  setTimeout(() => {
+    const user = { name: 'Customer', phone, loginTime: Date.now() };
+    localStorage.setItem('nirmal_user', JSON.stringify(user));
+    showToast('Welcome back! Signed in successfully 🌶️', 'success', 2000);
+    setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+  }, 1500);
+}
+
+// ============================================================
+// REGISTER
+// ============================================================
+function handleRegister(e) {
+  e.preventDefault();
+  let valid = true;
+
+  const email  = document.getElementById('regEmail')?.value.trim();
+  const phone  = document.getElementById('regPhone')?.value.trim();
+  const pass   = document.getElementById('regPassword')?.value;
+  const cpass  = document.getElementById('regConfirmPassword')?.value;
+  const terms  = document.getElementById('agreeTerms')?.checked;
+
+  clearFieldError('regEmail', 'regEmailError');
+  clearFieldError('regPhone', 'regPhoneError');
+  clearFieldError('regConfirmPassword', 'regConfirmError');
+
+  if (!email || !isValidEmail(email)) { showFieldError('regEmail', 'regEmailError'); valid = false; }
+  if (!phone || !isValidPhone(phone)) { showFieldError('regPhone', 'regPhoneError'); valid = false; }
+  if (pass !== cpass) { showFieldError('regConfirmPassword', 'regConfirmError'); valid = false; }
+  if (!terms) { showToast('Please agree to the Terms of Service to continue', 'error'); valid = false; }
+
+  if (!valid) return;
+
+  const btn = document.getElementById('registerBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ri-loader-4-line" style="animation:spin 1s linear infinite"></i> Creating Account...'; }
+
+  setTimeout(() => {
+    const firstName = document.getElementById('regFirstName')?.value || 'Customer';
+    const user = { name: firstName, email, phone, loginTime: Date.now() };
+    localStorage.setItem('nirmal_user', JSON.stringify(user));
+    showToast('Account created! Welcome to Nirmal\'s Spices! 🌶️🎉', 'success', 3000);
+    setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+  }, 2000);
+}
+
+// ============================================================
+// FORGOT PASSWORD
+// ============================================================
+function handleForgotPassword(e) {
+  e.preventDefault();
+  const email = document.getElementById('forgotEmail')?.value.trim();
+
+  clearFieldError('forgotEmail', 'forgotEmailError');
+  if (!email || (!isValidEmail(email) && !isValidPhone(email))) {
+    showFieldError('forgotEmail', 'forgotEmailError'); return;
+  }
+
+  const btn = document.getElementById('forgotBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ri-loader-4-line" style="animation:spin 1s linear infinite"></i> Sending...'; }
+
+  setTimeout(() => {
+    showToast(`Reset link sent to ${email}. Check your inbox! 📧`, 'success', 4000);
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ri-mail-send-line"></i> Send Reset Link'; }
+  }, 1500);
+}
+
+// ============================================================
+// SOCIAL LOGIN
+// ============================================================
+function socialLogin(provider) {
+  showToast(`${provider === 'google' ? 'Google' : 'OTP'} login coming soon! Use email/password for now.`, 'info', 3000);
+  if (provider === 'phone') {
+    document.getElementById('otpDesc').textContent = 'Enter your mobile number to receive OTP';
+    switchAuthTab('otp');
+    startOTPTimer();
+  }
+}
+
+// ============================================================
+// OTP
+// ============================================================
+function handleOTPInput(input, nextId) {
+  input.value = input.value.replace(/[^0-9]/g, '');
+  if (input.value && nextId) document.getElementById(nextId)?.focus();
+}
+
+function handleOTPKeydown(e, prevId, currentId) {
+  if (e.key === 'Backspace' && !document.getElementById(currentId)?.value && prevId) {
+    document.getElementById(prevId)?.focus();
+  }
+}
+
+let otpTimerInterval = null;
+function startOTPTimer() {
+  clearInterval(otpTimerInterval);
+  let seconds = 30;
+  const timerEl = document.getElementById('timerCount');
+  const timerWrap = document.getElementById('otpTimer');
+  const resendBtn = document.getElementById('resendOTPBtn');
+
+  if (timerEl) timerEl.textContent = seconds;
+  if (timerWrap) timerWrap.style.display = 'block';
+  if (resendBtn) resendBtn.style.display = 'none';
+
+  otpTimerInterval = setInterval(() => {
+    seconds--;
+    if (timerEl) timerEl.textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(otpTimerInterval);
+      if (timerWrap) timerWrap.style.display = 'none';
+      if (resendBtn) resendBtn.style.display = 'block';
+    }
+  }, 1000);
+}
+
+function resendOTP() {
+  showToast('New OTP sent to your mobile! 📱', 'success');
+  startOTPTimer();
+}
+
+function handleOTPVerify(e) {
+  e.preventDefault();
+  const otp = ['otp1','otp2','otp3','otp4','otp5','otp6'].map(id => document.getElementById(id)?.value || '').join('');
+  if (otp.length !== 6) { showToast('Please enter complete 6-digit OTP', 'error'); return; }
+
+  // Simulate verify
+  showToast('OTP verified successfully! Signing you in... 🎉', 'success');
+  setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+}
+
+// CSS animation for spinner
+const style = document.createElement('style');
+style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+document.head.appendChild(style);
+
+// Auto-fill check
+document.addEventListener('DOMContentLoaded', () => {
+  const user = localStorage.getItem('nirmal_user');
+  if (user) {
+    showToast('You are already signed in! Redirecting...', 'info');
+    setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+  }
+});
+
+window.switchAuthTab = switchAuthTab;
+window.togglePassword = togglePassword;
+window.checkPasswordStrength = checkPasswordStrength;
+window.handleLogin = handleLogin;
+window.handleRegister = handleRegister;
+window.handleForgotPassword = handleForgotPassword;
+window.socialLogin = socialLogin;
+window.handleOTPInput = handleOTPInput;
+window.handleOTPKeydown = handleOTPKeydown;
+window.resendOTP = resendOTP;
+window.handleOTPVerify = handleOTPVerify;
+</script>
+</body>
+</html>

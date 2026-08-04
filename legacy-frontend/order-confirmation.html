@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed! | Nirmal's Spices</title>
+  <meta name="description" content="Your order has been placed successfully. Thank you for shopping with Nirmal's Spices!">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .confirmation-page {
+      min-height: 100vh;
+      background: var(--parchment);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: var(--space-2xl) var(--space-lg);
+    }
+    .confirmation-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      padding: var(--space-2xl);
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+      animation: hero-fade-in 0.7s ease;
+    }
+    .success-icon-wrap {
+      width: 96px; height: 96px;
+      background: linear-gradient(135deg, #27AE60, #2ECC71);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.8rem;
+      margin: 0 auto var(--space-lg);
+      animation: success-pop 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) 0.3s both;
+      box-shadow: 0 0 0 0 rgba(39,174,96,0.4);
+      animation: success-pop 0.6s ease 0.3s both, pulse-glow 2s ease-in-out 1s infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(39,174,96,0.4); }
+      70% { box-shadow: 0 0 0 20px rgba(39,174,96,0); }
+    }
+    .confirmation-title {
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      color: var(--charcoal);
+      text-align: center;
+      margin-bottom: var(--space-sm);
+    }
+    .confirmation-subtitle {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: var(--space-xl);
+      line-height: 1.7;
+    }
+    .order-id-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--cream);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm) var(--space-lg);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      margin: 0 auto var(--space-xl);
+      display: flex;
+      width: fit-content;
+    }
+    .order-timeline {
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: var(--space-xl);
+    }
+    .order-timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px; top: 8px; bottom: 8px;
+      width: 2px;
+      background: var(--border);
+    }
+    .timeline-item {
+      position: relative;
+      padding: var(--space-sm) 0 var(--space-sm) var(--space-md);
+      margin-bottom: 4px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -20px; top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--border);
+      border: 2px solid var(--white);
+      box-shadow: 0 0 0 2px var(--border);
+    }
+    .timeline-item.done::before {
+      background: var(--success);
+      box-shadow: 0 0 0 2px rgba(39,174,96,0.3);
+    }
+    .timeline-item.active::before {
+      background: var(--crimson);
+      box-shadow: 0 0 0 2px rgba(192,57,43,0.3);
+      animation: pulse-glow 1.5s ease-in-out infinite;
+    }
+    .timeline-title { font-weight: 700; font-size: 0.9rem; color: var(--charcoal); }
+    .timeline-desc  { font-size: 0.8rem; color: var(--muted); }
+    .timeline-date  { font-size: 0.75rem; color: var(--muted); font-weight: 600; text-align: right; }
+    .order-items-summary { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .order-items-summary .order-item:last-child { border-bottom: none; }
+    .share-buttons { display: flex; gap: var(--space-sm); justify-content: center; flex-wrap: wrap; }
+    .share-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: var(--radius-full);
+      font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      transition: all var(--transition-base); border: none;
+    }
+    .share-whatsapp { background: #25D366; color: white; }
+    .share-copy     { background: var(--cream); color: var(--charcoal); border: 1.5px solid var(--border); }
+    .share-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div style="background:var(--white);border-bottom:1px solid var(--border);padding:var(--space-md) 0;position:sticky;top:0;z-index:var(--z-sticky)">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <a href="index.html" class="header-logo">
+        <div class="logo-emblem" style="width:40px;height:40px;font-size:1.1rem">🌶️</div>
+        <div class="logo-text">
+          <span class="logo-brand">Nirmal's Spices</span>
+          <span class="logo-tagline">Pure • Authentic • Harda, MP</span>
+        </div>
+      </a>
+      <a href="index.html" class="btn btn-secondary btn-sm">
+        <i class="ri-home-5-line"></i> Back to Store
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="confirmation-page" role="main">
+
+  <!-- Confetti particles -->
+  <div id="confettiContainer" style="position:fixed;inset:0;pointer-events:none;z-index:9999" aria-hidden="true"></div>
+
+  <div class="confirmation-card" role="region" aria-label="Order confirmation">
+
+    <!-- Success Icon -->
+    <div class="success-icon-wrap" role="img" aria-label="Order confirmed successfully">✅</div>
+
+    <h1 class="confirmation-title">Order Placed Successfully! 🎉</h1>
+    <p class="confirmation-subtitle">
+      Thank you for shopping with Nirmal's Spices!<br>
+      Your order has been confirmed and will be delivered to your doorstep.
+    </p>
+
+    <!-- Order ID -->
+    <div class="order-id-badge" id="orderIdBadge" aria-label="Order ID">
+      <i class="ri-file-list-3-line" aria-hidden="true"></i>
+      Order ID: <strong id="displayOrderId">NS1234567890</strong>
+      <button onclick="copyOrderId()" style="background:none;border:none;cursor:pointer;color:var(--crimson);font-size:0.9rem" aria-label="Copy order ID">
+        <i class="ri-file-copy-line"></i>
+      </button>
+    </div>
+
+    <!-- Key Info Grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-bottom:var(--space-xl)" aria-label="Order details">
+      <div style="text-align:center;padding:var(--space-md);background:var(--cream);border-radius:var(--radius-md)">
+        <div style="font-size:1.5rem;margin-bottom:4px" aria-hidden="true">📅</div>
+        <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;font-weight:600;font-family:var(--font-accent)">Order Date</div>
+        <div style="font-weight:700;color:var(--charcoal);font-size:0.9rem" id="orderDate">Today</div>
+      </div>
+      <div style="text-align:center;padding:var(--space-md);background:var(--cream);border-radius:var(--radius-md)">
+        <div style="font-size:1.5rem;margin-bottom:4px" aria-hidden="true">🚚</div>
+        <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;font-weight:600;font-family:var(--font-accent)">Expected Delivery</div>
+        <div style="font-weight:700;color:var(--charcoal);font-size:0.9rem" id="orderETA">In 3–5 days</div>
+      </div>
+      <div style="text-align:center;padding:var(--space-md);background:var(--cream);border-radius:var(--radius-md)">
+        <div style="font-size:1.5rem;margin-bottom:4px" aria-hidden="true">💳</div>
+        <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;font-weight:600;font-family:var(--font-accent)">Payment</div>
+        <div style="font-weight:700;color:var(--charcoal);font-size:0.9rem" id="orderPayment">UPI</div>
+      </div>
+      <div style="text-align:center;padding:var(--space-md);background:var(--parchment);border-radius:var(--radius-md);border:1.5px solid var(--saffron-light)">
+        <div style="font-size:1.5rem;margin-bottom:4px" aria-hidden="true">💰</div>
+        <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;font-weight:600;font-family:var(--font-accent)">Order Total</div>
+        <div style="font-weight:700;color:var(--crimson);font-size:1.1rem" id="orderTotal">₹0</div>
+      </div>
+    </div>
+
+    <!-- Ordered Items -->
+    <div style="margin-bottom:var(--space-xl)">
+      <h2 style="font-size:1rem;font-weight:700;color:var(--charcoal);margin-bottom:var(--space-md)">
+        Items Ordered
+      </h2>
+      <div class="order-items-summary" id="confirmedItems" role="list">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+
+    <!-- Delivery Timeline -->
+    <div style="margin-bottom:var(--space-xl)">
+      <h2 style="font-size:1rem;font-weight:700;color:var(--charcoal);margin-bottom:var(--space-md)">
+        Order Timeline
+      </h2>
+      <div class="order-timeline" role="list" aria-label="Order status timeline">
+        <div class="timeline-item done" role="listitem">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div class="timeline-title">✅ Order Confirmed</div><div class="timeline-desc">Your order has been received and confirmed</div></div>
+            <div class="timeline-date" id="confirmedDate">Today</div>
+          </div>
+        </div>
+        <div class="timeline-item active" role="listitem">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div class="timeline-title">🏭 Processing</div><div class="timeline-desc">Spices being freshly packed in our Harda facility</div></div>
+            <div class="timeline-date">Tomorrow</div>
+          </div>
+        </div>
+        <div class="timeline-item" role="listitem">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div class="timeline-title">📦 Dispatched</div><div class="timeline-desc">Order handed to delivery partner</div></div>
+            <div class="timeline-date" id="dispatchDate">Day 2</div>
+          </div>
+        </div>
+        <div class="timeline-item" role="listitem">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div class="timeline-title">🚚 Out for Delivery</div><div class="timeline-desc">On the way to your address</div></div>
+            <div class="timeline-date" id="outDate">Day 4</div>
+          </div>
+        </div>
+        <div class="timeline-item" role="listitem">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div class="timeline-title">🎉 Delivered!</div><div class="timeline-desc">Enjoy your authentic Nirmal's Spices</div></div>
+            <div class="timeline-date" id="deliveryDate">Day 5</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share / Referral -->
+    <div style="text-align:center;margin-bottom:var(--space-xl);padding:var(--space-lg);background:linear-gradient(135deg,var(--cream),var(--parchment));border-radius:var(--radius-lg)">
+      <p style="font-size:0.9rem;font-weight:600;color:var(--charcoal);margin-bottom:var(--space-md)">
+        🎁 Share & Get 15% Off Your Next Order!
+      </p>
+      <div class="share-buttons" aria-label="Share options">
+        <button class="share-btn share-whatsapp" onclick="shareOnWhatsApp()" aria-label="Share on WhatsApp">
+          <i class="ri-whatsapp-fill"></i> Share on WhatsApp
+        </button>
+        <button class="share-btn share-copy" onclick="copyShareLink()" aria-label="Copy share link">
+          <i class="ri-link"></i> Copy Share Link
+        </button>
+      </div>
+    </div>
+
+    <!-- CTA Buttons -->
+    <div style="display:flex;flex-direction:column;gap:var(--space-md)">
+      <a href="collection.html" class="btn btn-primary btn-lg" style="text-align:center">
+        <i class="ri-shopping-bag-3-line"></i> Continue Shopping
+      </a>
+      <a href="https://wa.me/919770057005?text=Hi%20Nirmal's%20Spices!%20I%20placed%20order%20and%20need%20support." 
+         class="btn btn-secondary btn-lg" style="text-align:center" target="_blank" rel="noopener">
+        <i class="ri-whatsapp-fill" style="color:#25D366"></i> Track via WhatsApp
+      </a>
+    </div>
+
+    <!-- Footer note -->
+    <p style="text-align:center;font-size:0.8rem;color:var(--muted);margin-top:var(--space-xl);line-height:1.6">
+      📧 A confirmation email has been sent to your registered email address.<br>
+      Need help? Call us at <a href="tel:+919770057005" style="color:var(--crimson);font-weight:600">+91 9770057005</a> 
+      or email <a href="mailto:info@nirmalspices.in" style="color:var(--crimson)">info@nirmalspices.in</a>
+    </p>
+
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer" role="status" aria-live="assertive"></div>
+
+<script src="app.js"></script>
+<script>
+// ================================================================
+// CONFETTI
+// ================================================================
+function launchConfetti() {
+  const container = document.getElementById('confettiContainer');
+  if (!container) return;
+  const colors = ['#E74C3C','#E67E22','#F39C12','#27AE60','#3498DB','#9B59B6','#F1C40F'];
+  const shapes = ['circle','square'];
+
+  for (let i = 0; i < 80; i++) {
+    setTimeout(() => {
+      const piece = document.createElement('div');
+      const size  = Math.random() * 10 + 6;
+      const shape = shapes[Math.floor(Math.random() * shapes.length)];
+      piece.style.cssText = `
+        position:absolute;
+        left:${Math.random() * 100}%;
+        top:-20px;
+        width:${size}px;
+        height:${size}px;
+        background:${colors[Math.floor(Math.random() * colors.length)]};
+        border-radius:${shape === 'circle' ? '50%' : '2px'};
+        opacity:${Math.random() * 0.7 + 0.3};
+        animation:confettiFall ${Math.random() * 2 + 2}s ease-in forwards;
+        transform:rotate(${Math.random() * 360}deg);
+      `;
+      container.appendChild(piece);
+      setTimeout(() => piece.remove(), 4000);
+    }, i * 40);
+  }
+}
+
+// Add CSS for confetti animation
+const confettiStyle = document.createElement('style');
+confettiStyle.textContent = `
+  @keyframes confettiFall {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+`;
+document.head.appendChild(confettiStyle);
+
+// ================================================================
+// LOAD ORDER DATA
+// ================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const params  = new URLSearchParams(window.location.search);
+  const orderId = params.get('orderId');
+
+  const orders = JSON.parse(localStorage.getItem('nirmal_orders') || '[]');
+  const order  = orders.find(o => o.id === orderId) || orders[0];
+
+  if (!order) {
+    // Fallback for direct visit without order
+    document.getElementById('displayOrderId').textContent = 'NS' + Date.now();
+    document.getElementById('orderTotal').textContent = '₹0';
+    launchConfetti();
+    return;
+  }
+
+  // Populate order details
+  document.getElementById('displayOrderId').textContent = order.id;
+  document.getElementById('orderDate').textContent      = order.date || 'Today';
+  document.getElementById('orderETA').textContent       = order.eta  || 'In 3–5 days';
+  document.getElementById('confirmedDate').textContent  = order.date || 'Today';
+  document.getElementById('orderTotal').textContent     = `₹${(order.total || 0).toLocaleString('en-IN')}`;
+
+  const paymentLabels = { upi:'UPI', card:'Card', netbanking:'Net Banking', cod:'COD' };
+  document.getElementById('orderPayment').textContent   = paymentLabels[order.payment] || order.payment || 'UPI';
+
+  // Timeline dates
+  const baseDate = new Date();
+  const fmtDate  = d => d.toLocaleDateString('en-IN', { day:'2-digit', month:'short' });
+  document.getElementById('dispatchDate').textContent = fmtDate(new Date(baseDate.getTime() + 1 * 86400000));
+  document.getElementById('outDate').textContent      = fmtDate(new Date(baseDate.getTime() + 3 * 86400000));
+  document.getElementById('deliveryDate').textContent = fmtDate(new Date(baseDate.getTime() + 4 * 86400000));
+
+  // Items list
+  const itemsEl = document.getElementById('confirmedItems');
+  if (itemsEl && order.items) {
+    itemsEl.innerHTML = order.items.map(item => `
+      <div class="order-item" role="listitem" style="border-bottom:1px solid var(--border);padding-bottom:var(--space-sm);margin-bottom:var(--space-sm)">
+        <img src="${item.img}" class="order-item-img" alt="${item.name}" width="56" height="56" loading="lazy">
+        <div style="flex:1">
+          <div class="order-item-name">${item.name}</div>
+          <div class="order-item-meta">${item.weight} · Qty ${item.qty}</div>
+        </div>
+        <div class="order-item-price" style="color:var(--crimson);font-weight:700">
+          ₹${(item.price * item.qty).toLocaleString('en-IN')}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Launch confetti on load
+  setTimeout(launchConfetti, 300);
+  // Second burst
+  setTimeout(launchConfetti, 1500);
+});
+
+// ================================================================
+// UTILITIES
+// ================================================================
+function copyOrderId() {
+  const id = document.getElementById('displayOrderId')?.textContent;
+  if (navigator.clipboard && id) {
+    navigator.clipboard.writeText(id).then(() => showToast('Order ID copied! 📋', 'success'));
+  }
+}
+
+function shareOnWhatsApp() {
+  const id = document.getElementById('displayOrderId')?.textContent;
+  const total = document.getElementById('orderTotal')?.textContent;
+  const msg = `🌶️ I just ordered from Nirmal's Spices! Order ID: ${id} | Total: ${total}\nGet authentic Indian spices at https://nirmalspices.in`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function copyShareLink() {
+  const link = `https://nirmalspices.in?ref=${document.getElementById('displayOrderId')?.textContent}`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => showToast('Share link copied! Get 15% off with your friends 🎁', 'success', 4000));
+  }
+}
+
+window.copyOrderId   = copyOrderId;
+window.shareOnWhatsApp = shareOnWhatsApp;
+window.copyShareLink = copyShareLink;
+</script>
+</body>
+</html>
