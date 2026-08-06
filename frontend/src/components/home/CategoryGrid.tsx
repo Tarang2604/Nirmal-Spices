@@ -24,6 +24,16 @@ const ACCENTS = [
   { color: 'bg-green-500/10', border: 'border-green-500/20', accent: 'text-green-700' },
 ];
 
+const CATEGORY_COVER_MAP: Record<string, string> = {
+  'blended-masalas': '/blended_masala_collection.jpg',
+  'ground-spices': '/spices_flatlay.png',
+  'whole-spices': '/whole_spices_collection.jpg',
+  salts: '/salt_category_banner.png',
+  'instant-mix': '/instant_mix_category_banner.png',
+  flours: '/flour_catalog.jpg',
+  flour: '/flour_catalog.jpg',
+};
+
 export default function CategoryGrid() {
   const { data, isLoading } = useQuery({
     queryKey: ['store-categories'],
@@ -84,7 +94,8 @@ export default function CategoryGrid() {
             {categories.map((cat, idx) => {
               const style = ACCENTS[idx % ACCENTS.length];
               const count = cat.count ?? 0;
-              const imageSrc = cat.image || '/masala_collection.png';
+              const imageSrc =
+                CATEGORY_COVER_MAP[cat.slug] || cat.image || '/spices_flatlay.png';
               // /uploads/* is proxied by Next rewrites — not in /public, so skip optimizer
               const usePlainImg =
                 imageSrc.startsWith('/uploads/') || imageSrc.startsWith('http://localhost');

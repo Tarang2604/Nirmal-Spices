@@ -31,6 +31,9 @@ export default function AdminOrdersPage() {
       const res = await api.get('/admin/orders?limit=100');
       return res.data;
     },
+    staleTime: 30_000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
     refetchInterval: 30_000,
   });
 

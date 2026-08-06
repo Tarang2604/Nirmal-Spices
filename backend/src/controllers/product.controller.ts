@@ -21,7 +21,8 @@ const CATEGORY_ALIASES: Record<string, string> = {
   salts: 'salts',
   'salts-sugars': 'salts',
   'instant-mix': 'instant-mix',
-  flour: 'flour',
+  flour: 'flours',
+  flours: 'flours',
 };
 
 const BADGE_ALIASES: Record<string, string> = {

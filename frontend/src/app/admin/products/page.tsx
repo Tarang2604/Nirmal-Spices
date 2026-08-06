@@ -102,6 +102,9 @@ function AdminProductsInner() {
       const res = await api.get('/categories/admin/all');
       return res.data.data as Category[];
     },
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const categories = useMemo(
@@ -115,6 +118,9 @@ function AdminProductsInner() {
       const res = await api.get('/products/admin/all?limit=200');
       return res.data;
     },
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const products = data?.data || [];

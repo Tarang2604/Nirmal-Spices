@@ -515,6 +515,6 @@ export function assertStatusTransition(from: OrderStatus, to: OrderStatus): void
   }
 }
 
-export const getAllOrders = asyncHandler(async (req: Request, res: Response) => {
+export const getAllOrders = asyncHandler(async (_req: Request, res: Response) => {
   res.status(501).json({ success: false, message: 'Not implemented' });
 });

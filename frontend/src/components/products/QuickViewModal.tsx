@@ -12,23 +12,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
 interface QuickViewModalProps {
-  product: {
-    _id: string;
-    name: string;
-    slug: string;
-    category: string;
-    images: string[];
-    weights: Array<{
-      weight: string;
-      price: number;
-      mrp: number;
-      stock: number;
-    }>;
-    badge?: string;
-    rating: number;
-    reviewCount: number;
-    description: string;
-  } | null;
+  product: any;
   open: boolean;
   onClose: () => void;
 }
@@ -51,7 +35,12 @@ export default function QuickViewModal({ product, open, onClose }: QuickViewModa
 
   if (!product) return null;
 
-  const variant = product.weights[selectedVariantIdx] || product.weights[0];
+  const variant = product.weights?.[selectedVariantIdx] || product.weights?.[0] || {
+    price: product.salePrice ?? product.price ?? 0,
+    mrp: product.price ?? 0,
+    stock: product.inStock ? 10 : 0,
+    weight: product.packSize || '100g',
+  };
   const isWishlisted = has(product._id);
 
   const discountPercent = variant.mrp > variant.price 
@@ -152,7 +141,7 @@ export default function QuickViewModal({ product, open, onClose }: QuickViewModa
             <div className="flex flex-col gap-1.5">
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Weight Variant</span>
               <div className="flex flex-wrap gap-1.5">
-                {product.weights.map((w, idx) => (
+                {product.weights?.map((w: { weight: string }, idx: number) => (
                   <button
                     key={w.weight}
                     onClick={() => {

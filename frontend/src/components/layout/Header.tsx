@@ -34,6 +34,11 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const { user, isLoggedIn, isInitialized } = useAuthStore();
   const { items, fetchCart } = useCartStore();
@@ -84,10 +89,10 @@ export default function Header() {
   return (
     <header 
       className={cn(
-        "sticky top-[30px] z-50 w-full transition-all duration-300 border-b",
+        "sticky top-[28px] z-40 w-full transition-all duration-300 border-b",
         isScrolled 
-          ? "bg-white shadow-md border-border/60" 
-          : "bg-white/98 shadow-sm border-border/20"
+          ? "bg-white/98 backdrop-blur-md shadow-md border-border/60" 
+          : "bg-white shadow-xs border-border/20"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -227,7 +232,7 @@ export default function Header() {
             <Link href="/" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🏠 Home</Link>
             <Link href="/about" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>✨ About Us</Link>
             <Link href="/shop" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🛍️ All Products</Link>
-            {(categories || []).map((c) => (
+            {(isMounted && categories ? categories : []).map((c) => (
               <Link
                 key={c.slug}
                 href={`/shop?cat=${c.slug}`}

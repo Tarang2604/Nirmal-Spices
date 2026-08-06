@@ -21,6 +21,9 @@ export default function AdminSettingsPage() {
       const res = await api.get('/admin/settings');
       return res.data.data;
     },
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {

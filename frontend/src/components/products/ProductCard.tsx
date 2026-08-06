@@ -73,6 +73,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
       {/* Wishlist */}
       <button
         onClick={handleWishlist}
+        suppressHydrationWarning
         className="absolute top-2.5 right-2.5 z-10 w-8 h-8 bg-white/90 border border-border/40 backdrop-blur-sm flex items-center justify-center rounded-full text-muted-foreground hover:text-crimson hover:border-crimson/30 transition-colors duration-150 shadow-sm"
         aria-label="Toggle wishlist"
       >
@@ -152,6 +153,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           <button
             onClick={handleAddToCart}
             disabled={!product.inStock}
+            suppressHydrationWarning
             className={cn(
               "w-9 h-9 flex items-center justify-center rounded-full transition-all duration-200 flex-shrink-0",
               product.inStock
