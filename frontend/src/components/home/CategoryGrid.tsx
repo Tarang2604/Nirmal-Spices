@@ -6,15 +6,9 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { fetchCategories, ICategory } from '@/lib/api';
 
-type Category = {
-  _id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  image?: string;
-  count?: number;
-};
+type Category = ICategory;
 
 const ACCENTS = [
   { color: 'bg-saffron/10', border: 'border-saffron/20', accent: 'text-saffron' },
@@ -34,20 +28,15 @@ const CATEGORY_COVER_MAP: Record<string, string> = {
   flour: '/flour_catalog.jpg',
 };
 
-export default function CategoryGrid() {
-  const { data, isLoading } = useQuery({
+export default function CategoryGrid({ initialCategories = [] }: { initialCategories?: Category[] }) {
+  const { data: categories = initialCategories } = useQuery({
     queryKey: ['store-categories'],
-    queryFn: async () => {
-      const res = await fetch('/api/categories', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Failed to load categories');
-      const json = await res.json();
-      return (json.data || []) as Category[];
-    },
-    staleTime: 60_000,
+    queryFn: fetchCategories,
+    initialData: initialCategories,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
     retry: 2,
   });
-
-  const categories = data || [];
 
   const gridVariants = {
     hidden: { opacity: 0 },
@@ -75,13 +64,7 @@ export default function CategoryGrid() {
           </p>
         </div>
 
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-2xl bg-cream/60 h-72 animate-pulse" />
-            ))}
-          </div>
-        ) : categories.length === 0 ? (
+        {categories.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground">Categories will appear once seeded.</p>
         ) : (
           <motion.div

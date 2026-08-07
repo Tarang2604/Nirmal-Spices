@@ -11,9 +11,13 @@ import { ShoppingBag, Star, Heart, ArrowRight, Flame, Sparkles, Grid, Eye } from
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { Skeleton } from '@/components/ui/skeleton';
-import QuickViewModal from '@/components/products/QuickViewModal';
+import dynamic from 'next/dynamic';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+
+const QuickViewModal = dynamic(() => import('@/components/products/QuickViewModal'), {
+  ssr: false,
+});
 
 export default function TrendingProducts() {
   const [activeTab, setActiveTab] = useState<'bestseller' | 'new' | 'all'>('bestseller');
@@ -22,10 +26,14 @@ export default function TrendingProducts() {
   const addItem = useCartStore((s) => s.addItem);
   const { toggleWishlist, has } = useWishlistStore();
 
-  const { data: apiProducts = [], isLoading } = useQuery({
-    queryKey: ['trending-products-all'],
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ['trending-products', activeTab],
     queryFn: async () => {
-      const res = await fetch('/api/products?limit=100');
+      const params = new URLSearchParams({ limit: '16' });
+      if (activeTab === 'bestseller') params.set('badge', 'bestseller');
+      else if (activeTab === 'new') params.set('badge', 'new');
+
+      const res = await fetch(`/api/products?${params.toString()}`);
       if (!res.ok) throw new Error('Failed to load products');
       const json = await res.json();
       return toStorefrontProducts(json.data || []);
@@ -33,19 +41,13 @@ export default function TrendingProducts() {
     staleTime: 60_000,
   });
 
-  const source: Product[] = apiProducts;
-
   const tabs = [
     { label: "Best Sellers", value: "bestseller" as const, icon: Flame },
     { label: "New Arrivals", value: "new" as const, icon: Sparkles },
     { label: "All Spices", value: "all" as const, icon: Grid },
   ];
 
-  const filtered = source.filter((p) => {
-    if (activeTab === 'bestseller') return p.badge === 'best-seller';
-    if (activeTab === 'new') return p.badge === 'new';
-    return true;
-  }).slice(0, 16);
+  const filtered: Product[] = products.slice(0, 16);
 
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
@@ -155,8 +157,8 @@ export default function TrendingProducts() {
 
               const badgeLabel =
                 product.badge === 'best-seller' ? '🔥 Best Seller' :
-                product.badge === 'new' ? '✨ New' :
-                product.badge === 'sale' ? '🏷️ Sale' : null;
+                  product.badge === 'new' ? '✨ New' :
+                    product.badge === 'sale' ? '🏷️ Sale' : null;
 
               return (
                 <motion.div
@@ -175,8 +177,8 @@ export default function TrendingProducts() {
                         product.badge === 'best-seller'
                           ? "bg-crimson text-white"
                           : product.badge === 'new'
-                          ? "bg-saffron text-white"
-                          : "bg-charcoal text-white"
+                            ? "bg-saffron text-white"
+                            : "bg-charcoal text-white"
                       )}>
                         {badgeLabel}
                       </span>

@@ -32,6 +32,8 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
       const json = await res.json();
       return (json.data || []) as { name: string; slug: string }[];
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
   });
 
   // Local state so typing doesn't trigger router.push on every keystroke
