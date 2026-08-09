@@ -71,6 +71,26 @@ export default function AdminOrdersPage() {
     },
   });
 
+  const markPaidMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      const res = await api.put(`/orders/${orderId}/mark-paid-test`);
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success('Order marked as paid (test mode) — no real payment occurred');
+      queryClient.invalidateQueries({ queryKey: ['admin-orders-list'] });
+      queryClient.invalidateQueries({ queryKey: ['my-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['order-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['order-confirmation'] });
+    },
+    onError: (err: any) => {
+      toast.error(
+        err.response?.data?.message ||
+          'Failed to mark order as paid — is PAYMENT_TEST_MODE enabled on the backend?',
+      );
+    },
+  });
+
   const applyStatus = (order: any, nextStatus: string) => {
     setDraftStatus((prev) => ({ ...prev, [order._id]: nextStatus }));
     updateMutation.mutate({
@@ -161,23 +181,41 @@ export default function AdminOrdersPage() {
                           </div>
                         </td>
                         <td className="p-4">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (updatingOrderId === order._id) {
-                                setUpdatingOrderId(null);
-                              } else {
-                                setUpdatingOrderId(order._id);
-                                setTrackingByOrder((p) => ({
-                                  ...p,
-                                  [order._id]: order.trackingNumber || '',
-                                }));
-                              }
-                            }}
-                            className="text-primary hover:underline font-bold text-[10px] font-accent uppercase"
-                          >
-                            {updatingOrderId === order._id ? 'Close' : 'Tracking / Notes'}
-                          </button>
+                          <div className="flex flex-col items-start gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (updatingOrderId === order._id) {
+                                  setUpdatingOrderId(null);
+                                } else {
+                                  setUpdatingOrderId(order._id);
+                                  setTrackingByOrder((p) => ({
+                                    ...p,
+                                    [order._id]: order.trackingNumber || '',
+                                  }));
+                                }
+                              }}
+                              className="text-primary hover:underline font-bold text-[10px] font-accent uppercase"
+                            >
+                              {updatingOrderId === order._id ? 'Close' : 'Tracking / Notes'}
+                            </button>
+                            {order.paymentMethod === 'razorpay' && order.paymentStatus !== 'paid' && (
+                              <button
+                                type="button"
+                                title="TEST ONLY — manually confirms payment without a real Razorpay transaction. Requires PAYMENT_TEST_MODE=true on the backend."
+                                disabled={
+                                  markPaidMutation.isPending &&
+                                  markPaidMutation.variables === order._id
+                                }
+                                onClick={() => markPaidMutation.mutate(order._id)}
+                                className="text-amber-700 hover:underline font-bold text-[10px] font-accent uppercase disabled:opacity-50"
+                              >
+                                {markPaidMutation.isPending && markPaidMutation.variables === order._id
+                                  ? 'Marking…'
+                                  : 'Mark as Paid (Test)'}
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
 
