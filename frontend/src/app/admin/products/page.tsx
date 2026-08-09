@@ -88,7 +88,15 @@ function AdminProductsInner() {
   const [seoDescription, setSeoDescription] = useState('');
   const [variants, setVariants] = useState<WeightRow[]>([emptyRow()]);
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [imagesToRemove, setImagesToRemove] = useState<string[]>([]);
   const [bulkFile, setBulkFile] = useState<File | null>(null);
+
+  const MAX_PRODUCT_IMAGES = 5;
+  const remainingExistingImages = existingImages.filter((url) => !imagesToRemove.includes(url));
+  const toggleRemoveImage = (url: string) => {
+    setImagesToRemove((prev) => (prev.includes(url) ? prev.filter((u) => u !== url) : [...prev, url]));
+  };
 
   const splitLines = (text: string) =>
     text
@@ -164,6 +172,8 @@ function AdminProductsInner() {
     setCategory(categories[0]?.slug || '');
     setVariants([emptyRow()]);
     setSelectedFiles(null);
+    setExistingImages([]);
+    setImagesToRemove([]);
     setEditingId(null);
     setMode('create');
     setVariantMode('choose');
@@ -189,6 +199,8 @@ function AdminProductsInner() {
     setCategory(categories[0]?.slug || '');
     setVariants([emptyRow()]);
     setSelectedFiles(null);
+    setExistingImages([]);
+    setImagesToRemove([]);
     setEditingId(null);
     setMode('create');
     setVariantMode('choose');
@@ -224,6 +236,8 @@ function AdminProductsInner() {
     setVariants(rows.length ? rows : [emptyRow()]);
     setVariantMode(rows.length > 1 ? 'variants' : 'simple');
     setSelectedFiles(null);
+    setExistingImages(Array.isArray(p.images) ? p.images : []);
+    setImagesToRemove([]);
     setShowForm(true);
   };
 
@@ -275,8 +289,17 @@ function AdminProductsInner() {
       toast.error('Select a category');
       return;
     }
-    if (mode === 'create' && (!selectedFiles || selectedFiles.length === 0)) {
+    const newFileCount = selectedFiles?.length || 0;
+    if (mode === 'create' && newFileCount === 0) {
       toast.error('Please upload at least one image for a new product');
+      return;
+    }
+    if (mode === 'edit' && remainingExistingImages.length + newFileCount === 0) {
+      toast.error('A product needs at least one image — keep an existing one or upload a new one');
+      return;
+    }
+    if (remainingExistingImages.length + newFileCount > MAX_PRODUCT_IMAGES) {
+      toast.error(`A product can have at most ${MAX_PRODUCT_IMAGES} images — remove some first`);
       return;
     }
 
@@ -333,6 +356,9 @@ function AdminProductsInner() {
         formData.append('images', selectedFiles[i]);
       }
     }
+    if (mode === 'edit' && imagesToRemove.length > 0) {
+      formData.append('removeImages', JSON.stringify(imagesToRemove));
+    }
 
     saveMutation.mutate(formData);
   };
@@ -361,7 +387,10 @@ function AdminProductsInner() {
     onSuccess: (res) => {
       const created = res?.data?.createdCount ?? 0;
       const errs = res?.data?.errors?.length ?? 0;
-      toast.success(`Imported ${created} product(s)${errs ? ` · ${errs} row error(s)` : ''}`);
+      const warns = res?.data?.warnings?.length ?? 0;
+      toast.success(
+        `Imported ${created} product(s)${errs ? ` · ${errs} row error(s)` : ''}${warns ? ` · ${warns} image URL(s) skipped (untrusted host — add photos manually)` : ''}`,
+      );
       setBulkFile(null);
       setShowBulk(false);
       queryClient.invalidateQueries({ queryKey: ['admin-products-list'] });
@@ -761,9 +790,56 @@ function AdminProductsInner() {
                 })}
               </div>
 
+              {mode === 'edit' && existingImages.length > 0 && (
+                <div className="sm:col-span-2 flex flex-col gap-1.5 border-t border-gray-100 pt-4">
+                  <label className="font-bold text-muted-foreground uppercase tracking-wider text-[10px]">
+                    Current Images ({remainingExistingImages.length}/{MAX_PRODUCT_IMAGES})
+                  </label>
+                  <div className="flex flex-wrap gap-3">
+                    {existingImages.map((url) => {
+                      const marked = imagesToRemove.includes(url);
+                      return (
+                        <div
+                          key={url}
+                          className="relative w-20 h-20 rounded-xl overflow-hidden border border-gray-200"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={url}
+                            alt=""
+                            className={cn(
+                              'w-full h-full object-cover transition-opacity',
+                              marked && 'opacity-30 grayscale',
+                            )}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => toggleRemoveImage(url)}
+                            title={marked ? 'Keep this image' : 'Remove this image'}
+                            className={cn(
+                              'absolute top-1 right-1 rounded-full p-1 text-white shadow',
+                              marked ? 'bg-green-600' : 'bg-red-600/90',
+                            )}
+                          >
+                            {marked ? <Plus size={12} /> : <X size={12} />}
+                          </button>
+                          {marked && (
+                            <div className="absolute inset-x-0 bottom-0 bg-red-600/90 text-white text-[9px] font-bold text-center py-0.5">
+                              Removing
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <div className="sm:col-span-2 flex flex-col gap-1.5 border-t border-gray-100 pt-4">
                 <label className="font-bold text-muted-foreground uppercase tracking-wider text-[10px]">
-                  {mode === 'edit' ? 'Additional Images (optional)' : 'Product Images (max 5)'}
+                  {mode === 'edit'
+                    ? `Add More Images (optional — up to ${Math.max(0, MAX_PRODUCT_IMAGES - remainingExistingImages.length)} more)`
+                    : 'Product Images (max 5)'}
                 </label>
                 <input
                   type="file"
