@@ -90,6 +90,7 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
         razorpayOrderId: existing.razorpayOrderId,
         total: existing.total,
         key: existing.paymentMethod === 'razorpay' ? env.RAZORPAY_KEY_ID : undefined,
+        testMode: env.PAYMENT_TEST_MODE,
       },
       'Order created successfully',
     );
@@ -172,15 +173,23 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
 
     let razorpayOrderId: string | undefined;
     if (paymentMethod === 'razorpay') {
-      try {
-        const rpOrder = await razorpay.orders.create({
-          amount: Math.round(total * 100),
-          currency: 'INR',
-          receipt: `receipt_order_${Date.now()}`,
-        });
-        razorpayOrderId = rpOrder.id;
-      } catch (rpErr: any) {
-        throw ApiError.internal(`Razorpay order creation failed: ${rpErr.message}`);
+      if (env.PAYMENT_TEST_MODE) {
+        // Skip the live Razorpay API call entirely — lets checkout be
+        // exercised end-to-end without working Razorpay credentials. Orders
+        // created this way stay 'pending' until an admin uses the test-only
+        // "Mark as Paid" action (PUT /api/orders/:id/mark-paid-test).
+        razorpayOrderId = `test_${uuidv4()}`;
+      } else {
+        try {
+          const rpOrder = await razorpay.orders.create({
+            amount: Math.round(total * 100),
+            currency: 'INR',
+            receipt: `receipt_order_${Date.now()}`,
+          });
+          razorpayOrderId = rpOrder.id;
+        } catch (rpErr: any) {
+          throw ApiError.internal(`Razorpay order creation failed: ${rpErr.message}`);
+        }
       }
     }
 
@@ -244,6 +253,7 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
         razorpayOrderId,
         total,
         key: env.RAZORPAY_KEY_ID,
+        testMode: env.PAYMENT_TEST_MODE,
       },
       'Order created successfully',
     );
@@ -385,13 +395,26 @@ export const handleRazorpayWebhook = asyncHandler(async (req: Request, res: Resp
     if (order && order.status === 'pending') {
       order.status = 'payment-failed';
       order.paymentStatus = 'failed';
-      await order.save();
 
-      for (const item of order.items) {
-        await Product.updateOne(
-          { _id: item.product, 'weights.weight': item.weight },
-          { $inc: { 'weights.$.stock': item.qty } },
-        );
+      const failSession = await mongoose.startSession();
+      try {
+        failSession.startTransaction();
+        await order.save({ session: failSession });
+
+        for (const item of order.items) {
+          await Product.updateOne(
+            { _id: item.product, 'weights.weight': item.weight },
+            { $inc: { 'weights.$.stock': item.qty } },
+            { session: failSession },
+          );
+        }
+
+        await failSession.commitTransaction();
+      } catch (error) {
+        await failSession.abortTransaction();
+        throw error;
+      } finally {
+        failSession.endSession();
       }
     }
   }
@@ -432,7 +455,7 @@ export const getOrderById = asyncHandler(async (req: Request, res: Response) => 
   }
 
   const isAdmin = req.user?.role === 'admin';
-  const isOwner = order.user?.toString() === req.user?._id;
+  const isOwner = !!req.user && !!order.user && order.user.toString() === req.user._id;
   const isGuestMatch =
     !order.user &&
     !!guestEmail &&
@@ -467,13 +490,26 @@ export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
 
   const previousStatus = order.status;
   order.status = 'cancelled';
-  await order.save();
 
-  for (const item of order.items) {
-    await Product.updateOne(
-      { _id: item.product, 'weights.weight': item.weight },
-      { $inc: { 'weights.$.stock': item.qty } },
-    );
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    await order.save({ session });
+
+    for (const item of order.items) {
+      await Product.updateOne(
+        { _id: item.product, 'weights.weight': item.weight },
+        { $inc: { 'weights.$.stock': item.qty } },
+        { session },
+      );
+    }
+
+    await session.commitTransaction();
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
 
   const email = order.user
@@ -493,6 +529,74 @@ export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
   }
 
   return sendSuccess(res, order, 'Order cancelled and stock restored successfully');
+});
+
+/**
+ * TEST/STAGING ONLY — manually flips a pending Razorpay order to paid/confirmed
+ * without going through real payment verification. Mirrors what verifyPayment /
+ * the order.paid webhook do on a genuine successful payment. Gated on
+ * PAYMENT_TEST_MODE so it cannot be invoked against a real production deploy.
+ */
+export const markOrderPaidForTesting = asyncHandler(async (req: Request, res: Response) => {
+  if (!env.PAYMENT_TEST_MODE) {
+    throw ApiError.forbidden('Payment test mode is disabled — cannot manually mark orders as paid');
+  }
+
+  const { id } = req.params;
+  const order = await Order.findById(id);
+  if (!order) {
+    throw ApiError.notFound('Order not found');
+  }
+
+  if (order.paymentMethod !== 'razorpay') {
+    throw ApiError.badRequest('Only razorpay orders can be marked as paid');
+  }
+
+  if (order.paymentStatus === 'paid') {
+    return sendSuccess(res, order, 'Order is already marked as paid');
+  }
+
+  if (order.status !== 'pending') {
+    throw ApiError.badRequest(`Cannot mark as paid — order status is '${order.status}'`);
+  }
+
+  order.status = 'confirmed';
+  order.paymentStatus = 'paid';
+  await order.save();
+
+  if (order.timeline?.length) {
+    order.timeline[order.timeline.length - 1].note = 'Marked paid manually (test mode)';
+    await order.save();
+  }
+
+  const cartSelector = order.user
+    ? { userId: order.user }
+    : order.guestSessionId
+      ? { sessionId: order.guestSessionId }
+      : null;
+  if (cartSelector) await Cart.findOneAndDelete(cartSelector);
+
+  const email = order.user
+    ? (await User.findById(order.user).select('email').lean())?.email
+    : order.guestEmail;
+  if (email) void sendOrderConfirmationEmail(email, order);
+
+  void writeAuditLog({
+    req,
+    action: 'ORDER_STATUS_UPDATE',
+    entity: 'order',
+    entityId: order._id.toString(),
+    before: { status: 'pending', paymentStatus: 'pending' },
+    after: { status: 'confirmed', paymentStatus: 'paid' },
+    meta: { testMode: true, reason: 'manual test payment confirmation' },
+  });
+
+  logger.warn(
+    { orderId: order._id, adminId: req.user?._id },
+    'Order marked as paid via test-mode bypass (no real payment occurred)',
+  );
+
+  return sendSuccess(res, order, 'Order marked as paid (test mode)');
 });
 
 /** Allowed admin status transitions — flexible for ops (any forward / cancel / refund paths) */
@@ -515,6 +619,33 @@ export function assertStatusTransition(from: OrderStatus, to: OrderStatus): void
   }
 }
 
-export const getAllOrders = asyncHandler(async (_req: Request, res: Response) => {
-  res.status(501).json({ success: false, message: 'Not implemented' });
+export const getAllOrders = asyncHandler(async (req: Request, res: Response) => {
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 20;
+  const skip = (page - 1) * limit;
+
+  const filter: Record<string, unknown> = {};
+  const status = typeof req.query.status === 'string' ? req.query.status : undefined;
+  if (status && status in ORDER_STATUS_TRANSITIONS) {
+    filter.status = status;
+  }
+  const email = typeof req.query.email === 'string' ? req.query.email.toLowerCase().trim() : undefined;
+  if (email) {
+    const matchingUser = await User.findOne({ email }).select('_id').lean();
+    filter.$or = matchingUser
+      ? [{ guestEmail: email }, { user: matchingUser._id }]
+      : [{ guestEmail: email }];
+  }
+
+  const total = await Order.countDocuments(filter);
+  const totalPages = Math.ceil(total / limit);
+
+  const orders = await Order.find(filter)
+    .populate({ path: 'user', select: 'name email' })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  return sendSuccess(res, orders, 'Orders fetched', 200, { page, limit, total, totalPages });
 });
