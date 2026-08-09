@@ -7,6 +7,7 @@ import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { useAuthStore } from '@/store/authStore';
 import { cn } from '@/lib/utils';
+import { getSafeImageUrl, imageLoader } from '@/lib/imageUrl';
 import { Star, ShoppingCart, Heart, X, ArrowRight } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { toast } from 'sonner';
@@ -77,9 +78,10 @@ export default function QuickViewModal({ product, open, onClose }: QuickViewModa
           {/* Left Visual Column */}
           <div className="md:col-span-6 relative aspect-square md:aspect-auto w-full bg-cream-dark/10">
             <Image
-              src={product.images[0] || '/hero_spices.png'}
+              src={getSafeImageUrl(product.images[0])}
               alt={product.name}
               fill
+              loader={imageLoader}
               className="object-cover"
             />
             {product.badge && (
