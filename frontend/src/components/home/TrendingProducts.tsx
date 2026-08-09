@@ -13,6 +13,7 @@ import { useWishlistStore } from '@/store/wishlistStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
 import { cn } from '@/lib/utils';
+import { getSafeImageUrl, imageLoader } from '@/lib/imageUrl';
 import { toast } from 'sonner';
 
 const QuickViewModal = dynamic(() => import('@/components/products/QuickViewModal'), {
@@ -207,9 +208,10 @@ export default function TrendingProducts() {
                     className="relative aspect-square w-full overflow-hidden bg-cream/30 shrink-0 block"
                   >
                     <Image
-                      src={product.images[0] || '/hero_spices.png'}
+                      src={getSafeImageUrl(product.images[0])}
                       alt={product.name}
                       fill
+                      loader={imageLoader}
                       sizes="(max-width:640px) 50vw, (max-width:1024px) 33vw, 25vw"
                       className="object-contain p-4 group-hover:scale-105 transition-transform duration-400"
                     />

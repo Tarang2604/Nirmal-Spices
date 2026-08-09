@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchCategories, ICategory } from '@/lib/api';
+import { imageLoader } from '@/lib/imageUrl';
 
 type Category = ICategory;
 
@@ -103,6 +104,7 @@ export default function CategoryGrid({ initialCategories = [] }: { initialCatego
                         src={imageSrc}
                         alt={cat.name}
                         fill
+                        loader={imageLoader}
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                         sizes="(max-width: 768px) 100vw, 350px"
                       />

@@ -8,6 +8,35 @@ import { redisGet, redisSet, redisDel, redisDelPattern, RedisKeys } from '../con
 import { deleteCloudinaryAsset, resolveUploadedImage } from '../config/cloudinary';
 import { writeAuditLog } from '../middleware/audit';
 import crypto from 'crypto';
+import path from 'path';
+import fs from 'fs';
+
+const MAX_PRODUCT_IMAGES = 5;
+
+// Mirrors frontend/src/lib/imageUrl.ts and next.config.ts's images.remotePatterns.
+// next/image hard-crashes on any host not in that allowlist — an arbitrary
+// URL pasted into a CSV "image" column (e.g. a scraped recipe-blog photo)
+// would otherwise silently break the storefront for every visitor.
+const TRUSTED_IMAGE_HOSTS = new Set(['nirmalspices.in', 'res.cloudinary.com']);
+
+function isTrustedImageUrl(url: string): boolean {
+  if (!url) return false;
+  if (url.startsWith('/')) return true; // relative — local upload
+  try {
+    return TRUSTED_IMAGE_HOSTS.has(new URL(url).hostname);
+  } catch {
+    return false;
+  }
+}
+
+/** Best-effort delete of a locally-stored (non-Cloudinary) product image file. */
+function unlinkLocalProductImage(url: string): void {
+  if (!url.startsWith('/uploads/products/')) return;
+  const filePath = path.join(process.cwd(), url);
+  fs.unlink(filePath, () => {
+    // Ignore errors — file may already be gone, or Cloudinary-hosted (no local file).
+  });
+}
 
 // Cache TTL: 5 minutes
 const CACHE_TTL = 300;
@@ -224,8 +253,14 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
     const resolved = files
       .map((f) => resolveUploadedImage(f, 'products'))
       .filter(Boolean) as { url: string; publicId: string }[];
+    // Keep images/publicIds index-aligned — publicId is '' for local-disk fallback
+    // uploads, but the slot must stay so images[i] always maps to publicIds[i].
     imageUrls = resolved.map((r) => r.url);
-    publicIds = resolved.map((r) => r.publicId).filter(Boolean);
+    publicIds = resolved.map((r) => r.publicId);
+  }
+
+  if (imageUrls.length > MAX_PRODUCT_IMAGES) {
+    throw ApiError.badRequest(`A product can have at most ${MAX_PRODUCT_IMAGES} images`);
   }
 
   const categorySlug = normalizeCategory(req.body.category) || req.body.category;
@@ -271,28 +306,61 @@ export const updateProduct = asyncHandler(async (req: Request, res: Response) =>
   }
 
   const beforeState = originalProduct.toObject();
-  let updatedData = { ...req.body };
+  const updatedData = { ...req.body };
 
-  // Handle image upload updates
+  const removeImages: string[] = Array.isArray(req.body.removeImages) ? req.body.removeImages : [];
+  const overwriteImages = req.body.overwriteImages === true;
+
+  if (overwriteImages) {
+    // Full replace: delete every existing asset regardless of removeImages.
+    for (let i = 0; i < originalProduct.images.length; i++) {
+      const pid = originalProduct.imagePublicIds[i];
+      if (pid) {
+        try { await deleteCloudinaryAsset(pid); } catch {}
+      } else {
+        unlinkLocalProductImage(originalProduct.images[i]);
+      }
+    }
+    updatedData.images = [];
+    updatedData.imagePublicIds = [];
+  } else if (removeImages.length > 0) {
+    // Remove selected images — images[] and imagePublicIds[] stay index-aligned.
+    const keptImages: string[] = [];
+    const keptPublicIds: string[] = [];
+    for (let i = 0; i < originalProduct.images.length; i++) {
+      const url = originalProduct.images[i];
+      const pid = originalProduct.imagePublicIds[i] || '';
+      if (removeImages.includes(url)) {
+        if (pid) {
+          try { await deleteCloudinaryAsset(pid); } catch {}
+        } else {
+          unlinkLocalProductImage(url);
+        }
+      } else {
+        keptImages.push(url);
+        keptPublicIds.push(pid);
+      }
+    }
+    updatedData.images = keptImages;
+    updatedData.imagePublicIds = keptPublicIds;
+  } else {
+    updatedData.images = [...originalProduct.images];
+    updatedData.imagePublicIds = [...originalProduct.imagePublicIds];
+  }
+
+  // Handle new image uploads — append to whatever survived removal/overwrite above.
   if (files && files.length > 0) {
     const resolved = files
       .map((f) => resolveUploadedImage(f, 'products'))
       .filter(Boolean) as { url: string; publicId: string }[];
-    const imageUrls = resolved.map((r) => r.url);
-    const publicIds = resolved.map((r) => r.publicId).filter(Boolean);
-    
-    // Append or overwrite images
-    if (req.body.overwriteImages === 'true') {
-      // Delete old assets first
-      for (const pid of originalProduct.imagePublicIds) {
-        try { await deleteCloudinaryAsset(pid); } catch {}
-      }
-      updatedData.images = imageUrls;
-      updatedData.imagePublicIds = publicIds;
-    } else {
-      updatedData.images = [...originalProduct.images, ...imageUrls];
-      updatedData.imagePublicIds = [...originalProduct.imagePublicIds, ...publicIds];
-    }
+    updatedData.images = [...updatedData.images, ...resolved.map((r) => r.url)];
+    updatedData.imagePublicIds = [...updatedData.imagePublicIds, ...resolved.map((r) => r.publicId)];
+  }
+
+  if (updatedData.images.length > MAX_PRODUCT_IMAGES) {
+    throw ApiError.badRequest(
+      `A product can have at most ${MAX_PRODUCT_IMAGES} images — remove some before adding more`,
+    );
   }
 
   // Update in DB
@@ -357,6 +425,12 @@ export const deleteProduct = asyncHandler(async (req: Request, res: Response) =>
 });
 
 // ── BULK IMPORT PRODUCTS FROM CSV / EXCEL (Admin) ────────────────────
+// `xlsx` has an unpatched high-severity prototype-pollution/ReDoS advisory
+// (GHSA-4r6h-8v6p-xvw6, GHSA-5pgg-2g8v-p4x9) with no upstream fix. Residual
+// risk is bounded by this route being admin-only + rate-limited + 5MB-capped
+// (see product.routes.ts) — only a trusted, already-authenticated admin can
+// reach this parser. Revisit if the file-import feature is ever opened up
+// beyond admins, or replace with a maintained parser (e.g. exceljs).
 export const bulkImportProducts = asyncHandler(async (req: Request, res: Response) => {
   const file = req.file;
   if (!file) throw ApiError.badRequest('Upload a CSV or Excel (.xlsx) file');
@@ -374,6 +448,7 @@ export const bulkImportProducts = asyncHandler(async (req: Request, res: Respons
 
   const created: string[] = [];
   const errors: { row: number; message: string }[] = [];
+  const warnings: { row: number; message: string }[] = [];
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
@@ -387,7 +462,14 @@ export const bulkImportProducts = asyncHandler(async (req: Request, res: Respons
       const price = Number(row.price || row.Price || 0);
       const mrp = Number(row.mrp || row.MRP || price);
       const stock = Number(row.stock || row.Stock || 0);
-      const image = String(row.image || row.Image || '').trim();
+      const rawImage = String(row.image || row.Image || '').trim();
+      const image = isTrustedImageUrl(rawImage) ? rawImage : '';
+      if (rawImage && !image) {
+        warnings.push({
+          row: rowNum,
+          message: `Image URL skipped (untrusted host) — upload a photo for this product from the admin panel: ${rawImage}`,
+        });
+      }
 
       if (!name) throw new Error('name is required');
       if (!category || !validSlugs.has(category)) {
@@ -424,12 +506,12 @@ export const bulkImportProducts = asyncHandler(async (req: Request, res: Respons
     req,
     action: 'PRODUCT_BULK_IMPORT',
     entity: 'product',
-    after: { created: created.length, errors: errors.length },
+    after: { created: created.length, errors: errors.length, warnings: warnings.length },
   });
 
   return sendSuccess(
     res,
-    { createdCount: created.length, created, errors },
+    { createdCount: created.length, created, errors, warnings },
     `Imported ${created.length} product(s)`,
   );
 });

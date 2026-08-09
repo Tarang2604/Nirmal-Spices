@@ -8,6 +8,7 @@ import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { useAuthStore } from '@/store/authStore';
 import { api } from '@/lib/api';
+import { getSafeImageUrl, imageLoader } from '@/lib/imageUrl';
 import { 
   X, 
   Trash2, 
@@ -172,9 +173,10 @@ export default function CartSheet() {
                     {/* Thumbnail */}
                     <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-cream border border-border-spice/40 shrink-0">
                       <Image
-                        src={item.product?.images?.[0] || '/hero_spices.png'}
+                        src={getSafeImageUrl(item.product?.images?.[0])}
                         alt={item.product?.name || 'Spice item'}
                         fill
+                        loader={imageLoader}
                         sizes="64px"
                         className="object-cover"
                       />
