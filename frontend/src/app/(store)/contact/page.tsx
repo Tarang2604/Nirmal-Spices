@@ -241,6 +241,19 @@ export default function ContactPage() {
         </form>
 
       </div>
+
+      {/* Embedded location map */}
+      <div className="mt-8 lg:mt-12 rounded-3xl overflow-hidden border border-border shadow-xs">
+        <iframe
+          title="Nirmal's Spices location on Google Maps"
+          src="https://www.google.com/maps?cid=7688581438700374253&output=embed"
+          width="100%"
+          height="360"
+          style={{ border: 0 }}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+      </div>
     </div>
   );
 }

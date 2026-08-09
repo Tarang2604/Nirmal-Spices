@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import { Loader2, Percent, IndianRupee, Save, Truck } from 'lucide-react';
+import { Loader2, Percent, IndianRupee, Save, Truck, Star } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminSettingsPage() {
@@ -14,6 +14,7 @@ export default function AdminSettingsPage() {
   const [platformFeeValue, setPlatformFeeValue] = useState('10');
   const [deliveryCharge, setDeliveryCharge] = useState('40');
   const [freeDeliveryMin, setFreeDeliveryMin] = useState('499');
+  const [googleReviewUrl, setGoogleReviewUrl] = useState('');
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['admin-settings'],
@@ -34,6 +35,7 @@ export default function AdminSettingsPage() {
       setPlatformFeeValue(String(data.platformFeeValue ?? 0));
       setDeliveryCharge(String(data.deliveryCharge ?? 40));
       setFreeDeliveryMin(String(data.freeDeliveryMin ?? 499));
+      setGoogleReviewUrl(data.googleReviewUrl ?? '');
     }
   }, [data]);
 
@@ -46,6 +48,7 @@ export default function AdminSettingsPage() {
         platformFeeValue: Number(platformFeeValue),
         deliveryCharge: Number(deliveryCharge),
         freeDeliveryMin: Number(freeDeliveryMin),
+        googleReviewUrl: googleReviewUrl.trim(),
       });
       return res.data;
     },
@@ -204,6 +207,28 @@ export default function AdminSettingsPage() {
           Example on ₹{merchExample} merchandise: commission ₹{exampleCommission}, platform fee ₹
           {examplePlatform}, delivery {exampleShipping === 0 ? 'FREE' : `₹${exampleShipping}`}. Total
           extras: ₹{exampleCommission + examplePlatform + exampleShipping}.
+        </div>
+
+        <div className="flex flex-col gap-3 border-t border-border-spice/40 pt-6">
+          <h3 className="font-bold text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <Star size={14} className="text-primary" /> Google Review Link
+          </h3>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold text-muted-foreground">
+              Google Business Profile review URL
+            </label>
+            <input
+              type="url"
+              placeholder="https://g.page/r/XXXXXXXXXXXXX/review"
+              value={googleReviewUrl}
+              onChange={(e) => setGoogleReviewUrl(e.target.value)}
+              className="bg-cream-dark/25 border border-border rounded-xl px-3 py-2 text-xs outline-none"
+            />
+          </div>
+          <p className="text-[10px] text-muted-foreground">
+            Shown to customers once their order is marked Delivered (order page + email) — never on
+            cancelled/refunded orders. Leave blank to hide the prompt entirely.
+          </p>
         </div>
 
         <button
