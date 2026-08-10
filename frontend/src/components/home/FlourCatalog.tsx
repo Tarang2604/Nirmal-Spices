@@ -111,6 +111,7 @@ export default function FlourCatalog() {
                 alt="Nirmal's Flour Catalog – Singhada Atta, Rajgira Atta, Fariyali Atta, Karnal Singhada Atta"
                 width={600}
                 height={800}
+                sizes="(max-width: 768px) 100vw, 600px"
                 className="w-full object-cover"
                 priority
               />
