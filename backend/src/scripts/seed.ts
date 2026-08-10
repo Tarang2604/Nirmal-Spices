@@ -20,6 +20,8 @@ const CATEGORY_MAP: Record<string, string> = {
   'whole-spices': 'whole-spices',
   salts: 'salts',
   'instant-mix': 'instant-mix',
+  flour: 'flours',
+  flours: 'flours',
   // legacy aliases → canonical storefront slugs
   'blend-spices': 'blended-masalas',
   'salts-sugars': 'salts',
@@ -101,11 +103,12 @@ async function seedAdmin() {
 
 async function seedCategories() {
   const defaults = [
-    { name: 'Blended Masalas', slug: 'blended-masalas', description: 'Authentic ready masala blends', sortOrder: 1, image: '/masala_collection.png' },
+    { name: 'Blended Masalas', slug: 'blended-masalas', description: 'Authentic ready masala blends', sortOrder: 1, image: '/blended_masala_collection.jpg' },
     { name: 'Ground Spices', slug: 'ground-spices', description: 'Pure stone-ground powders', sortOrder: 2, image: '/spices_flatlay.png' },
-    { name: 'Whole Spices', slug: 'whole-spices', description: 'Naturally dried aromatic seeds', sortOrder: 3, image: '/hero_spices.png' },
-    { name: 'Salts', slug: 'salts', description: 'Sendha Namak & Kala Namak', sortOrder: 4, image: '/hero_spices.png' },
-    { name: 'Instant Mix', slug: 'instant-mix', description: 'Idli Mix & Gulab Jamun Mix', sortOrder: 5, image: '/masala_collection.png' },
+    { name: 'Whole Spices', slug: 'whole-spices', description: 'Naturally dried aromatic seeds', sortOrder: 3, image: '/whole_spices_collection.jpg' },
+    { name: 'Salts', slug: 'salts', description: 'Sendha Namak & Kala Namak', sortOrder: 4, image: '/salt_category_banner.png' },
+    { name: 'Instant Mix', slug: 'instant-mix', description: 'Idli Mix & Gulab Jamun Mix', sortOrder: 5, image: '/instant_mix_category_banner.png' },
+    { name: 'Flours', slug: 'flours', description: 'Pure stone-ground Rajgira, Singhada & Kuttu flours', sortOrder: 6, image: '/flour_catalog.jpg' },
   ];
 
   for (const cat of defaults) {
@@ -119,6 +122,7 @@ async function seedCategories() {
   // Migrate legacy product category keys to storefront slugs
   await Product.updateMany({ category: 'blend-spices' }, { $set: { category: 'blended-masalas' } });
   await Product.updateMany({ category: 'salts-sugars' }, { $set: { category: 'salts' } });
+  await Product.updateMany({ category: 'flour' }, { $set: { category: 'flours' } });
 
   console.log(`Categories upserted: ${defaults.length}`);
 }
@@ -174,6 +178,13 @@ async function seedProducts() {
     );
     upserted += 1;
   }
+
+  const catalogSlugs = catalog.map((c) => c.slug);
+  const pruned = await Product.deleteMany({ slug: { $nin: catalogSlugs } });
+  if (pruned.deletedCount > 0) {
+    console.log(`Pruned ${pruned.deletedCount} obsolete products from DB.`);
+  }
+
   console.log(`Products upserted: ${upserted}`);
 }
 
