@@ -9,6 +9,17 @@ import {
 
 const router = Router();
 
+/** Public, safe-to-expose site settings (e.g. Google review link) for storefront pages */
+router.get(
+  '/public',
+  asyncHandler(async (_req, res) => {
+    const settings = await getOrCreateStoreSettings();
+    return sendSuccess(res, {
+      googleReviewUrl: settings.googleReviewUrl || null,
+    });
+  }),
+);
+
 /** Public fee preview for checkout / cart UI */
 router.get(
   '/fees',

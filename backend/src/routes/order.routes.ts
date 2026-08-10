@@ -39,4 +39,8 @@ router.put('/:id/cancel', orderController.cancelOrder);
 // Admin-only: list all orders with filters
 router.get('/admin/all', requireAdmin, orderController.getAllOrders);
 
+// Admin-only, TEST MODE ONLY: manually mark a pending Razorpay order as paid
+// (controller enforces PAYMENT_TEST_MODE — this route is a no-op in real prod)
+router.put('/:id/mark-paid-test', requireAdmin, orderController.markOrderPaidForTesting);
+
 export default router;
