@@ -6,15 +6,10 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { fetchCategories, ICategory } from '@/lib/api';
+import { imageLoader } from '@/lib/imageUrl';
 
-type Category = {
-  _id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  image?: string;
-  count?: number;
-};
+type Category = ICategory;
 
 const ACCENTS = [
   { color: 'bg-saffron/10', border: 'border-saffron/20', accent: 'text-saffron' },
@@ -24,20 +19,25 @@ const ACCENTS = [
   { color: 'bg-green-500/10', border: 'border-green-500/20', accent: 'text-green-700' },
 ];
 
-export default function CategoryGrid() {
-  const { data, isLoading } = useQuery({
+const CATEGORY_COVER_MAP: Record<string, string> = {
+  'blended-masalas': '/blended_masala_collection.jpg',
+  'ground-spices': '/spices_flatlay.png',
+  'whole-spices': '/whole_spices_collection.jpg',
+  salts: '/salt_category_banner.png',
+  'instant-mix': '/instant_mix_category_banner.png',
+  flours: '/flour_catalog.jpg',
+  flour: '/flour_catalog.jpg',
+};
+
+export default function CategoryGrid({ initialCategories = [] }: { initialCategories?: Category[] }) {
+  const { data: categories = initialCategories } = useQuery({
     queryKey: ['store-categories'],
-    queryFn: async () => {
-      const res = await fetch('/api/categories', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Failed to load categories');
-      const json = await res.json();
-      return (json.data || []) as Category[];
-    },
-    staleTime: 60_000,
+    queryFn: fetchCategories,
+    initialData: initialCategories,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
     retry: 2,
   });
-
-  const categories = data || [];
 
   const gridVariants = {
     hidden: { opacity: 0 },
@@ -65,13 +65,7 @@ export default function CategoryGrid() {
           </p>
         </div>
 
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-2xl bg-cream/60 h-72 animate-pulse" />
-            ))}
-          </div>
-        ) : categories.length === 0 ? (
+        {categories.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground">Categories will appear once seeded.</p>
         ) : (
           <motion.div
@@ -84,7 +78,8 @@ export default function CategoryGrid() {
             {categories.map((cat, idx) => {
               const style = ACCENTS[idx % ACCENTS.length];
               const count = cat.count ?? 0;
-              const imageSrc = cat.image || '/masala_collection.png';
+              const imageSrc =
+                CATEGORY_COVER_MAP[cat.slug] || cat.image || '/spices_flatlay.png';
               // /uploads/* is proxied by Next rewrites — not in /public, so skip optimizer
               const usePlainImg =
                 imageSrc.startsWith('/uploads/') || imageSrc.startsWith('http://localhost');
@@ -109,6 +104,7 @@ export default function CategoryGrid() {
                         src={imageSrc}
                         alt={cat.name}
                         fill
+                        loader={imageLoader}
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                         sizes="(max-width: 768px) 100vw, 350px"
                       />
