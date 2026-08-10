@@ -20,9 +20,6 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "paths": {
-      "@/*": ["src/*"]
-    },
     "types": ["jest", "node"]
   },
   "include": ["src/**/*"],
