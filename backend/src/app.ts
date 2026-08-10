@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import mongoose from 'mongoose';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -12,8 +13,15 @@ import { logger } from './utils/logger';
 import routes from './routes';
 import { errorHandler, notFound } from './middleware/errorHandler';
 import { apiLimiter } from './middleware/rateLimit';
+import { getRedis, isRedisEnabled } from './config/redis';
 
 const app = express();
+
+// ── TRUST PROXY ───────────────────────────────────────────────────────
+// Render/Vercel sit in front of the app behind a single reverse-proxy hop.
+// Without this, req.ip resolves to the proxy's IP for every request, which
+// collapses per-IP rate limiting (auth/OTP limiters) into a single shared bucket.
+app.set('trust proxy', 1);
 
 // ── SENTRY ERROR MONITORING ──────────────────────────────────────────
 if (env.SENTRY_DSN) {
@@ -74,8 +82,33 @@ app.use(hpp());          // Prevent HTTP Parameter Pollution
 app.use('/api', apiLimiter);
 
 // ── HEALTH CHECK ─────────────────────────────────────────────────────
+// Liveness — process is up, no dependency checks (fast, always cheap to hit).
 app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date() });
+});
+
+// Readiness — verifies the app can actually serve requests (DB + Redis if enabled).
+// Point uptime monitors / deploy health checks here, not at /health.
+app.get('/health/ready', async (_req, res) => {
+  const mongoUp = mongoose.connection.readyState === 1;
+
+  let redisUp = true;
+  if (isRedisEnabled()) {
+    try {
+      const client = getRedis();
+      redisUp = (await client?.ping()) === 'PONG';
+    } catch {
+      redisUp = false;
+    }
+  }
+
+  const ok = mongoUp && redisUp;
+  res.status(ok ? 200 : 503).json({
+    status: ok ? 'ok' : 'unavailable',
+    mongo: mongoUp ? 'up' : 'down',
+    redis: isRedisEnabled() ? (redisUp ? 'up' : 'down') : 'disabled',
+    timestamp: new Date(),
+  });
 });
 
 // Local image uploads (used when Cloudinary credentials are not configured)

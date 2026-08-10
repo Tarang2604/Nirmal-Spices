@@ -14,6 +14,8 @@ export interface IStoreSettings extends Document {
   deliveryCharge: number;
   /** Merchandise amount (subtotal − discount) at/above which delivery is free */
   freeDeliveryMin: number;
+  /** Google Business Profile review link (e.g. https://g.page/r/XXXXXXX/review) shown to customers after delivery */
+  googleReviewUrl?: string;
   updatedBy?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -28,6 +30,7 @@ const storeSettingsSchema = new Schema<IStoreSettings>(
     platformFeeValue: { type: Number, default: 10, min: 0 },
     deliveryCharge: { type: Number, default: 40, min: 0 },
     freeDeliveryMin: { type: Number, default: 499, min: 0 },
+    googleReviewUrl: { type: String, trim: true, default: '' },
     updatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
   },
   { timestamps: true },
