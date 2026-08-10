@@ -18,6 +18,7 @@ const updateSettingsSchema = z.object({
   platformFeeValue: z.coerce.number().min(0).max(10000),
   deliveryCharge: z.coerce.number().min(0).max(10000),
   freeDeliveryMin: z.coerce.number().min(0).max(100000),
+  googleReviewUrl: z.string().trim().url('Must be a valid URL').optional().or(z.literal('')),
 });
 
 export const updateStoreSettings = asyncHandler(async (req: Request, res: Response) => {
@@ -37,6 +38,7 @@ export const updateStoreSettings = asyncHandler(async (req: Request, res: Respon
     platformFeeValue: settings.platformFeeValue,
     deliveryCharge: settings.deliveryCharge,
     freeDeliveryMin: settings.freeDeliveryMin,
+    googleReviewUrl: settings.googleReviewUrl,
   };
 
   settings.commissionType = parsed.data.commissionType;
@@ -45,6 +47,7 @@ export const updateStoreSettings = asyncHandler(async (req: Request, res: Respon
   settings.platformFeeValue = parsed.data.platformFeeValue;
   settings.deliveryCharge = parsed.data.deliveryCharge;
   settings.freeDeliveryMin = parsed.data.freeDeliveryMin;
+  settings.googleReviewUrl = parsed.data.googleReviewUrl || '';
   if (req.user?._id) {
     settings.updatedBy = req.user._id as any;
   }

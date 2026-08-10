@@ -12,6 +12,7 @@ import {
   Loader2,
   ChevronRight,
   MapPinned,
+  Star,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -34,6 +35,15 @@ export default function OrderConfirmationPage() {
     },
     refetchInterval: 15_000,
     refetchOnWindowFocus: true,
+  });
+
+  const { data: publicSettings } = useQuery({
+    queryKey: ['public-settings'],
+    queryFn: async () => {
+      const res = await api.get('/settings/public');
+      return res.data.data as { googleReviewUrl: string | null };
+    },
+    staleTime: 5 * 60 * 1000,
   });
 
   useEffect(() => {
@@ -101,6 +111,18 @@ export default function OrderConfirmationPage() {
             className="mt-2 inline-flex items-center gap-2 bg-primary text-white text-[11px] font-bold uppercase tracking-wider font-accent px-5 py-2.5 rounded-full hover:bg-crimson-dark transition-colors"
           >
             <MapPinned size={14} /> Track Order
+          </a>
+        )}
+
+        {/* Only invite a public review after a good outcome (delivered) — never on cancelled/refunded */}
+        {order.status === 'delivered' && publicSettings?.googleReviewUrl && (
+          <a
+            href={publicSettings.googleReviewUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 inline-flex items-center gap-2 border border-primary text-primary text-[11px] font-bold uppercase tracking-wider font-accent px-5 py-2.5 rounded-full hover:bg-primary hover:text-white transition-colors"
+          >
+            <Star size={14} /> Leave us a Google Review
           </a>
         )}
 
