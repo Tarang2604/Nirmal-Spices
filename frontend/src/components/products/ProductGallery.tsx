@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { getSafeImageUrl, imageLoader } from '@/lib/imageUrl';
 
 interface ProductGalleryProps {
   images: string[];
@@ -11,7 +12,9 @@ interface ProductGalleryProps {
 export default function ProductGallery({ images }: ProductGalleryProps) {
   const [activeIdx, setActiveIdx] = useState(0);
 
-  const displayImages = images.length > 0 ? images : ['/hero_spices.png'];
+  const displayImages = (images.length > 0 ? images : ['/hero_spices.png']).map((img) =>
+    getSafeImageUrl(img),
+  );
   const activeImage = displayImages[activeIdx];
 
   return (
@@ -24,6 +27,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
           alt="Product main gallery image"
           fill
           priority
+          loader={imageLoader}
           className="object-cover"
           sizes="(max-w-768px) 100vw, 500px"
         />
@@ -47,6 +51,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                 src={img}
                 alt={`Product thumbnail ${idx + 1}`}
                 fill
+                loader={imageLoader}
                 className="object-cover"
                 sizes="80px"
               />
