@@ -99,3 +99,19 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+export interface ICategory {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  count?: number;
+}
+
+/** Shared category fetcher for React Query deduplication */
+export async function fetchCategories(): Promise<ICategory[]> {
+  const res = await fetch('/api/categories');
+  if (!res.ok) throw new Error('Failed to load categories');
+  const json = await res.json();
+  return (json.data || []) as ICategory[];
+}
