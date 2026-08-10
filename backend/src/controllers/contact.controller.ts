@@ -3,8 +3,8 @@ import { Newsletter } from '../models/Newsletter';
 import { ApiError } from '../utils/apiError';
 import { sendSuccess } from '../utils/apiResponse';
 import { asyncHandler } from '../utils/asyncHandler';
-import { resend } from '../config/mailer';
-import { sendNewsletterWelcome } from '../services/email.service';
+import { mailer } from '../config/mailer';
+import { sendNewsletterWelcome, renderEmailShell } from '../services/email.service';
 import { env } from '../config/env';
 import { logger } from '../utils/logger';
 
@@ -16,24 +16,22 @@ export const submitContact = asyncHandler(async (req: Request, res: Response) =>
 
   // Send email to admin
   try {
-    await resend.emails.send({
+    await mailer.sendMail({
       from: env.EMAIL_FROM,
       to: adminEmail,
       subject: `[Contact Form] ${subject}: Message from ${firstName} ${lastName || ''}`,
-      html: `
-        <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#F9F9F9;padding:24px;border:1px solid #EEE">
-          <h2 style="border-bottom:2px solid #C0392B;padding-bottom:8px">New Contact Form Message</h2>
-          <p><strong>Name:</strong> ${firstName} ${lastName || ''}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Phone:</strong> ${phone || 'N/A'}</p>
-          <p><strong>Subject:</strong> ${subject}</p>
-          ${orderId ? `<p><strong>Order ID:</strong> #${orderId}</p>` : ''}
-          <div style="background:#FFF;padding:16px;border-left:4px solid #C0392B;margin-top:16px">
-            <strong>Message:</strong><br>
-            <p style="white-space:pre-wrap">${message}</p>
-          </div>
+      html: renderEmailShell(`
+        <h2 style="color:#C0392B;font-family:Georgia,serif">New Contact Form Message</h2>
+        <p style="color:#3A3A3C;font-size:14px"><strong>Name:</strong> ${firstName} ${lastName || ''}</p>
+        <p style="color:#3A3A3C;font-size:14px"><strong>Email:</strong> ${email}</p>
+        <p style="color:#3A3A3C;font-size:14px"><strong>Phone:</strong> ${phone || 'N/A'}</p>
+        <p style="color:#3A3A3C;font-size:14px"><strong>Subject:</strong> ${subject}</p>
+        ${orderId ? `<p style="color:#3A3A3C;font-size:14px"><strong>Order ID:</strong> #${orderId}</p>` : ''}
+        <div style="background:#FFF;padding:16px;border-left:4px solid #C0392B;border-radius:4px;margin-top:16px">
+          <strong style="color:#3A3A3C">Message:</strong><br>
+          <p style="white-space:pre-wrap;color:#3A3A3C;font-size:14px">${message}</p>
         </div>
-      `,
+      `),
     });
     logger.info({ email, subject }, 'Contact form email sent to admin');
   } catch (err) {

@@ -14,6 +14,10 @@ services:
         value: 5000
       - key: MONGODB_URI
         sync: false
+      # Refresh-token reuse detection and idempotency caching are weakened
+      # without Redis — recommended true for production (see app startup warning).
+      - key: REDIS_ENABLED
+        value: false
       - key: REDIS_URL
         sync: false
       - key: JWT_ACCESS_SECRET
@@ -26,9 +30,46 @@ services:
         sync: false
       - key: RAZORPAY_WEBHOOK_SECRET
         sync: false
-      - key: RESEND_API_KEY
+      # Note: PAYMENT_TEST_MODE is deliberately NOT listed here — leave it
+      # unset so it defaults to false. env.ts hard-fails startup if it's set
+      # true alongside NODE_ENV=production; only ever set it on a staging service.
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: CLOUDINARY_FOLDER
+        value: nirmal-spices
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
         sync: false
       - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_REPLY_TO
+        sync: false
+      # SMS OTP silently no-ops as "sent" without real delivery if these are
+      # left unset — see MSG91_AUTH_KEY note in the deployment plan.
+      - key: MSG91_AUTH_KEY
+        sync: false
+      - key: MSG91_TEMPLATE_ID
+        sync: false
+      - key: MSG91_SENDER_ID
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      # Used only by `npm run seed` — set a real strong password before
+      # ever running the seed script against production data.
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
         sync: false
       - key: CLIENT_URL
         sync: false

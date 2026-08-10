@@ -27,6 +27,14 @@ import { cn } from '@/lib/utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { addressSchema } from '@/validators/auth.validator';
+import {
+  getWizardState,
+  saveWizardState,
+  clearWizardState,
+  getPendingPayment,
+  savePendingPayment,
+  clearPendingPayment,
+} from '@/lib/checkoutSession';
 
 type CheckoutStep = 'address' | 'shipping' | 'payment' | 'review';
 
@@ -66,9 +74,22 @@ export default function CheckoutPage() {
   const [tempAddress, setTempAddress] = useState<any>(null);
   const [saveAddressToAccount, setSaveAddressToAccount] = useState(true);
 
-  // Generate idempotency key on mount; allow brief cart hydrate before empty-redirect
+  // Restore in-progress checkout state (and reuse the same idempotency key)
+  // after an unexpected reload — e.g. Razorpay falling back to a full-page
+  // bank redirect instead of staying in-page. Without this, a mid-payment
+  // reload drops the shopper back to a blank step-1 checkout.
   useEffect(() => {
-    setIdempotencyKey(crypto.randomUUID());
+    const saved = getWizardState();
+    if (saved?.tempAddress) {
+      setTempAddress(saved.tempAddress);
+      setGuestEmail(saved.guestEmail || '');
+      setGuestPhone(saved.guestPhone || '');
+      setStep(saved.step);
+      setIdempotencyKey(saved.idempotencyKey || crypto.randomUUID());
+    } else {
+      setIdempotencyKey(crypto.randomUUID());
+    }
+
     const { fetchCart } = useCartStore.getState();
     let cancelled = false;
 
@@ -88,6 +109,84 @@ export default function CheckoutPage() {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Persist wizard progress so a mid-payment reload can resume instead of
+  // resetting to step 1.
+  useEffect(() => {
+    if (!tempAddress || !idempotencyKey) return;
+    saveWizardState({ step, tempAddress, guestEmail, guestPhone, idempotencyKey });
+  }, [step, tempAddress, guestEmail, guestPhone, idempotencyKey]);
+
+  // Recover from a Razorpay top-level redirect back to this page, or a plain
+  // reload that happened mid-payment (see lib/checkoutSession.ts for why).
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const url = new URL(window.location.href);
+    const paymentId = url.searchParams.get('razorpay_payment_id');
+    const razorpayOrderId = url.searchParams.get('razorpay_order_id');
+    const signature = url.searchParams.get('razorpay_signature');
+    const hasRazorpayParams = Boolean(paymentId || razorpayOrderId);
+
+    const pending = getPendingPayment();
+    if (!hasRazorpayParams && !pending) return; // nothing to recover
+
+    if (hasRazorpayParams) {
+      // Clean the URL immediately so a refresh doesn't replay this.
+      router.replace('/checkout');
+    }
+
+    void (async () => {
+      // Best case: Razorpay's own redirect params are present — verify directly.
+      if (hasRazorpayParams && pending && pending.razorpayOrderId === razorpayOrderId && paymentId && signature) {
+        setSubmittingOrder(true);
+        try {
+          const verifyRes = await api.post('/orders/verify', {
+            razorpayOrderId,
+            razorpayPaymentId: paymentId,
+            razorpaySignature: signature,
+            orderId: pending.orderId,
+          });
+          toast.success('Payment verified! Order placed successfully.');
+          clearPendingPayment();
+          clearWizardState();
+          await clearCart();
+          const q = pending.guestEmail ? `?email=${encodeURIComponent(pending.guestEmail)}` : '';
+          router.push(`/order/${verifyRes.data.data.orderId}${q}`);
+        } catch {
+          toast.error('Payment verification failed. Please contact support if you were charged.');
+        } finally {
+          setSubmittingOrder(false);
+        }
+        return;
+      }
+
+      // No usable Razorpay params (a bare reload, or the redirect didn't carry
+      // them) — fall back to asking the backend whether the order already got
+      // marked paid (e.g. the webhook beat us to it).
+      if (pending) {
+        try {
+          const q = pending.guestEmail ? `?email=${encodeURIComponent(pending.guestEmail)}` : '';
+          const res = await api.get(`/orders/${pending.orderId}${q}`);
+          const order = res.data.data;
+          if (order?.paymentStatus === 'paid') {
+            toast.success('Your payment was already confirmed!');
+            clearPendingPayment();
+            clearWizardState();
+            await clearCart();
+            router.push(`/order/${pending.orderId}${pending.guestEmail ? `?email=${encodeURIComponent(pending.guestEmail)}` : ''}`);
+            return;
+          }
+        } catch {
+          // Order lookup failed — fall through to letting them retry.
+        }
+        toast.message("Your previous payment attempt wasn't completed — you can try again.");
+        clearPendingPayment();
+        setStep('review');
+      }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -279,6 +378,19 @@ export default function CheckoutPage() {
         if (!isLoggedIn && guestEmail) {
           localStorage.setItem('nirmal_guest_email', guestEmail);
         }
+        clearWizardState();
+        await clearCart();
+        setSubmittingOrder(false);
+        const q = !isLoggedIn && guestEmail ? `?email=${encodeURIComponent(guestEmail)}` : '';
+        router.push(`/order/${orderData.orderId}${q}`);
+      } else if (orderData.testMode) {
+        // Backend PAYMENT_TEST_MODE is on — no live Razorpay order was created.
+        // Order stays pending until an admin uses "Mark as Paid" in /admin/orders.
+        toast.success('Order created (TEST MODE) — pending manual payment confirmation by an admin.');
+        if (!isLoggedIn && guestEmail) {
+          localStorage.setItem('nirmal_guest_email', guestEmail);
+        }
+        clearWizardState();
         await clearCart();
         setSubmittingOrder(false);
         const q = !isLoggedIn && guestEmail ? `?email=${encodeURIComponent(guestEmail)}` : '';
@@ -293,6 +405,15 @@ export default function CheckoutPage() {
         setSubmittingOrder(false);
         return;
       }
+
+      // In case the modal falls back to a full-page bank redirect (Netbanking,
+      // or a browser blocking Razorpay's iframe/third-party cookies), this lets
+      // the recovery effect above resume the flow after the reload.
+      savePendingPayment({
+        orderId: orderData.orderId,
+        razorpayOrderId: orderData.razorpayOrderId,
+        guestEmail: !isLoggedIn ? guestEmail : undefined,
+      });
 
       const options = {
         key: orderData.key,
@@ -313,6 +434,8 @@ export default function CheckoutPage() {
             });
 
             toast.success('Payment verified! Order placed successfully.');
+            clearPendingPayment();
+            clearWizardState();
             await clearCart();
             const q = !isLoggedIn && guestEmail ? `?email=${encodeURIComponent(guestEmail)}` : '';
             router.push(`/order/${verifyRes.data.data.orderId}${q}`);
@@ -358,7 +481,7 @@ export default function CheckoutPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16 font-sans">
       {/* Razorpay Script Injection */}
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
 
       {/* Progress timeline bar */}
       <div className="flex items-center justify-center gap-6 sm:gap-12 border-b border-border-spice/40 pb-6 mb-12 select-none">
