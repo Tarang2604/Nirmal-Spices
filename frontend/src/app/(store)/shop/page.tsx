@@ -1,8 +1,7 @@
 "use client";
 
-export const dynamic = 'force-dynamic';
-
 import React, { Suspense, useState } from 'react';
+import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ProductCard from '@/components/products/ProductCard';
@@ -10,6 +9,16 @@ import ProductFilters from '@/components/products/ProductFilters';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
+const CATEGORY_COVER_MAP: Record<string, string> = {
+  'blended-masalas': '/blended_masala_collection.jpg',
+  'ground-spices': '/spices_flatlay.png',
+  'whole-spices': '/whole_spices_collection.jpg',
+  salts: '/salt_category_banner.png',
+  'instant-mix': '/instant_mix_category_banner.png',
+  flours: '/flour_catalog.jpg',
+  flour: '/flour_catalog.jpg',
+};
 
 function ShopContent() {
   const router = useRouter();
@@ -88,7 +97,29 @@ function ShopContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 font-sans">
-      
+
+      {/* Category Hero Cover Banner */}
+      {cat && CATEGORY_COVER_MAP[cat] && (
+        <div className="relative w-full h-44 sm:h-56 md:h-64 rounded-2xl overflow-hidden mb-8 border border-border/40 shadow-sm">
+          <Image
+            src={CATEGORY_COVER_MAP[cat]}
+            alt={activeCategoryName || 'Category Banner'}
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent flex flex-col justify-center px-6 sm:px-10 text-white">
+            <span className="text-xs uppercase font-accent font-bold tracking-widest text-saffron mb-1">
+              Collection Showcase
+            </span>
+            <h2 className="font-display text-2xl sm:text-4xl font-bold">{activeCategoryName}</h2>
+            <p className="text-xs sm:text-sm text-cream/90 mt-1 max-w-md">
+              Explore authentic {activeCategoryName} carefully packed and freshly prepared in Harda, MP.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Top Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-border-spice pb-6 mb-8 gap-4">
         <div>
@@ -106,10 +137,10 @@ function ShopContent() {
 
         {/* Sort Controls */}
         <div className="flex items-center gap-3 self-end sm:self-auto">
-          
+
           {/* Mobile Filter Sheet Trigger */}
           <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
-            <SheetTrigger 
+            <SheetTrigger
               className="lg:hidden border border-border bg-white text-charcoal text-xs font-semibold py-2 px-4 rounded-xl flex items-center gap-1.5 outline-none hover:bg-muted"
               aria-label="Filter"
             >
@@ -124,6 +155,7 @@ function ShopContent() {
           <select
             value={sort}
             onChange={(e) => handleSortChange(e.target.value)}
+            suppressHydrationWarning
             className="bg-white border border-border text-xs font-semibold text-charcoal px-4 py-2 rounded-xl outline-none focus:border-primary"
             aria-label="Sort products"
           >
@@ -137,7 +169,7 @@ function ShopContent() {
 
       {/* Main Grid Section */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
+
         {/* Sidebar Filters (Desktop only) */}
         <div className="hidden lg:block lg:col-span-3 bg-white p-6 rounded-2xl border border-border-spice/40 sticky top-36">
           <ProductFilters />
@@ -145,7 +177,7 @@ function ShopContent() {
 
         {/* Products Grid Area */}
         <div className="lg:col-span-9 flex flex-col gap-12">
-          
+
           {showSkeleton ? (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6" key={`loading-${cat}-${page}`}>
               {[...Array(6)].map((_, i) => (
@@ -186,7 +218,7 @@ function ShopContent() {
               >
                 <ChevronLeft size={16} />
               </button>
-              
+
               <span className="text-xs font-semibold text-charcoal px-4 py-2 border rounded-xl bg-white select-none">
                 Page {page} of {meta.totalPages}
               </span>

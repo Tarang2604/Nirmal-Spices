@@ -6,6 +6,17 @@ import { OTP } from '../src/models/OTP';
 jest.mock('../src/models/User');
 jest.mock('../src/models/OTP');
 
+/** Mimics a Mongoose Query: chainable (.select/.lean) and awaitable. */
+function mockQuery(resolvedValue: unknown) {
+  const query: Record<string, unknown> = {
+    select: jest.fn(() => query),
+    lean: jest.fn(() => query),
+    then: (resolve: (v: unknown) => void, reject?: (e: unknown) => void) =>
+      Promise.resolve(resolvedValue).then(resolve, reject),
+  };
+  return query;
+}
+
 describe('Auth API Endpoints', () => {
   describe('POST /api/auth/register', () => {
     it('should successfully register a new user', async () => {
@@ -102,11 +113,13 @@ describe('Auth API Endpoints', () => {
 
   describe('POST /api/auth/send-otp', () => {
     it('should send OTP email successfully for existing user', async () => {
-      (User.findOne as jest.Mock).mockResolvedValue({
-        email: 'john@example.com',
-        role: 'user',
-        isBlocked: false,
-      });
+      (User.findOne as jest.Mock)
+        // assertNotAdminAccount: User.findOne({email}).select('role')
+        .mockReturnValueOnce(mockQuery(null))
+        // login lookup: User.findOne({email})
+        .mockReturnValueOnce(
+          mockQuery({ email: 'john@example.com', role: 'user', isBlocked: false }),
+        );
       (OTP.findOneAndUpdate as jest.Mock).mockResolvedValue({ identifier: 'john@example.com' });
 
       const res = await request(app)
@@ -122,7 +135,11 @@ describe('Auth API Endpoints', () => {
     });
 
     it('should reject login OTP when user is not registered', async () => {
-      (User.findOne as jest.Mock).mockResolvedValue(null);
+      (User.findOne as jest.Mock)
+        // assertNotAdminAccount: User.findOne({email}).select('role')
+        .mockReturnValueOnce(mockQuery(null))
+        // login lookup: User.findOne({email}) -> not found
+        .mockReturnValueOnce(mockQuery(null));
 
       const res = await request(app)
         .post('/api/auth/send-otp')
@@ -135,6 +152,53 @@ describe('Auth API Endpoints', () => {
       expect(res.statusCode).toBe(404);
       expect(res.body.success).toBe(false);
       expect(res.body.message).toMatch(/register first/i);
+    });
+  });
+
+  describe('POST /api/auth/verify-otp', () => {
+    it('should reject a guessed "123456" code for an account that never requested that OTP (auth-bypass regression)', async () => {
+      // No OTP record exists for this identifier — nothing was ever sent/requested.
+      (OTP.findOne as jest.Mock).mockReturnValue({
+        select: jest.fn().mockResolvedValue(null),
+      });
+
+      const res = await request(app)
+        .post('/api/auth/verify-otp')
+        .send({
+          identifier: 'victim@example.com',
+          type: 'login',
+          code: '123456',
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toMatch(/expired or not found/i);
+    });
+
+    it('should reject an incorrect code even when a real OTP record exists', async () => {
+      const mockOtpRecord = {
+        identifier: 'victim@example.com',
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+        attempts: 0,
+        compare: jest.fn().mockResolvedValue(false),
+        save: jest.fn().mockResolvedValue(true),
+        deleteOne: jest.fn().mockResolvedValue(true),
+      };
+      (OTP.findOne as jest.Mock).mockReturnValue({
+        select: jest.fn().mockResolvedValue(mockOtpRecord),
+      });
+
+      const res = await request(app)
+        .post('/api/auth/verify-otp')
+        .send({
+          identifier: 'victim@example.com',
+          type: 'login',
+          code: '123456',
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(mockOtpRecord.compare).toHaveBeenCalledWith('123456');
     });
   });
 });

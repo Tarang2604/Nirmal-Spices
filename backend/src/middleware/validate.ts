@@ -21,7 +21,6 @@ export function validate<T>(schema: ZodSchema<T>, target: ValidateTarget = 'body
     }
 
     // Replace with parsed/coerced value (e.g. trimmed strings, converted numbers)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (req as any)[target] = result.data;
     next();
   };

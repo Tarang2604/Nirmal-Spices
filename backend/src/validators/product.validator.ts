@@ -56,6 +56,11 @@ export const createProductSchema = z.object({
     message: 'At least one weight variant is required',
   }),
   tags: jsonArray(z.string()).default([]),
+  // Image management (updateProduct only, but harmless/unused on create):
+  // URLs to remove from the existing gallery, or wipe it entirely and replace
+  // with whatever's in this request's file upload.
+  removeImages: jsonArray(z.string()).default([]),
+  overwriteImages: z.preprocess((v) => v === 'true', z.boolean()),
   badge: z.enum(['bestseller', 'new', 'sale', 'organic', 'premium']).optional().or(z.literal('')),
   isActive: z.preprocess((v) => {
     if (v === 'true') return true;

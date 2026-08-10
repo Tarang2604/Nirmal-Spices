@@ -12,8 +12,15 @@ process.env.RAZORPAY_WEBHOOK_SECRET = 'test_webhook_secret';
 process.env.CLOUDINARY_CLOUD_NAME = 'test_cloudinary';
 process.env.CLOUDINARY_API_KEY = 'test_key';
 process.env.CLOUDINARY_API_SECRET = 'test_secret';
-process.env.RESEND_API_KEY = 'test_resend_key';
+process.env.SMTP_HOST = 'smtp.test.local';
+process.env.SMTP_PORT = '587';
+process.env.SMTP_USER = 'test_smtp_user';
+process.env.SMTP_PASS = 'test_smtp_pass';
 process.env.EMAIL_FROM = 'test@nirmalspices.in';
+// Pin explicitly — env.ts's dotenv.config() otherwise falls through to
+// whatever a developer's local .env has set, making test defaults depend on
+// machine-specific config.
+process.env.PAYMENT_TEST_MODE = 'false';
 
 // Mock getRedis to return a mock Redis client for tests
 jest.mock('../src/config/redis', () => {
@@ -25,12 +32,15 @@ jest.mock('../src/config/redis', () => {
     keys: jest.fn().mockResolvedValue([]),
     connect: jest.fn().mockResolvedValue(null),
     quit: jest.fn().mockResolvedValue(null),
+    ping: jest.fn().mockResolvedValue('PONG'),
   };
   return {
     getRedis: () => mockRedis,
+    isRedisEnabled: () => false,
     redisGet: jest.fn(),
     redisSet: jest.fn(),
     redisDel: jest.fn(),
+    redisDelPattern: jest.fn(),
     redisExists: jest.fn(),
     RedisKeys: {
       refreshToken: (userId: string, tokenId: string) => `rt:${userId}:${tokenId}`,
@@ -44,12 +54,10 @@ jest.mock('../src/config/redis', () => {
   };
 });
 
-// Mock Resend mailer client
+// Mock SMTP mailer client
 jest.mock('../src/config/mailer', () => ({
-  resend: {
-    emails: {
-      send: jest.fn().mockResolvedValue({ id: 'test_mail_id' }),
-    },
+  mailer: {
+    sendMail: jest.fn().mockResolvedValue({ messageId: 'test_mail_id' }),
   },
   FROM: 'test@nirmalspices.in',
   REPLY_TO: 'reply@nirmalspices.in',
