@@ -9,11 +9,11 @@ export default function QueryProvider({ children }: { children: React.ReactNode 
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 0,
-            gcTime: 5 * 60 * 1000,
-            refetchOnMount: 'always',
+            staleTime: 5 * 60 * 1000, // 5 minutes
+            gcTime: 15 * 60 * 1000,    // 15 minutes
+            refetchOnMount: false,
             refetchOnReconnect: true,
-            refetchOnWindowFocus: true,
+            refetchOnWindowFocus: false,
             retry: (failureCount, error: any) => {
               if (error?.response?.status >= 400 && error?.response?.status < 500) {
                 return false;

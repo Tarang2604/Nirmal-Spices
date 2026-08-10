@@ -122,9 +122,9 @@ function AdminCustomersInner() {
       const res = await api.get(`/admin/users?${params.toString()}`);
       return extractCustomers(res.data);
     },
-    staleTime: 0,
-    refetchOnMount: 'always',
-    refetchOnWindowFocus: true,
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
     retry: 1,
   });
 
