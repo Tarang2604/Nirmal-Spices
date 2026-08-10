@@ -1,5 +1,3 @@
-"use client";
-
 import React from 'react';
 import { Leaf, Award, Recycle, ShieldCheck, Truck } from 'lucide-react';
 

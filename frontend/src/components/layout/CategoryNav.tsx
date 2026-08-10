@@ -1,25 +1,27 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
+import { fetchCategories } from '@/lib/api';
 
 export default function CategoryNav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentCat = searchParams.get('cat');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const { data: categories } = useQuery({
     queryKey: ['store-categories'],
-    queryFn: async () => {
-      const res = await fetch('/api/categories', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Failed to load categories');
-      const json = await res.json();
-      return (json.data || []) as { name: string; slug: string }[];
-    },
-    staleTime: 60_000,
+    queryFn: fetchCategories,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
     retry: 2,
   });
 
@@ -27,7 +29,7 @@ export default function CategoryNav() {
     { label: 'Home', href: '/', slug: undefined as string | undefined },
     { label: 'About Us', href: '/about', slug: undefined },
     { label: 'All Products', href: '/shop', slug: undefined },
-    ...(categories || []).map((c) => ({
+    ...(isMounted && categories ? categories : []).map((c) => ({
       label: c.name,
       href: `/shop?cat=${c.slug}`,
       slug: c.slug,
@@ -37,11 +39,11 @@ export default function CategoryNav() {
 
   return (
     <nav
-      className="bg-cream-dark/50 border-b border-border/80 sticky top-16 z-40 backdrop-blur-md hidden md:block"
+      className="bg-white/95 border-b border-border/60 sticky top-[92px] z-30 backdrop-blur-md hidden md:block shadow-xs transition-all duration-200"
       aria-label="Quick Category navigation"
     >
-      <div className="max-w-7xl mx-auto px-4">
-        <ul className="flex items-center justify-center gap-6 lg:gap-8 py-3 text-sm font-sans font-semibold tracking-wide uppercase overflow-x-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <ul className="flex items-center justify-center gap-2.5 sm:gap-4 lg:gap-6 py-2.5 text-[11px] font-sans font-bold tracking-wider uppercase overflow-x-auto whitespace-nowrap scrollbar-none">
           {links.map((link) => {
             const isActive = link.slug
               ? currentCat === link.slug
@@ -52,13 +54,13 @@ export default function CategoryNav() {
                 <Link
                   href={link.href}
                   className={cn(
-                    'text-muted-foreground hover:text-primary transition-colors duration-250 relative py-1.5',
-                    isActive && 'text-primary',
+                    'text-muted-foreground hover:text-primary transition-colors duration-200 relative py-1 px-1.5 rounded-md hover:bg-cream/40 inline-flex items-center',
+                    isActive && 'text-primary font-extrabold',
                   )}
                 >
                   {link.label}
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                    <span className="absolute bottom-0 left-1 right-1 h-0.5 bg-primary rounded-full" />
                   )}
                 </Link>
               </li>

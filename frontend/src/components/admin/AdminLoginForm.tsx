@@ -71,13 +71,14 @@ export default function AdminLoginForm() {
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-md flex flex-col items-center">
-        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg border border-border mb-6 p-2">
+        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-border mb-6 p-2">
           <Image
-            src="/nirmal_logo.png"
-            alt="Nirmal's Spices"
+            src="/nirmal_logo (2).png"
+            alt="Nirmal Spices"
             width={48}
             height={48}
             className="object-contain"
+            priority
           />
         </div>
         <h1 className="font-display font-bold text-3xl text-charcoal tracking-wide text-center">

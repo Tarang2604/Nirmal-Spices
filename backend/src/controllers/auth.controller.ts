@@ -218,8 +218,7 @@ export const sendOtp = asyncHandler(async (req: Request, res: Response) => {
     }
   }
 
-  // Fixed manual OTP for login (user types it — not autofilled on the client)
-  const rawOtp = '123456';
+  const rawOtp = crypto.randomInt(100000, 1000000).toString();
   await (OTP as any).createOTP(normalizedId, type, rawOtp, 15);
 
   const delivered: boolean[] = [];
@@ -252,44 +251,36 @@ export const sendOtp = asyncHandler(async (req: Request, res: Response) => {
 export const verifyOtp = asyncHandler(async (req: Request, res: Response) => {
   const { identifier, type, phone } = req.body;
   const code = String(req.body.code ?? '').trim();
-  const MANUAL_OTP = '123456';
 
   const otpRecord = await OTP.findOne({ identifier: identifier.toLowerCase(), type }).select(
     '+hashedCode',
   );
 
-  const isManualOtp = code === MANUAL_OTP;
-  let isValid = isManualOtp;
-
-  if (!isManualOtp) {
-    if (!otpRecord) {
-      throw ApiError.badRequest('OTP expired or not found. Please request a new one.');
-    }
-
-    if (otpRecord.expiresAt < new Date()) {
-      await otpRecord.deleteOne();
-      throw ApiError.badRequest('OTP has expired. Please request a new one.');
-    }
-
-    if (otpRecord.attempts >= 5) {
-      await otpRecord.deleteOne();
-      throw ApiError.tooMany('Too many incorrect attempts, please request a new OTP');
-    }
-
-    isValid = await otpRecord.compare(code);
-    if (!isValid) {
-      otpRecord.attempts += 1;
-      await otpRecord.save();
-      throw ApiError.badRequest('Invalid OTP. Please try again.');
-    }
+  if (!otpRecord) {
+    throw ApiError.badRequest('OTP expired or not found. Please request a new one.');
   }
 
-  if (otpRecord) {
+  if (otpRecord.expiresAt < new Date()) {
     await otpRecord.deleteOne();
+    throw ApiError.badRequest('OTP has expired. Please request a new one.');
   }
+
+  if (otpRecord.attempts >= 5) {
+    await otpRecord.deleteOne();
+    throw ApiError.tooMany('Too many incorrect attempts, please request a new OTP');
+  }
+
+  const isValid = await otpRecord.compare(code);
+  if (!isValid) {
+    otpRecord.attempts += 1;
+    await otpRecord.save();
+    throw ApiError.badRequest('Invalid OTP. Please try again.');
+  }
+
+  await otpRecord.deleteOne();
 
   if (type === 'login' || type === 'register') {
-    let user = await User.findOne(
+    const user = await User.findOne(
       isEmail(identifier) ? { email: identifier.toLowerCase() } : { phone: identifier },
     );
 
