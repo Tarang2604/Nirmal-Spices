@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBackendApiUrl } from '@/lib/backend';
 import { toStorefrontProducts } from '@/lib/productMapper';
+import { filterAndSortProducts } from '@/data/catalog';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
 
-    const category = searchParams.get('category') || searchParams.get('cat') || '';
-    const badgeRaw = searchParams.get('badge') || '';
-    const badge =
-      badgeRaw === 'best-seller' || badgeRaw === 'bestseller'
-        ? 'bestseller'
-        : badgeRaw;
+  const category = searchParams.get('category') || searchParams.get('cat') || '';
+  const badgeRaw = searchParams.get('badge') || '';
+  const badge =
+    badgeRaw === 'best-seller' || badgeRaw === 'bestseller'
+      ? 'bestseller'
+      : badgeRaw;
   const minPrice = searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined;
   const maxPrice = searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined;
   const sort = searchParams.get('sort') || '';
@@ -33,24 +34,34 @@ export async function GET(req: NextRequest) {
       cache: 'no-store',
     });
 
-    if (!res.ok) {
-      return NextResponse.json(
-        { success: false, message: 'Failed to load products from API' },
-        { status: 502 },
-      );
+    if (res.ok) {
+      const json = await res.json();
+      const products = toStorefrontProducts(json.data || []);
+      return NextResponse.json({
+        success: true,
+        data: products,
+        meta: json.meta || { page, limit, total: products.length, totalPages: 1 },
+      });
     }
-
-    const json = await res.json();
-    const products = toStorefrontProducts(json.data || []);
-    return NextResponse.json({
-      success: true,
-      data: products,
-      meta: json.meta || { page, limit, total: products.length, totalPages: 1 },
-    });
   } catch {
-    return NextResponse.json(
-      { success: false, message: 'Product API unavailable' },
-      { status: 503 },
-    );
+    // ignore, fall back to local catalog
   }
+
+  // Fallback to local catalog
+  const { products, total, totalPages } = filterAndSortProducts({
+    category,
+    badge: badgeRaw,
+    minPrice,
+    maxPrice,
+    sort,
+    search,
+    page,
+    limit,
+  });
+
+  return NextResponse.json({
+    success: true,
+    data: products,
+    meta: { page, limit, total, totalPages },
+  });
 }

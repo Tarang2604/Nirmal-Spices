@@ -34,7 +34,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   const mrp = selected.mrp ?? selected.price;
   const price = selected.price ?? mrp;
   const salePrice = price < mrp ? price : null;
-  const displayPrice = salePrice ?? price;
+  const displayPrice = salePrice ?? mrp;
   const discountPercent = salePrice ? Math.round(((mrp - price) / mrp) * 100) : 0;
   const inStock = (selected.stock ?? 0) > 0;
   const maxQty = Math.min(10, Math.max(1, selected.stock || 1));

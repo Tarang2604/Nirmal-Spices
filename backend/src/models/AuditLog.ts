@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export type AuditAction =
-  | 'PRODUCT_CREATE' | 'PRODUCT_UPDATE' | 'PRODUCT_DELETE'
+  | 'PRODUCT_CREATE' | 'PRODUCT_UPDATE' | 'PRODUCT_DELETE' | 'PRODUCT_BULK_IMPORT'
   | 'ORDER_STATUS_UPDATE' | 'ORDER_CANCEL' | 'ORDER_REFUND'
   | 'COUPON_CREATE' | 'COUPON_UPDATE' | 'COUPON_DELETE'
   | 'USER_BLOCK' | 'USER_UNBLOCK' | 'USER_PROMOTE'
@@ -32,7 +32,7 @@ const auditLogSchema = new Schema<IAuditLog>(
       type: String,
       required: true,
       enum: [
-        'PRODUCT_CREATE', 'PRODUCT_UPDATE', 'PRODUCT_DELETE',
+        'PRODUCT_CREATE', 'PRODUCT_UPDATE', 'PRODUCT_DELETE', 'PRODUCT_BULK_IMPORT',
         'ORDER_STATUS_UPDATE', 'ORDER_CANCEL', 'ORDER_REFUND',
         'COUPON_CREATE', 'COUPON_UPDATE', 'COUPON_DELETE',
         'USER_BLOCK', 'USER_UNBLOCK', 'USER_PROMOTE',

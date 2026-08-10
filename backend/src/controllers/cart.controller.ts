@@ -29,7 +29,7 @@ export const getCart = asyncHandler(async (req: Request, res: Response) => {
 
   const selector = getCartSelector(req);
 
-  let cart = await Cart.findOne(selector).populate({
+  const cart = await Cart.findOne(selector).populate({
     path: 'items.product',
     select: 'name slug category images weights isActive',
   });

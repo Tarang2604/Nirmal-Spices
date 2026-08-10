@@ -45,6 +45,9 @@ export default function AdminCouponsPage() {
       const res = await api.get('/coupons');
       return res.data.data as CouponRow[];
     },
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const resetForm = () => {

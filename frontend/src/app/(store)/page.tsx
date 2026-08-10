@@ -1,13 +1,41 @@
-import React from 'react';
+import dynamic from 'next/dynamic';
 import HeroSection from '@/components/home/HeroSection';
+import BrandTagline from '@/components/home/BrandTagline';
 import CategoryGrid from '@/components/home/CategoryGrid';
 import FlourCatalog from '@/components/home/FlourCatalog';
 import TrendingProducts from '@/components/home/TrendingProducts';
 import FeaturesGrid from '@/components/home/FeaturesGrid';
-import TestimonialsCarousel from '@/components/home/TestimonialsCarousel';
-import FloatingSpices from '@/components/home/FloatingSpices';
 
-export default function HomePage() {
+import { getBackendApiUrl } from '@/lib/backend';
+import { CATEGORIES } from '@/data/catalog';
+
+const FloatingSpices = dynamic(() => import('@/components/home/FloatingSpices'));
+const TestimonialsCarousel = dynamic(() => import('@/components/home/TestimonialsCarousel'));
+
+async function getInitialCategories() {
+  try {
+    const res = await fetch(`${getBackendApiUrl()}/categories`, { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+        return json.data;
+      }
+    }
+  } catch {
+    // fallback to catalog data
+  }
+  return CATEGORIES.filter((c) => c.slug).map((c) => ({
+    _id: c.slug,
+    name: c.label,
+    slug: c.slug,
+    count: c.count,
+    image: c.image || '/spices_flatlay.png',
+  }));
+}
+
+export default async function HomePage() {
+  const initialCategories = await getInitialCategories();
+
   return (
     <div className="relative min-h-screen">
       {/* Background Floating Spice Particles */}
@@ -16,8 +44,11 @@ export default function HomePage() {
       {/* Hero Section */}
       <HeroSection />
 
+      {/* Brand Tagline — rendered once, between hero and first product section */}
+      <BrandTagline />
+
       {/* Category Grid Section */}
-      <CategoryGrid />
+      <CategoryGrid initialCategories={initialCategories} />
 
       {/* Flour Catalog Section */}
       <FlourCatalog />

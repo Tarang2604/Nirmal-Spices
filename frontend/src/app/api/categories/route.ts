@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getBackendApiUrl } from '@/lib/backend';
+import { CATEGORIES } from '@/data/catalog';
 
 export async function GET() {
   try {
@@ -7,22 +8,29 @@ export async function GET() {
       cache: 'no-store',
     });
 
-    if (!res.ok) {
-      return NextResponse.json(
-        { success: false, message: 'Failed to load categories from API' },
-        { status: 502 },
-      );
+    if (res.ok) {
+      const json = await res.json();
+      if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+        return NextResponse.json({
+          success: true,
+          data: json.data,
+        });
+      }
     }
-
-    const json = await res.json();
-    return NextResponse.json({
-      success: true,
-      data: json.data || [],
-    });
   } catch {
-    return NextResponse.json(
-      { success: false, message: 'Category API unavailable' },
-      { status: 503 },
-    );
+    // ignore, use fallback catalog categories below
   }
+
+  const fallback = CATEGORIES.filter((c) => c.slug).map((c) => ({
+    _id: c.slug,
+    name: c.label,
+    slug: c.slug,
+    count: c.count,
+    image: c.image || '/spices_flatlay.png',
+  }));
+
+  return NextResponse.json({
+    success: true,
+    data: fallback,
+  });
 }
