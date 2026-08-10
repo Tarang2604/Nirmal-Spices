@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { logoutNow } from '@/lib/authActions';
 import { cn } from '@/lib/utils';
@@ -16,21 +17,23 @@ import {
   Percent,
   LogOut,
   FolderTree,
-  Search,
-  Bell,
   Menu,
   X,
   Users,
   ChevronDown,
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  ShieldCheck
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const NAV_ITEMS = [
-  { label: 'Overview', href: '/admin', icon: LayoutDashboard },
-  { label: 'Categories', href: '/admin/categories', icon: FolderTree },
-  { label: 'Products', href: '/admin/products', icon: Layers },
+  { label: 'Dashboard Overview', href: '/admin', icon: LayoutDashboard },
+  { label: 'Categories Management', href: '/admin/categories', icon: FolderTree },
+  { label: 'Products Inventory', href: '/admin/products', icon: Layers },
   {
-    label: 'Customers',
+    label: 'Customers List',
     href: '/admin/customers',
     icon: Users,
     children: [
@@ -38,9 +41,9 @@ const NAV_ITEMS = [
       { label: 'Blocked Customers', href: '/admin/customers?status=blocked' },
     ],
   },
-  { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
-  { label: 'Coupons', href: '/admin/coupons', icon: Tag },
-  { label: 'Fees & Delivery', href: '/admin/settings', icon: Percent },
+  { label: 'Orders & Sales', href: '/admin/orders', icon: ShoppingBag },
+  { label: 'Coupons & Offers', href: '/admin/coupons', icon: Tag },
+  { label: 'Delivery & Fees', href: '/admin/settings', icon: Percent },
   { label: 'Audit Logs', href: '/admin/logs', icon: ShieldAlert },
 ] as const;
 
@@ -49,25 +52,14 @@ function isNavActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/** Hard navigation — guarantees admin UI remounts (soft nav was fetching APIs but not painting). */
-function goAdmin(href: string) {
-  if (typeof window === 'undefined') return;
-  const current = `${window.location.pathname}${window.location.search}`;
-  if (current === href) {
-    window.location.reload();
-    return;
-  }
-  window.location.assign(href);
-}
-
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const routeKey = `${pathname}?${searchParams.toString()}`;
   const { user, isLoggedIn, isInitialized } = useAuthStore();
   const isLoginPage = pathname === '/admin/login';
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [customersOpen, setCustomersOpen] = useState(false);
 
   useEffect(() => {
@@ -77,16 +69,10 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     if (!isInitialized || isLoginPage) return;
     if (!isLoggedIn || user?.role !== 'admin') {
-      toast.error('Please sign in with your admin account');
+      toast.error('Please sign in with an administrator account');
       router.replace('/admin/login');
     }
   }, [isLoggedIn, user, isInitialized, isLoginPage, router]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      setSidebarOpen(false);
-    }
-  }, [pathname]);
 
   if (isLoginPage) return <>{children}</>;
 
@@ -94,8 +80,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4 bg-[#FAF7F2]">
         <Loader2 className="w-8 h-8 text-[#8B1E1E] animate-spin" />
-        <span className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">
-          Verifying credentials...
+        <span className="text-xs font-accent uppercase tracking-widest font-bold text-muted-foreground">
+          Authenticating Admin Access…
         </span>
       </div>
     );
@@ -105,16 +91,16 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4 bg-[#FAF7F2]">
         <Loader2 className="w-8 h-8 text-[#8B1E1E] animate-spin" />
-        <span className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">
-          Redirecting to admin login...
+        <span className="text-xs font-accent uppercase tracking-widest font-bold text-muted-foreground">
+          Redirecting to login portal…
         </span>
       </div>
     );
   }
 
-  const handleLogout = () => {
-    void logoutNow();
-    window.location.assign('/admin/login');
+  const handleLogout = async () => {
+    await logoutNow();
+    router.replace('/admin/login');
   };
 
   const initials = (user.name || 'AD')
@@ -125,34 +111,71 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     .toUpperCase();
 
   return (
-    <div className="min-h-screen bg-[#F8F6F1] flex font-sans">
-      {sidebarOpen && (
-        <button
-          type="button"
-          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
-          aria-label="Close sidebar"
-          onClick={() => setSidebarOpen(false)}
+    <div className="min-h-screen bg-[#F8F6F0] flex font-sans antialiased">
+      
+      {/* Mobile Drawer Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
+      {/* Sidebar Navigation */}
       <aside
         className={cn(
-          'fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-[#3D1F1F] text-white flex flex-col transition-transform duration-100',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+          'fixed lg:sticky top-0 left-0 z-50 h-screen bg-[#2A1212] text-cream flex flex-col transition-all duration-300 shadow-xl border-r border-white/10 shrink-0',
+          collapsed ? 'lg:w-20' : 'lg:w-64',
+          mobileMenuOpen ? 'w-64 translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
       >
-        <div className="h-16 px-5 flex items-center gap-3 border-b border-white/10 shrink-0">
-          <Image src="/nirmal_logo.png" alt="Nirmal" width={32} height={32} className="rounded-full bg-white p-0.5" />
-          <div className="leading-tight">
-            <div className="font-display font-bold text-sm tracking-wide">NIRMAL&apos;S SPICES</div>
-            <div className="text-[9px] uppercase tracking-widest text-white/50">Admin Console</div>
-          </div>
-          <button type="button" className="ml-auto lg:hidden" onClick={() => setSidebarOpen(false)}>
-            <X size={18} />
+        {/* Sidebar Header Branding */}
+        <div className="h-16 px-4 flex items-center justify-between border-b border-white/10 shrink-0">
+          <Link href="/admin" className="flex items-center gap-3 overflow-hidden">
+            <div className="w-10 h-10 rounded-xl bg-white p-1 shrink-0 flex items-center justify-center shadow-md">
+              <Image
+                src="/nirmal_logo (2).png"
+                alt="Nirmal Spices"
+                width={36}
+                height={36}
+                className="object-contain"
+                priority
+              />
+            </div>
+            {!collapsed && (
+              <div className="leading-tight overflow-hidden">
+                <div className="font-display font-bold text-sm tracking-wide text-white truncate">
+                  NIRMAL&apos;S SPICES
+                </div>
+                <div className="text-[9px] uppercase tracking-widest text-primary font-accent font-bold">
+                  Admin Panel
+                </div>
+              </div>
+            )}
+          </Link>
+
+          {/* Desktop Collapse Toggle */}
+          <button
+            type="button"
+            onClick={() => setCollapsed(!collapsed)}
+            className="hidden lg:flex w-7 h-7 rounded-lg bg-white/10 text-white/80 hover:bg-white/20 items-center justify-center transition-colors"
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+
+          {/* Mobile Close Button */}
+          <button
+            type="button"
+            className="lg:hidden text-white/70 hover:text-white"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <X size={20} />
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+        {/* Navigation Items */}
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1.5 scrollbar-none">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const hasChildren = 'children' in item && Array.isArray(item.children);
@@ -163,103 +186,144 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                 <div key={item.href} className="space-y-1">
                   <button
                     type="button"
-                    onClick={() => setCustomersOpen((v) => !v)}
+                    onClick={() => {
+                      if (collapsed) setCollapsed(false);
+                      setCustomersOpen((v) => !v);
+                    }}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all duration-200',
                       active || pathname.startsWith('/admin/customers')
-                        ? 'bg-white/15 text-white'
-                        : 'text-white/70 hover:bg-white/10 hover:text-white',
+                        ? 'bg-primary text-white font-bold shadow-sm'
+                        : 'text-cream/70 hover:bg-white/10 hover:text-white'
                     )}
+                    title={collapsed ? item.label : undefined}
                   >
-                    <Icon size={16} />
-                    <span className="flex-1 text-left">{item.label}</span>
-                    <ChevronDown
-                      size={14}
-                      className={cn('transition-transform', customersOpen && 'rotate-180')}
-                    />
+                    <Icon size={18} className="shrink-0" />
+                    {!collapsed && <span className="flex-1 text-left">{item.label}</span>}
+                    {!collapsed && (
+                      <ChevronDown
+                        size={14}
+                        className={cn('transition-transform duration-200', customersOpen && 'rotate-180')}
+                      />
+                    )}
                   </button>
-                  {customersOpen &&
-                    item.children.map((child) => (
-                      <a
-                        key={child.href}
-                        href={child.href}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          goAdmin(child.href);
-                        }}
-                        className="flex items-center gap-3 pl-10 pr-3 py-2 rounded-lg text-xs font-medium text-white/65 hover:bg-white/10 hover:text-white"
-                      >
-                        {child.label}
-                      </a>
-                    ))}
+                  {!collapsed && customersOpen && (
+                    <div className="ml-3 pl-3 border-l border-white/15 space-y-1 my-1">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={cn(
+                            'block py-1.5 px-3 rounded-lg text-[11px] font-medium transition-all',
+                            pathname === child.href
+                              ? 'text-primary font-bold bg-white/10'
+                              : 'text-cream/65 hover:text-white hover:bg-white/5'
+                          )}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             }
 
             return (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
-                onClick={(e) => {
-                  e.preventDefault();
-                  goAdmin(item.href);
-                }}
+                onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                  active ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white',
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all duration-200',
+                  active
+                    ? 'bg-primary text-white font-bold shadow-sm'
+                    : 'text-cream/70 hover:bg-white/10 hover:text-white'
                 )}
+                title={collapsed ? item.label : undefined}
               >
-                <Icon size={16} />
-                {item.label}
-              </a>
+                <Icon size={18} className="shrink-0" />
+                {!collapsed && <span>{item.label}</span>}
+              </Link>
             );
           })}
         </nav>
 
-        <button
-          type="button"
-          onClick={() => void handleLogout()}
-          className="m-3 flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:bg-white/10 hover:text-white"
-        >
-          <LogOut size={16} /> Logout
-        </button>
+        {/* Sidebar Footer */}
+        <div className="p-3 border-t border-white/10 shrink-0 space-y-1">
+          <Link
+            href="/"
+            target="_blank"
+            className={cn(
+              'flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-cream/70 hover:bg-white/10 hover:text-white transition-colors',
+              collapsed && 'justify-center px-0'
+            )}
+            title={collapsed ? "View Live Store" : undefined}
+          >
+            <ExternalLink size={16} className="shrink-0 text-primary" />
+            {!collapsed && <span>View Live Store</span>}
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => void handleLogout()}
+            className={cn(
+              'w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold text-rose-300 hover:bg-rose-950/40 hover:text-rose-200 transition-colors outline-none',
+              collapsed && 'justify-center px-0'
+            )}
+            title={collapsed ? "Logout Admin" : undefined}
+          >
+            <LogOut size={16} className="shrink-0" />
+            {!collapsed && <span>Logout</span>}
+          </button>
+        </div>
       </aside>
 
+      {/* Main Content Area */}
       <div className="flex-1 min-w-0 flex flex-col">
-        <header className="sticky top-0 z-20 h-16 bg-white border-b border-gray-100 px-4 md:px-6 flex items-center gap-4">
-          <button type="button" className="lg:hidden p-2 rounded-lg hover:bg-gray-50" onClick={() => setSidebarOpen(true)}>
-            <Menu size={18} />
-          </button>
-          <span className="hidden sm:inline text-xs font-bold uppercase tracking-widest text-gray-400">
-            Admin Panel
-          </span>
-          <div className="flex-1 max-w-xl mx-auto relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="search"
-              placeholder="Search products, orders..."
-              className="w-full bg-gray-50 border border-gray-100 rounded-full pl-9 pr-4 py-2 text-xs outline-none focus:border-[#8B1E1E]/40"
-            />
-          </div>
-          <button type="button" className="relative p-2 rounded-full hover:bg-gray-50 text-gray-500">
-            <Bell size={16} />
-          </button>
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:block text-right leading-tight">
-              <div className="text-xs font-bold text-charcoal">{user.name}</div>
-              <div className="text-[10px] text-muted-foreground lowercase">{user.role}</div>
+        
+        {/* Top Header Bar */}
+        <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-md border-b border-border/60 px-4 md:px-6 flex items-center justify-between gap-4 shadow-xs">
+          
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="lg:hidden p-2 rounded-xl text-charcoal hover:bg-cream"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open mobile menu"
+            >
+              <Menu size={20} />
+            </button>
+
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-accent font-bold uppercase tracking-wider">
+                <ShieldCheck size={13} /> Official Admin Panel
+              </span>
             </div>
-            <div className="w-9 h-9 rounded-full bg-[#8B1E1E] text-white text-xs font-bold flex items-center justify-center">
+          </div>
+
+          {/* User Profile Info */}
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex flex-col text-right leading-tight">
+              <span className="text-xs font-bold text-charcoal">{user.name}</span>
+              <span className="text-[10px] text-muted-foreground uppercase font-accent font-semibold tracking-wider">
+                {user.role}
+              </span>
+            </div>
+            
+            <div className="w-9 h-9 rounded-full bg-primary text-white text-xs font-bold font-accent flex items-center justify-center shadow-xs border border-primary/30">
               {initials}
             </div>
           </div>
         </header>
 
-        {/* key forces a fresh page tree whenever the admin URL changes */}
-        <main key={routeKey} className="flex-1 p-4 md:p-6 lg:p-8">
+        {/* Dynamic Page Content without forced unmounting keys */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
           {children}
         </main>
       </div>
+
     </div>
   );
 }

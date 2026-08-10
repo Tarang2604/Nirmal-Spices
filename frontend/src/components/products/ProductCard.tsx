@@ -7,6 +7,7 @@ import { Heart, Star, ShoppingBag, Eye } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { cn } from '@/lib/utils';
+import { getSafeImageUrl, imageLoader } from '@/lib/imageUrl';
 import { toast } from 'sonner';
 import type { Product } from '@/data/catalog';
 
@@ -73,6 +74,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
       {/* Wishlist */}
       <button
         onClick={handleWishlist}
+        suppressHydrationWarning
         className="absolute top-2.5 right-2.5 z-10 w-8 h-8 bg-white/90 border border-border/40 backdrop-blur-sm flex items-center justify-center rounded-full text-muted-foreground hover:text-crimson hover:border-crimson/30 transition-colors duration-150 shadow-sm"
         aria-label="Toggle wishlist"
       >
@@ -85,9 +87,10 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         className="relative aspect-square w-full overflow-hidden bg-cream/40 shrink-0 block"
       >
         <Image
-          src={product.images[0] || '/hero_spices.png'}
+          src={getSafeImageUrl(product.images[0])}
           alt={product.name}
           fill
+          loader={imageLoader}
           sizes="(max-width:640px) 50vw, (max-width:1024px) 33vw, 25vw"
           className="object-contain p-4 group-hover:scale-105 transition-transform duration-400"
         />
@@ -152,6 +155,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           <button
             onClick={handleAddToCart}
             disabled={!product.inStock}
+            suppressHydrationWarning
             className={cn(
               "w-9 h-9 flex items-center justify-center rounded-full transition-all duration-200 flex-shrink-0",
               product.inStock
