@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { cache } from 'react';
 import type { Metadata } from 'next';
 import type { Product } from '@/data/catalog';
 import ProductGallery from '@/components/products/ProductGallery';
@@ -15,7 +15,7 @@ interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }
 
-async function getProduct(slug: string): Promise<Product | null> {
+const getProduct = cache(async (slug: string): Promise<Product | null> => {
   try {
     const res = await fetch(`${getBackendApiUrl()}/products/${slug}`, {
       cache: 'no-store',
@@ -28,7 +28,7 @@ async function getProduct(slug: string): Promise<Product | null> {
     // Fall through
   }
   return null;
-}
+});
 
 // Dynamic SEO metadata
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {

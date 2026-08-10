@@ -12,6 +12,9 @@ export default function AdminAuditLogsPage() {
       const res = await api.get('/admin/audit-logs');
       return res.data;
     },
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const logs = data?.data || [];

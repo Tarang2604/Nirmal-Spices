@@ -10,9 +10,9 @@ export default function AnnouncementBar() {
   ];
 
   return (
-    <div className="bg-crimson text-cream py-1.5 text-xs overflow-hidden w-full select-none sticky top-0 z-[60]" role="banner">
-      <div className="max-w-7xl mx-auto px-4 overflow-hidden relative">
-        <div className="announcement-ticker flex items-center gap-12 font-sans font-medium uppercase tracking-wider">
+    <div className="bg-crimson text-cream h-[28px] text-[11px] overflow-hidden w-full select-none sticky top-0 z-50 flex items-center" role="banner">
+      <div className="max-w-7xl mx-auto px-4 overflow-hidden relative w-full">
+        <div className="announcement-ticker flex items-center gap-12 font-sans font-semibold uppercase tracking-widest">
           {/* Double array to make the infinite loop continuous */}
           {[...announcements, ...announcements].map((text, idx) => (
             <span key={idx} className="inline-flex items-center gap-2 whitespace-nowrap">
