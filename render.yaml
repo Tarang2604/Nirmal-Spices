@@ -5,7 +5,12 @@ services:
     env: node
     plan: free
     rootDir: backend
-    buildCommand: npm install --legacy-peer-deps && npm run build
+    # --include=dev is required: with NODE_ENV=production set (as it should be
+    # for the running app), npm install skips devDependencies by default —
+    # which breaks the build itself, since tsc, @types/jest (tsconfig's global
+    # "types" array includes "jest"), etc. are all devDependencies needed only
+    # at build time, not runtime.
+    buildCommand: npm install --legacy-peer-deps --include=dev && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_ENV
