@@ -32,12 +32,23 @@ const envSchema = z
     RAZORPAY_KEY_SECRET: z.string().min(1),
     RAZORPAY_WEBHOOK_SECRET: z.string().min(1),
 
+    // TEST/STAGING ONLY — when true, order creation skips the live Razorpay
+    // API call and admins can manually mark an order as paid via
+    // PUT /api/orders/:id/mark-paid-test. Must be false (default) wherever
+    // real customer payments are collected.
+    PAYMENT_TEST_MODE: booleanFromEnv.default(false),
+
     CLOUDINARY_CLOUD_NAME: z.string().min(1),
     CLOUDINARY_API_KEY: z.string().min(1),
     CLOUDINARY_API_SECRET: z.string().min(1),
     CLOUDINARY_FOLDER: z.string().default('nirmal-spices'),
 
-    RESEND_API_KEY: z.string().min(1),
+    SMTP_HOST: z.string().min(1),
+    SMTP_PORT: z.coerce.number().default(587),
+    // true for port 465 (implicit TLS), false for 587/25 (STARTTLS)
+    SMTP_SECURE: booleanFromEnv.default(false),
+    SMTP_USER: z.string().min(1),
+    SMTP_PASS: z.string().min(1),
     EMAIL_FROM: z.string().min(1),
     EMAIL_REPLY_TO: z.string().optional(),
 
@@ -58,6 +69,13 @@ const envSchema = z
         code: z.ZodIssueCode.custom,
         path: ['REDIS_URL'],
         message: 'REDIS_URL is required when REDIS_ENABLED=true',
+      });
+    }
+    if (data.PAYMENT_TEST_MODE && data.NODE_ENV === 'production') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['PAYMENT_TEST_MODE'],
+        message: 'PAYMENT_TEST_MODE must not be true when NODE_ENV=production — it bypasses real payment collection',
       });
     }
   });
