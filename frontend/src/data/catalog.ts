@@ -41,13 +41,13 @@ export type Product = {
 };
 
 export const CATEGORIES = [
-  { label: 'All Spices', slug: '', count: 58 },
-  { label: 'Blended Masalas', slug: 'blended-masalas', count: 26 },
-  { label: 'Ground Spices', slug: 'ground-spices', count: 11 },
-  { label: 'Whole Spices', slug: 'whole-spices', count: 7 },
-  { label: 'Salts', slug: 'salts', count: 2 },
-  { label: 'Instant Mix', slug: 'instant-mix', count: 8 },
-  { label: 'Flour', slug: 'flour', count: 4 }
+  { label: 'All Spices', slug: '', count: 58, image: '/hero_spices.png' },
+  { label: 'Blended Masalas', slug: 'blended-masalas', count: 26, image: '/blended_masala_collection.jpg' },
+  { label: 'Ground Spices', slug: 'ground-spices', count: 11, image: '/spices_flatlay.png' },
+  { label: 'Whole Spices', slug: 'whole-spices', count: 7, image: '/whole_spices_collection.jpg' },
+  { label: 'Salts', slug: 'salts', count: 2, image: '/salt_category_banner.png' },
+  { label: 'Instant Mix', slug: 'instant-mix', count: 8, image: '/instant_mix_category_banner.png' },
+  { label: 'Flours', slug: 'flours', count: 4, image: '/flour_catalog.jpg' }
 ];
 
 const RAW_PRODUCTS = [
@@ -1336,47 +1336,6 @@ const RAW_PRODUCTS = [
     }
   },
   {
-    "_id": "p032",
-    "name": "Hara Masala (Green Blend)",
-    "slug": "hara-masala-green-blend",
-    "category": "Blended Masalas",
-    "categorySlug": "blended-masalas",
-    "brand": "Nirmal's Spices",
-    "price": 60,
-    "salePrice": null,
-    "packSize": "100g",
-    "images": [
-      "/products/blend-spices/jholiya-masala.png"
-    ],
-    "shortDescription": "Vibrant green spice blend for fish, chicken, and vegetable green curries.",
-    "description": "Nirmal's Hara Masala is a unique blend of green chillies, mint, coriander, and warm spices, dried and ground under low-temperature grinding technology to retain maximum fresh aroma and green color.",
-    "ingredients": "Dehydrated Coriander, Dehydrated Mint, Dried Green Chilli, Ginger, Garlic, Cumin, Pepper, Salt",
-    "usageSuggestions": "Add to fish curry or green chicken (cafreal/hariyali) preparations.",
-    "shelfLife": "12 months from date of manufacture",
-    "storageInstructions": "Refrigerate after opening or store in a dark airtight container.",
-    "nutritionalNotes": "Rich in iron and dietary herbs.",
-    "inStock": true,
-    "rating": 4.6,
-    "reviewCount": 22,
-    "badge": "new",
-    "tags": [
-      "hara masala",
-      "green curry",
-      "fish masala",
-      "hariyali"
-    ],
-    "seo": {
-      "title": "Hara Masala 100g | Green Curry Blend | Nirmal's Spices",
-      "description": "Green spice blend for fish and chicken curries. Dehydrated fresh herbs and spices. Order online.",
-      "keywords": [
-        "green masala",
-        "hara masala powder",
-        "fish green curry",
-        "hariyali chicken spice"
-      ]
-    }
-  },
-  {
     "_id": "p033",
     "name": "Kadai Masala",
     "slug": "kadai-masala",
@@ -1414,47 +1373,6 @@ const RAW_PRODUCTS = [
         "kadai paneer spice",
         "coarse ground masala",
         "kadai chicken spice"
-      ]
-    }
-  },
-  {
-    "_id": "p034",
-    "name": "Burger / Pizza Masala",
-    "slug": "burger-pizza-masala",
-    "category": "Blended Masalas",
-    "categorySlug": "blended-masalas",
-    "brand": "Nirmal's Spices",
-    "price": 35,
-    "salePrice": null,
-    "packSize": "50g",
-    "images": [
-      "/products/blend-spices/chat-masala.png"
-    ],
-    "shortDescription": "Fusion seasoning for pizzas, burgers, sandwiches, and pastas.",
-    "description": "A fun fusion blend that adds an Indian street-food kick to Western favorites like pizzas, burgers, fries, garlic bread, and pastas.",
-    "ingredients": "Oregano, Red Chilli Flakes, Garlic Powder, Black Salt, Mango Powder, Cumin, Pepper, Salt",
-    "usageSuggestions": "Sprinkle on top of pizzas, sandwich fillings, pasta sauces, or burger patties.",
-    "shelfLife": "12 months from date of manufacture",
-    "storageInstructions": "Keep dry. Do not use wet spoon.",
-    "nutritionalNotes": "Contains herbs and spices, no artificial colors.",
-    "inStock": true,
-    "rating": 4.4,
-    "reviewCount": 31,
-    "badge": "new",
-    "tags": [
-      "pizza seasoning",
-      "burger masala",
-      "fusion spice",
-      "oregano flakes"
-    ],
-    "seo": {
-      "title": "Pizza & Burger Masala 50g | Fusion Spice | Nirmal's Spices",
-      "description": "Sprinkle street-style Indian flavor on pizzas and burgers with our fusion seasoning. Made in Harda, MP.",
-      "keywords": [
-        "pizza masala",
-        "burger spice",
-        "pizza seasoning buy",
-        "sandwich sprinkler"
       ]
     }
   },
@@ -2465,6 +2383,9 @@ export function getProductBySlug(slug: string): Product | undefined {
 
 export function getProductsByCategory(categorySlug: string): Product[] {
   if (!categorySlug) return PRODUCTS;
+  if (categorySlug === 'flours' || categorySlug === 'flour') {
+    return PRODUCTS.filter(p => p.categorySlug === 'flours' || p.categorySlug === 'flour');
+  }
   return PRODUCTS.filter(p => p.categorySlug === categorySlug);
 }
 
@@ -2494,7 +2415,12 @@ export function filterAndSortProducts(params: {
   let result = [...PRODUCTS];
 
   if (params.category) {
-    result = result.filter(p => p.categorySlug === params.category);
+    const cat = params.category;
+    if (cat === 'flours' || cat === 'flour') {
+      result = result.filter(p => p.categorySlug === 'flours' || p.categorySlug === 'flour');
+    } else {
+      result = result.filter(p => p.categorySlug === cat);
+    }
   }
   if (params.badge) {
     result = result.filter(p => p.badge === params.badge);
