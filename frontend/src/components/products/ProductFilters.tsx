@@ -13,6 +13,11 @@ interface ProductFiltersProps {
 export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const activeCategory = searchParams.get('cat') || '';
   const activeBadge = searchParams.get('badge') || '';
@@ -27,6 +32,8 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
       const json = await res.json();
       return (json.data || []) as { name: string; slug: string }[];
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
   });
 
   // Local state so typing doesn't trigger router.push on every keystroke
@@ -39,7 +46,7 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
 
   const categories = [
     { label: 'All Spices', value: '' },
-    ...(catData || []).map((c) => ({ label: c.name, value: c.slug })),
+    ...(isMounted && catData ? catData : []).map((c) => ({ label: c.name, value: c.slug })),
   ];
 
   const badges = [
@@ -96,6 +103,7 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
         <button
           type="button"
           onClick={handleClearAll}
+          suppressHydrationWarning
           className="text-xs text-primary font-semibold uppercase tracking-wider font-accent hover:underline"
         >
           Clear All
@@ -110,6 +118,7 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
               key={cat.value || 'all'}
               type="button"
               onClick={() => updateParam('cat', cat.value, true)}
+              suppressHydrationWarning
               className={cn(
                 "text-left text-xs font-medium py-1.5 px-3 rounded-lg transition-all duration-200 outline-none",
                 activeCategory === cat.value
@@ -131,6 +140,7 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
               key={b.value || 'all-products'}
               type="button"
               onClick={() => updateParam('badge', b.value, true)}
+              suppressHydrationWarning
               className={cn(
                 "text-left text-xs font-medium py-1.5 px-3 rounded-lg transition-all duration-200 outline-none",
                 activeBadge === b.value
@@ -155,6 +165,7 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
             onBlur={applyPriceFilter}
             onKeyDown={handlePriceKeyDown}
             min={0}
+            suppressHydrationWarning
             className="w-full bg-cream-dark/30 border border-border focus:border-primary rounded-lg px-3 py-2 text-xs outline-none"
           />
           <span className="text-muted-foreground text-xs font-bold">–</span>
@@ -166,6 +177,7 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
             onBlur={applyPriceFilter}
             onKeyDown={handlePriceKeyDown}
             min={0}
+            suppressHydrationWarning
             className="w-full bg-cream-dark/30 border border-border focus:border-primary rounded-lg px-3 py-2 text-xs outline-none"
           />
         </div>

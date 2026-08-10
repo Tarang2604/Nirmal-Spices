@@ -44,6 +44,9 @@ export default function AdminCategoriesPage() {
       const res = await api.get('/categories/admin/all');
       return res.data.data as Category[];
     },
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const categories = data || [];
