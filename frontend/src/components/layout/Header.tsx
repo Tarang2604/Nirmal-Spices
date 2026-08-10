@@ -8,13 +8,13 @@ import { useAuthStore } from '@/store/authStore';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { cn } from '@/lib/utils';
-import { 
-  ShoppingBag, 
-  User as UserIcon, 
-  Search, 
-  Menu, 
-  X, 
-  ChevronDown, 
+import {
+  ShoppingBag,
+  User as UserIcon,
+  Search,
+  Menu,
+  X,
+  ChevronDown,
   LogOut,
   MapPin,
   ClipboardList
@@ -28,12 +28,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from '@tanstack/react-query';
 import { logoutNow } from '@/lib/authActions';
+import { fetchCategories } from '@/lib/api';
 
 export default function Header() {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const { user, isLoggedIn, isInitialized } = useAuthStore();
   const { items, fetchCart } = useCartStore();
@@ -41,12 +47,7 @@ export default function Header() {
 
   const { data: categories } = useQuery({
     queryKey: ['store-categories'],
-    queryFn: async () => {
-      const res = await fetch('/api/categories', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Failed to load categories');
-      const json = await res.json();
-      return (json.data || []) as { name: string; slug: string }[];
-    },
+    queryFn: fetchCategories,
     staleTime: 60_000,
     retry: 2,
   });
@@ -82,19 +83,19 @@ export default function Header() {
   };
 
   return (
-    <header 
+    <header
       className={cn(
-        "sticky top-[30px] z-50 w-full transition-all duration-300 border-b",
-        isScrolled 
-          ? "bg-white shadow-md border-border/60" 
-          : "bg-white/98 shadow-sm border-border/20"
+        "sticky top-[28px] z-40 w-full transition-all duration-300 border-b",
+        isScrolled
+          ? "bg-white/98 backdrop-blur-md shadow-md border-border/60"
+          : "bg-white shadow-xs border-border/20"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
-          
+
           {/* Mobile Menu Button */}
-          <button 
+          <button
             suppressHydrationWarning
             className="md:hidden p-2 text-foreground hover:bg-muted/50 rounded-full"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -125,8 +126,8 @@ export default function Header() {
           </Link>
 
           {/* Desktop Search Bar */}
-          <form 
-            onSubmit={handleSearchSubmit} 
+          <form
+            onSubmit={handleSearchSubmit}
             className="hidden md:flex items-center relative max-w-sm w-full"
           >
             <input
@@ -141,7 +142,7 @@ export default function Header() {
 
           {/* Header Navigation Actions */}
           <div className="flex items-center gap-2 sm:gap-4">
-            
+
             {/* Account / User Dropdown — wait for /auth/me so Login doesn't flash wrongly */}
             {!isInitialized ? (
               <div className="w-9 h-9 rounded-full bg-muted/60 animate-pulse" aria-hidden />
@@ -181,8 +182,8 @@ export default function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className="flex items-center gap-2 p-2 hover:bg-muted/50 rounded-full text-foreground"
                 aria-label="Login Account"
               >
@@ -192,7 +193,7 @@ export default function Header() {
             )}
 
             {/* Shopping Cart Button */}
-            <button 
+            <button
               onClick={toggleCart}
               suppressHydrationWarning
               className="flex items-center gap-2 p-2 hover:bg-muted/50 rounded-full relative text-foreground outline-none"
@@ -227,7 +228,7 @@ export default function Header() {
             <Link href="/" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🏠 Home</Link>
             <Link href="/about" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>✨ About Us</Link>
             <Link href="/shop" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🛍️ All Products</Link>
-            {(categories || []).map((c) => (
+            {(isMounted && categories ? categories : []).map((c) => (
               <Link
                 key={c.slug}
                 href={`/shop?cat=${c.slug}`}

@@ -9,5 +9,7 @@ export function getBackendApiUrl(): string {
       : undefined) ||
     'http://localhost:5000/api';
 
-  return raw.replace(/\/$/, '').replace(/\/backend-api$/, '/api');
+  // Normalize regardless of whether the source env var already included /api
+  // (matches next.config.ts's rewrite, which does the same strip-then-append).
+  return raw.replace(/\/$/, '').replace(/\/backend-api$/, '').replace(/\/api$/, '') + '/api';
 }

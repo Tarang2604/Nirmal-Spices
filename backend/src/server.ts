@@ -1,3 +1,9 @@
+import dns from 'dns';
+// Some hosts (e.g. Render) resolve external hostnames like smtp.gmail.com to an
+// IPv6 address but can't route outbound IPv6 traffic, causing ENETUNREACH.
+// Prefer IPv4 results globally so outbound connections (SMTP, etc.) succeed.
+dns.setDefaultResultOrder('ipv4first');
+
 import app from './app';
 import { env } from './config/env';
 import { connectDB, disconnectDB } from './config/db';
