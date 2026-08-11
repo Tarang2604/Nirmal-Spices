@@ -46,15 +46,9 @@ services:
         sync: false
       - key: CLOUDINARY_FOLDER
         value: nirmal-spices
-      - key: SMTP_HOST
-        sync: false
-      - key: SMTP_PORT
-        sync: false
-      - key: SMTP_SECURE
-        sync: false
-      - key: SMTP_USER
-        sync: false
-      - key: SMTP_PASS
+      # HTTP-based (Resend), not SMTP — Render blocks outbound SMTP ports on
+      # free web services (see render.com/changelog/free-web-services-will-no-longer-allow-outbound-traffic-to-smtp-ports).
+      - key: RESEND_API_KEY
         sync: false
       - key: EMAIL_FROM
         sync: false

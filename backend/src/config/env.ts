@@ -43,12 +43,9 @@ const envSchema = z
     CLOUDINARY_API_SECRET: z.string().min(1),
     CLOUDINARY_FOLDER: z.string().default('nirmal-spices'),
 
-    SMTP_HOST: z.string().min(1),
-    SMTP_PORT: z.coerce.number().default(587),
-    // true for port 465 (implicit TLS), false for 587/25 (STARTTLS)
-    SMTP_SECURE: booleanFromEnv.default(false),
-    SMTP_USER: z.string().min(1),
-    SMTP_PASS: z.string().min(1),
+    // HTTP-based (Resend), not SMTP — Render blocks outbound SMTP ports on
+    // free web services, which made raw SMTP (e.g. Gmail) unreliable/unusable.
+    RESEND_API_KEY: z.string().min(1),
     EMAIL_FROM: z.string().min(1),
     EMAIL_REPLY_TO: z.string().optional(),
 

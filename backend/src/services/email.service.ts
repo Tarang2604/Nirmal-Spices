@@ -70,19 +70,17 @@ export async function sendWelcomeEmail(email: string, name: string): Promise<voi
 
 // ── OTP ─────────────────────────────────────────────────────────────
 
-function isSmtpConfigured(): boolean {
-  const host = env.SMTP_HOST || '';
-  const user = env.SMTP_USER || '';
-  const pass = env.SMTP_PASS || '';
-  if (!host || !user || !pass) return false;
-  if (user.includes('your_') || pass.includes('your_') || pass.includes('xxxx')) return false;
+function isEmailConfigured(): boolean {
+  const key = env.RESEND_API_KEY || '';
+  if (!key) return false;
+  if (key.includes('your_') || key.includes('xxxx')) return false;
   return true;
 }
 
 export async function sendOTPEmail(email: string, otp: string, type: string): Promise<boolean> {
   const actionLabel = type === 'reset-password' ? 'password reset' : 'verification';
 
-  if (!isSmtpConfigured()) {
+  if (!isEmailConfigured()) {
     logger.info(`[EMAIL DEV MOCK] OTP for ${email}: ${otp}`);
     return true;
   }
