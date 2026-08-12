@@ -37,7 +37,7 @@ export default function FeaturesGrid() {
         {/* Header */}
         <div className="text-center max-w-xl mx-auto mb-16">
           <h2 id="features-heading" className="font-display font-bold text-3xl text-charcoal mb-4">
-            The Nirmal Spices Promise
+            The Nirmal's Spices Promise
           </h2>
           <p className="text-muted-foreground text-sm font-sans">
             We are dedicated to maintaining the highest standards of culinary quality, safety, 

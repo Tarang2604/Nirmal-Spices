@@ -82,7 +82,7 @@ export default function RegisterForm() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onRegister)} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onRegister)} className="flex flex-col gap-4" suppressHydrationWarning>
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
             <UserIcon size={14} /> Full Name
@@ -91,6 +91,7 @@ export default function RegisterForm() {
             type="text"
             placeholder="John Doe"
             autoComplete="name"
+            suppressHydrationWarning
             {...register('name')}
             className="bg-cream-dark/25 border border-border focus:border-primary rounded-xl px-4 py-2.5 text-xs outline-none"
           />
@@ -107,6 +108,7 @@ export default function RegisterForm() {
             type="email"
             placeholder="name@email.com"
             autoComplete="email"
+            suppressHydrationWarning
             {...register('email')}
             className="bg-cream-dark/25 border border-border focus:border-primary rounded-xl px-4 py-2.5 text-xs outline-none"
           />
@@ -129,6 +131,7 @@ export default function RegisterForm() {
               autoComplete="tel"
               maxLength={10}
               placeholder="9876543210"
+              suppressHydrationWarning
               {...register('phone', {
                 onChange: (e) => {
                   e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
@@ -150,6 +153,7 @@ export default function RegisterForm() {
             type="password"
             placeholder="•••••••• (Min 8 chars)"
             autoComplete="new-password"
+            suppressHydrationWarning
             {...register('password')}
             className="bg-cream-dark/25 border border-border focus:border-primary rounded-xl px-4 py-2.5 text-xs outline-none"
           />
@@ -161,6 +165,7 @@ export default function RegisterForm() {
         <button
           type="submit"
           disabled={loading}
+          suppressHydrationWarning
           className="bg-primary hover:bg-crimson-dark text-white font-semibold font-accent uppercase tracking-wider text-xs py-3.5 rounded-xl flex items-center justify-center gap-2 mt-2 transition-colors outline-none disabled:opacity-50"
         >
           {loading && <Loader2 className="w-4 h-4 animate-spin" />}

@@ -8,6 +8,8 @@
   --font-sans: "Inter", system-ui, sans-serif;
   --font-display: "Playfair Display", Georgia, serif;
   --font-accent: "Lato", sans-serif;
+  --font-hindi: var(--font-noto-serif-devanagari), "Noto Serif Devanagari", serif;
+  --font-cormorant: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
 
   /* Custom Color Tokens */
   --color-crimson: #C0392B;
