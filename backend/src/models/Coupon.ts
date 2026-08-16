@@ -109,9 +109,7 @@ const couponSchema = new Schema<ICoupon>(
   { timestamps: true },
 );
 
-couponSchema.index({ code: 1 }, { unique: true });
 couponSchema.index({ isActive: 1, startsAt: 1, expiresAt: 1 });
-couponSchema.index({ expiresAt: 1 });
 
 couponSchema.pre('validate', function (next) {
   if (this.type === 'percent' && this.value > 100) {

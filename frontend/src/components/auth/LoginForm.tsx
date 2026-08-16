@@ -173,7 +173,7 @@ export default function LoginForm() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onVerifyLogin)} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onVerifyLogin)} className="flex flex-col gap-4" suppressHydrationWarning>
         <div className="flex flex-col gap-1.5 w-full">
           <label className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
             <Mail size={14} /> Email Address
@@ -183,6 +183,7 @@ export default function LoginForm() {
             autoComplete="email"
             placeholder="name@email.com"
             disabled={otpSent}
+            suppressHydrationWarning
             {...register('email')}
             className="w-full bg-cream-dark/25 border border-border focus:border-primary rounded-xl px-4 py-2.5 text-xs outline-none disabled:opacity-60"
           />
@@ -206,6 +207,7 @@ export default function LoginForm() {
               maxLength={10}
               placeholder="9876543210"
               disabled={otpSent}
+              suppressHydrationWarning
               {...register('phone', {
                 onChange: (e) => {
                   e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
@@ -224,6 +226,7 @@ export default function LoginForm() {
             type="button"
             onClick={() => void sendOtp()}
             disabled={loading}
+            suppressHydrationWarning
             className="bg-primary hover:bg-crimson-dark text-white font-semibold font-accent uppercase tracking-wider text-xs py-3.5 rounded-xl flex items-center justify-center gap-2 mt-1 transition-colors outline-none disabled:opacity-50"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -243,6 +246,7 @@ export default function LoginForm() {
                     setValue('otp', '');
                     clearErrors('otp');
                   }}
+                  suppressHydrationWarning
                   className="text-[10px] text-primary hover:underline font-semibold font-accent flex items-center gap-1 outline-none"
                 >
                   <RefreshCw size={10} /> Change details
@@ -253,6 +257,7 @@ export default function LoginForm() {
                 inputMode="numeric"
                 maxLength={6}
                 placeholder="000000"
+                suppressHydrationWarning
                 {...register('otp', {
                   onChange: (e) => {
                     const digits = e.target.value.replace(/\D/g, '').slice(0, 6);
@@ -273,6 +278,7 @@ export default function LoginForm() {
             <button
               type="submit"
               disabled={loading || otpValue.length !== 6}
+              suppressHydrationWarning
               className="bg-primary hover:bg-crimson-dark text-white font-semibold font-accent uppercase tracking-wider text-xs py-3.5 rounded-xl flex items-center justify-center gap-2 mt-1 transition-colors outline-none disabled:opacity-50"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -283,6 +289,7 @@ export default function LoginForm() {
               type="button"
               onClick={() => void sendOtp()}
               disabled={loading}
+              suppressHydrationWarning
               className="text-[11px] text-primary hover:underline font-semibold outline-none disabled:opacity-50"
             >
               Resend OTP
