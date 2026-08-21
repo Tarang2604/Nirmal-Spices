@@ -70,19 +70,17 @@ export async function sendWelcomeEmail(email: string, name: string): Promise<voi
 
 // ── OTP ─────────────────────────────────────────────────────────────
 
-function isSmtpConfigured(): boolean {
-  const host = env.SMTP_HOST || '';
-  const user = env.SMTP_USER || '';
-  const pass = env.SMTP_PASS || '';
-  if (!host || !user || !pass) return false;
-  if (user.includes('your_') || pass.includes('your_') || pass.includes('xxxx')) return false;
+function isEmailConfigured(): boolean {
+  const key = env.RESEND_API_KEY || '';
+  if (!key) return false;
+  if (key.includes('your_') || key.includes('xxxx')) return false;
   return true;
 }
 
 export async function sendOTPEmail(email: string, otp: string, type: string): Promise<boolean> {
   const actionLabel = type === 'reset-password' ? 'password reset' : 'verification';
 
-  if (!isSmtpConfigured()) {
+  if (!isEmailConfigured()) {
     logger.info(`[EMAIL DEV MOCK] OTP for ${email}: ${otp}`);
     return true;
   }
@@ -210,6 +208,94 @@ export async function sendOrderConfirmationEmail(
     logger.info({ email, orderId: order._id }, 'Order confirmation email sent');
   } catch (err) {
     logger.error({ err, email }, 'Failed to send order confirmation email');
+  }
+}
+
+// ── New Order Notification (to shop owner) ──────────────────────────
+
+export async function sendOrderNotificationToAdmin(
+  order: IOrder,
+  customerEmail: string,
+): Promise<void> {
+  const adminEmail = env.ADMIN_EMAIL ?? 'info@nirmalspices.in';
+
+  const itemsHtml = order.items
+    .map(
+      (item) => `
+      <tr>
+        <td style="padding:10px 0;border-bottom:1px solid #E8E0D0">
+          <strong>${item.name}</strong><br>
+          <span style="color:#8A8A8E;font-size:13px">${item.weight} &times; ${item.qty}</span>
+        </td>
+        <td style="text-align:right;padding:10px 0;border-bottom:1px solid #E8E0D0;font-weight:700">
+          &#8377;${(item.price * item.qty).toLocaleString('en-IN')}
+        </td>
+      </tr>
+    `,
+    )
+    .join('');
+
+  const addr = order.address;
+
+  try {
+    await mailer.sendMail({
+      from: FROM,
+      to: adminEmail,
+      replyTo: customerEmail,
+      subject: `New Order #${order._id} — ${addr.fullName} — Nirmal's Spices`,
+      html: renderEmailShell(`
+        <h1 style="color:#C0392B;font-family:Georgia,serif;font-size:26px">
+          New Order Received
+        </h1>
+        <p style="color:#3A3A3C;font-size:15px">
+          A new order has been paid and confirmed. Details below.
+        </p>
+
+        <div style="background:white;border-radius:12px;padding:20px;margin:24px 0">
+          <p style="font-size:13px;color:#8A8A8E;margin-bottom:4px">Order ID</p>
+          <strong style="color:#C0392B">#${order._id}</strong>
+          <p style="font-size:13px;color:#8A8A8E;margin:16px 0 4px">Payment</p>
+          <span>${order.paymentMethod === 'razorpay' ? 'Razorpay' : order.paymentMethod} &middot; Paid</span>
+
+          <table style="width:100%;margin-top:16px;border-collapse:collapse">
+            ${itemsHtml}
+            <tr>
+              <td style="padding:8px 0;color:#8A8A8E">Shipping</td>
+              <td style="text-align:right;color:#8A8A8E">${order.shipping === 0 ? 'FREE' : `&#8377;${order.shipping}`}</td>
+            </tr>
+            ${order.discount > 0 ? `<tr><td style="padding:8px 0;color:#27AE60">Discount</td><td style="text-align:right;color:#27AE60">-&#8377;${order.discount}</td></tr>` : ''}
+            <tr>
+              <td style="padding:12px 0;font-weight:700;font-size:16px">Total</td>
+              <td style="text-align:right;font-weight:800;font-size:16px;color:#C0392B">&#8377;${order.total.toLocaleString('en-IN')}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background:white;border-radius:12px;padding:20px;margin:24px 0">
+          <p style="font-size:13px;color:#8A8A8E;margin-bottom:8px">Customer</p>
+          <p style="margin:0 0 4px"><strong>${addr.fullName}</strong></p>
+          <p style="margin:0 0 4px;color:#3A3A3C">
+            <a href="mailto:${customerEmail}" style="color:#C0392B;text-decoration:none">${customerEmail}</a>
+          </p>
+          <p style="margin:0 0 16px;color:#3A3A3C">
+            <a href="tel:+91${addr.phone}" style="color:#C0392B;text-decoration:none">+91 ${addr.phone}</a>
+          </p>
+
+          <p style="font-size:13px;color:#8A8A8E;margin-bottom:4px">Ship To</p>
+          <p style="margin:0;color:#3A3A3C;line-height:1.6">
+            ${addr.line1}${addr.line2 ? `, ${addr.line2}` : ''}<br>
+            ${addr.city}, ${addr.state} — ${addr.pincode}
+          </p>
+        </div>
+
+        <a href="${process.env.CLIENT_URL}/admin/orders" style="display:inline-block;background:#C0392B;color:white;padding:14px 32px;border-radius:99px;text-decoration:none;font-weight:700;font-size:15px">
+          View in Admin Panel
+        </a>
+      `),
+    });
+    logger.info({ orderId: order._id, adminEmail }, 'Order notification email sent to admin');
+  } catch (err) {
+    logger.error({ err, orderId: order._id }, 'Failed to send order notification email to admin');
   }
 }
 

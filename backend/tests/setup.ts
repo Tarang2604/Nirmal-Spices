@@ -12,10 +12,7 @@ process.env.RAZORPAY_WEBHOOK_SECRET = 'test_webhook_secret';
 process.env.CLOUDINARY_CLOUD_NAME = 'test_cloudinary';
 process.env.CLOUDINARY_API_KEY = 'test_key';
 process.env.CLOUDINARY_API_SECRET = 'test_secret';
-process.env.SMTP_HOST = 'smtp.test.local';
-process.env.SMTP_PORT = '587';
-process.env.SMTP_USER = 'test_smtp_user';
-process.env.SMTP_PASS = 'test_smtp_pass';
+process.env.RESEND_API_KEY = 'test_resend_api_key';
 process.env.EMAIL_FROM = 'test@nirmalspices.in';
 // Pin explicitly — env.ts's dotenv.config() otherwise falls through to
 // whatever a developer's local .env has set, making test defaults depend on
@@ -54,7 +51,7 @@ jest.mock('../src/config/redis', () => {
   };
 });
 
-// Mock SMTP mailer client
+// Mock mailer client
 jest.mock('../src/config/mailer', () => ({
   mailer: {
     sendMail: jest.fn().mockResolvedValue({ messageId: 'test_mail_id' }),
