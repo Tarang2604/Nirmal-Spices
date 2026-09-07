@@ -106,7 +106,8 @@ export default function Footer() {
                 </li>
               ))}
               <li><Link href="/about" className="hover:text-primary transition-colors">✨ About Us</Link></li>
-              <li><Link href="/contact" className="hover:text-primary transition-colors">📞 Contact & Support</Link></li>
+              <li><Link href="/bulk-order" className="hover:text-primary transition-colors">🏢 B2B &amp; Bulk Orders</Link></li>
+              <li><Link href="/contact" className="hover:text-primary transition-colors">📞 Contact &amp; Support</Link></li>
             </ul>
           </div>
 
