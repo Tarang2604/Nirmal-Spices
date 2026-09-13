@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack --port 3000",
-    "build": "next build --webpack",
-    "start": "next start --port 3000",
+    "dev": "node init && next dev --webpack --port 3000",
+    "build": "node init && next build --webpack",
+    "start": "node init && next start --port 3000",
     "lint": "eslint",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
