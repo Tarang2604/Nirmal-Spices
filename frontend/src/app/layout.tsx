@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display, Lato } from "next/font/google";
+import { Inter, Playfair_Display, Lato, Noto_Serif_Devanagari, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/components/providers/QueryProvider";
 import AuthProvider from "@/components/providers/AuthProvider";
@@ -24,6 +24,21 @@ const lato = Lato({
   subsets: ["latin"],
   variable: "--font-accent",
   weight: ["300", "400", "700"],
+  display: "swap",
+});
+
+const notoSerifDevanagari = Noto_Serif_Devanagari({
+  subsets: ["devanagari", "latin"],
+  variable: "--font-noto-serif-devanagari",
+  weight: ["400", "600", "700", "800", "900"],
+  display: "swap",
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-cormorant",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -79,7 +94,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${playfair.variable} ${lato.variable} h-full scroll-smooth antialiased`}
+      className={`${inter.variable} ${playfair.variable} ${lato.variable} ${notoSerifDevanagari.variable} ${cormorantGaramond.variable} h-full scroll-smooth antialiased`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

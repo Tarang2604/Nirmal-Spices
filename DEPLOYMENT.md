@@ -31,7 +31,7 @@ Next.js reads `API_URL`/`BACKEND_URL` at **build time** to configure the `/backe
    | `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` | Generate fresh 32+ char random secrets — **do not reuse local dev values** |
    | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | Live-mode keys from Razorpay dashboard |
    | `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Same values as `backend/.env` |
-   | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM`, `EMAIL_REPLY_TO` | Same Gmail SMTP values as `backend/.env` |
+   | `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_REPLY_TO` | Resend (HTTP API), not SMTP — Render blocks outbound SMTP ports on free web services |
    | `MSG91_AUTH_KEY`, `MSG91_TEMPLATE_ID`, `MSG91_SENDER_ID` | See "SMS OTP" note below |
    | `SENTRY_DSN` | See "Error monitoring" note below |
    | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Only used by `npm run seed` — see "Admin credentials" note below |

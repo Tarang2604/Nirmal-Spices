@@ -9,7 +9,11 @@ import { ApiError } from '../utils/apiError';
 import { sendSuccess } from '../utils/apiResponse';
 import { asyncHandler } from '../utils/asyncHandler';
 import { razorpay } from '../config/razorpay';
-import { sendOrderConfirmationEmail, sendOrderStatusEmail } from '../services/email.service';
+import {
+  sendOrderConfirmationEmail,
+  sendOrderNotificationToAdmin,
+  sendOrderStatusEmail,
+} from '../services/email.service';
 import { writeAuditLog } from '../middleware/audit';
 import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
@@ -317,7 +321,10 @@ export const verifyPayment = asyncHandler(async (req: Request, res: Response) =>
     if (order.user) {
       email = req.user?.email || (await User.findById(order.user).select('email').lean())?.email;
     }
-    if (email) void sendOrderConfirmationEmail(email, order);
+    if (email) {
+      void sendOrderConfirmationEmail(email, order);
+      void sendOrderNotificationToAdmin(order, email);
+    }
   }
 
   return sendSuccess(res, { orderId: order._id }, 'Payment verified successfully');
@@ -385,7 +392,10 @@ export const handleRazorpayWebhook = asyncHandler(async (req: Request, res: Resp
       const email = order.user
         ? (await User.findById(order.user).select('email').lean())?.email
         : order.guestEmail;
-      if (email) void sendOrderConfirmationEmail(email, order);
+      if (email) {
+      void sendOrderConfirmationEmail(email, order);
+      void sendOrderNotificationToAdmin(order, email);
+    }
 
       logger.info({ orderId: order._id, event: eventObj.event }, 'Razorpay webhook order.paid processed');
     }
@@ -579,7 +589,10 @@ export const markOrderPaidForTesting = asyncHandler(async (req: Request, res: Re
   const email = order.user
     ? (await User.findById(order.user).select('email').lean())?.email
     : order.guestEmail;
-  if (email) void sendOrderConfirmationEmail(email, order);
+  if (email) {
+    void sendOrderConfirmationEmail(email, order);
+    void sendOrderNotificationToAdmin(order, email);
+  }
 
   void writeAuditLog({
     req,
