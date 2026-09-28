@@ -3,6 +3,10 @@ import { getBackendApiUrl } from '@/lib/backend';
 import { toStorefrontProducts } from '@/lib/productMapper';
 import { filterAndSortProducts } from '@/data/catalog';
 
+// Public storefront product data — safe to cache server-side.
+// Revalidate once per hour; full ISR in production.
+export const revalidate = 3600;
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
 
@@ -31,7 +35,7 @@ export async function GET(req: NextRequest) {
     if (search) params.set('search', search);
 
     const res = await fetch(`${getBackendApiUrl()}/products?${params.toString()}`, {
-      cache: 'no-store',
+      next: { revalidate: 3600 },
     });
 
     if (res.ok) {
