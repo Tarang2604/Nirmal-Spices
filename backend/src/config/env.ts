@@ -45,7 +45,7 @@ const envSchema = z
 
     // HTTP-based (Resend), not SMTP — Render blocks outbound SMTP ports on
     // free web services, which made raw SMTP (e.g. Gmail) unreliable/unusable.
-    RESEND_API_KEY: z.string().min(1),
+    RESEND_API_KEY: z.string().min(1).optional(),
     EMAIL_FROM: z.string().min(1),
     EMAIL_REPLY_TO: z.string().optional(),
 

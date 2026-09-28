@@ -21,7 +21,7 @@ const ACCENTS = [
 
 const CATEGORY_COVER_MAP: Record<string, string> = {
   'blended-masalas': '/blended_masala_collection.jpg',
-  'ground-spices': '/spices_flatlay.png',
+  'ground-spices': 'https://res.cloudinary.com/dzymvhmu/image/upload/v1789151413/nirmal-spices/marketing/spices_flatlay.jpg',
   'whole-spices': '/whole_spices_collection.jpg',
   salts: '/salt_category_banner.png',
   'instant-mix': '/instant_mix_category_banner.png',
@@ -79,7 +79,7 @@ export default function CategoryGrid({ initialCategories = [] }: { initialCatego
               const style = ACCENTS[idx % ACCENTS.length];
               const count = cat.count ?? 0;
               const imageSrc =
-                CATEGORY_COVER_MAP[cat.slug] || cat.image || '/spices_flatlay.png';
+                CATEGORY_COVER_MAP[cat.slug] || cat.image || 'https://res.cloudinary.com/dzymvhmu/image/upload/v1789151413/nirmal-spices/marketing/spices_flatlay.jpg';
               // /uploads/* is proxied by Next rewrites — not in /public, so skip optimizer
               const usePlainImg =
                 imageSrc.startsWith('/uploads/') || imageSrc.startsWith('http://localhost');

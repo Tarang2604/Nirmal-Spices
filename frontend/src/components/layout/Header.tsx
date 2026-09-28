@@ -238,6 +238,7 @@ export default function Header() {
                 🏷️ {c.name}
               </Link>
             ))}
+            <Link href="/bulk-order" className="hover:text-primary py-1 border-b border-border/40" onClick={() => setMobileMenuOpen(false)}>🏢 Bulk Orders</Link>
             <Link href="/contact" className="hover:text-primary py-1" onClick={() => setMobileMenuOpen(false)}>📞 Contact Us</Link>
           </nav>
         </div>
