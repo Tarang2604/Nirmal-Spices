@@ -1,7 +1,16 @@
-import { Resend } from 'resend';
 import { env } from './env';
 
-const resend = new Resend(env.RESEND_API_KEY);
+let resendInstance: import('resend').Resend | null = null;
+async function getResend() {
+  if (!env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY is not configured');
+  }
+  if (!resendInstance) {
+    const { Resend } = await import('resend');
+    resendInstance = new Resend(env.RESEND_API_KEY);
+  }
+  return resendInstance;
+}
 
 interface SendMailOptions {
   from: string;
@@ -11,13 +20,9 @@ interface SendMailOptions {
   replyTo?: string;
 }
 
-// Resend (HTTP API over 443) instead of SMTP — Render blocks outbound SMTP
-// ports on free web services, which made raw SMTP unreliable/unusable
-// (https://render.com/changelog/free-web-services-will-no-longer-allow-outbound-traffic-to-smtp-ports).
-// Keeps the same sendMail({ from, to, subject, html, replyTo }) shape the
-// nodemailer-based transport used, so callers didn't need to change.
 export const mailer = {
   sendMail: async ({ from, to, subject, html, replyTo }: SendMailOptions) => {
+    const resend = await getResend();
     const { error } = await resend.emails.send({
       from,
       to,

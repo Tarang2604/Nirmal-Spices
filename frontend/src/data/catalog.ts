@@ -43,7 +43,7 @@ export type Product = {
 export const CATEGORIES = [
   { label: 'All Spices', slug: '', count: 58, image: '/hero_spices.png' },
   { label: 'Blended Masalas', slug: 'blended-masalas', count: 26, image: '/blended_masala_collection.jpg' },
-  { label: 'Ground Spices', slug: 'ground-spices', count: 11, image: '/spices_flatlay.png' },
+  { label: 'Ground Spices', slug: 'ground-spices', count: 11, image: 'https://res.cloudinary.com/dzymvhmu/image/upload/v1789151413/nirmal-spices/marketing/spices_flatlay.jpg' },
   { label: 'Whole Spices', slug: 'whole-spices', count: 7, image: '/whole_spices_collection.jpg' },
   { label: 'Salts', slug: 'salts', count: 2, image: '/salt_category_banner.png' },
   { label: 'Instant Mix', slug: 'instant-mix', count: 8, image: '/instant_mix_category_banner.png' },

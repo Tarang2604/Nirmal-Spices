@@ -29,7 +29,7 @@ async function getInitialCategories() {
     name: c.label,
     slug: c.slug,
     count: c.count,
-    image: c.image || '/spices_flatlay.png',
+    image: c.image || 'https://res.cloudinary.com/dzymvhmu/image/upload/v1789151413/nirmal-spices/marketing/spices_flatlay.jpg',
   }));
 }
 

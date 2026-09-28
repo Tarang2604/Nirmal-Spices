@@ -26,13 +26,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     async function hydrate(fromFocus = false) {
       if (!fromFocus) initializeSession();
       try {
-        let user: IUserProfile;
-        try {
-          user = await loadMe();
-        } catch {
-          await api.post('/auth/refresh', undefined, { timeout: 12000 });
-          user = await loadMe();
-        }
+        const user = await loadMe();
         if (cancelled) return;
         setUser(user);
         if (!fromFocus) {

@@ -9,10 +9,11 @@ import ProductFilters from '@/components/products/ProductFilters';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { fetchCategories } from '@/lib/api';
 
 const CATEGORY_COVER_MAP: Record<string, string> = {
   'blended-masalas': '/blended_masala_collection.jpg',
-  'ground-spices': '/spices_flatlay.png',
+  'ground-spices': 'https://res.cloudinary.com/dzymvhmu/image/upload/v1789151413/nirmal-spices/marketing/spices_flatlay.jpg',
   'whole-spices': '/whole_spices_collection.jpg',
   salts: '/salt_category_banner.png',
   'instant-mix': '/instant_mix_category_banner.png',
@@ -35,13 +36,10 @@ function ShopContent() {
 
   const { data: catData } = useQuery({
     queryKey: ['store-categories'],
-    queryFn: async () => {
-      const res = await fetch('/api/categories', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Failed to load categories');
-      const json = await res.json();
-      return (json.data || []) as { name: string; slug: string }[];
-    },
-    staleTime: 60_000,
+    queryFn: fetchCategories,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    retry: 2,
   });
 
   const activeCategoryName =
