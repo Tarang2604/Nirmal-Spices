@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
+import { fetchCategories } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { Filter } from 'lucide-react';
 
@@ -26,14 +27,10 @@ export default function ProductFilters({ onCloseMobile }: ProductFiltersProps) {
 
   const { data: catData } = useQuery({
     queryKey: ['store-categories'],
-    queryFn: async () => {
-      const res = await fetch('/api/categories', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Failed to load categories');
-      const json = await res.json();
-      return (json.data || []) as { name: string; slug: string }[];
-    },
+    queryFn: fetchCategories,
     staleTime: 5 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
+    retry: 2,
   });
 
   // Local state so typing doesn't trigger router.push on every keystroke

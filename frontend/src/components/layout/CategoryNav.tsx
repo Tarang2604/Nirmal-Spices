@@ -34,6 +34,7 @@ export default function CategoryNav() {
       href: `/shop?cat=${c.slug}`,
       slug: c.slug,
     })),
+    { label: 'Bulk Orders', href: '/bulk-order', slug: undefined },
     { label: 'Contact Us', href: '/contact', slug: undefined },
   ];
 

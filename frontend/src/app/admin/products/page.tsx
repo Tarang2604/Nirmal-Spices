@@ -234,7 +234,7 @@ function AdminProductsInner() {
     setSeoTitle(p.seo?.title || '');
     setSeoDescription(p.seo?.description || '');
     setVariants(rows.length ? rows : [emptyRow()]);
-    setVariantMode(rows.length > 1 ? 'variants' : 'simple');
+    setVariantMode('variants'); // always allow adding more pack sizes when editing
     setSelectedFiles(null);
     setExistingImages(Array.isArray(p.images) ? p.images : []);
     setImagesToRemove([]);
@@ -303,7 +303,7 @@ function AdminProductsInner() {
       return;
     }
 
-    const rows = variantMode === 'simple' ? [variants[0]] : variants;
+    const rows = mode === 'edit' ? variants : (variantMode === 'simple' ? [variants[0]] : variants);
     for (const row of rows) {
       if (!row.weight.trim()) {
         toast.error('Each variant needs a weight / pack size');
