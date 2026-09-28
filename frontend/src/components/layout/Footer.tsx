@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { fetchCategories } from '@/lib/api';
 import { toast } from 'sonner';
 import { ArrowRight, Mail, Phone, MapPin } from 'lucide-react';
 
@@ -32,13 +33,9 @@ export default function Footer() {
 
   const { data: categories } = useQuery({
     queryKey: ['store-categories'],
-    queryFn: async () => {
-      const res = await fetch('/api/categories', { cache: 'no-store' });
-      if (!res.ok) throw new Error('Failed to load categories');
-      const json = await res.json();
-      return (json.data || []) as { name: string; slug: string }[];
-    },
-    staleTime: 60_000,
+    queryFn: fetchCategories,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
     retry: 2,
   });
 
@@ -106,7 +103,8 @@ export default function Footer() {
                 </li>
               ))}
               <li><Link href="/about" className="hover:text-primary transition-colors">✨ About Us</Link></li>
-              <li><Link href="/contact" className="hover:text-primary transition-colors">📞 Contact & Support</Link></li>
+              <li><Link href="/bulk-order" className="hover:text-primary transition-colors">🏢 B2B &amp; Bulk Orders</Link></li>
+              <li><Link href="/contact" className="hover:text-primary transition-colors">📞 Contact &amp; Support</Link></li>
             </ul>
           </div>
 

@@ -43,7 +43,7 @@ export default function AboutPage() {
       <section className="relative h-[450px] flex items-center justify-center overflow-hidden border-b border-bark/10">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/spices_flatlay.png"
+            src="https://res.cloudinary.com/dzymvhmu/image/upload/v1789151413/nirmal-spices/marketing/spices_flatlay.jpg"
             alt="Authentic Indian Spices Flatlay"
             fill
             className="object-cover brightness-40"

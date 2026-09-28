@@ -10,6 +10,7 @@ import contactRouter from './contact.routes';
 import adminRouter from './admin.routes';
 import wishlistRouter from './wishlist.routes';
 import settingsRouter from './settings.routes';
+import b2bRouter from './b2b.routes';
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use('/contact', contactRouter);
 router.use('/admin', adminRouter);
 router.use('/wishlist', wishlistRouter);
 router.use('/settings', settingsRouter);
+router.use('/b2b', b2bRouter);
 
 export default router;
