@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { imageLoader } from '@/lib/imageUrl';
 import { motion } from "framer-motion";
 
 /**
@@ -39,10 +40,11 @@ export default function BrandTagline() {
         }}
       >
         <Image
-          src="/brand_tagline_spices.png"
+          src="https://res.cloudinary.com/dzymvhmu/image/upload/v1789072333/nirmal-spices/marketing/brand_tagline_spices.jpg"
           alt="Authentic Indian Spices - Turmeric, Chilli, Whole Spices, Fresh Leaves"
           fill
           priority
+          loader={imageLoader}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
           className="object-cover object-right opacity-90 transition-opacity duration-700"
         />

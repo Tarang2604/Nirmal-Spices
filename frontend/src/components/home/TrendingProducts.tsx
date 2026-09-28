@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import type { Product } from '@/data/catalog';
 import { toStorefrontProducts } from '@/lib/productMapper';
+import { fetchProducts } from '@/lib/api';
 import { ShoppingBag, Star, Heart, ArrowRight, Flame, Sparkles, Grid, Eye } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
@@ -27,19 +28,16 @@ export default function TrendingProducts() {
   const addItem = useCartStore((s) => s.addItem);
   const { toggleWishlist, has } = useWishlistStore();
 
-  const { data: products = [], isLoading } = useQuery({
-    queryKey: ['trending-products', activeTab],
-    queryFn: async () => {
-      const params = new URLSearchParams({ limit: '16' });
-      if (activeTab === 'bestseller') params.set('badge', 'bestseller');
-      else if (activeTab === 'new') params.set('badge', 'new');
+  // Build params once — used in both queryKey and queryFn so they stay in sync
+  const queryParams: Record<string, string> = { limit: '16' };
+  if (activeTab === 'bestseller') queryParams.badge = 'bestseller';
+  else if (activeTab === 'new') queryParams.badge = 'new';
 
-      const res = await fetch(`/api/products?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to load products');
-      const json = await res.json();
-      return toStorefrontProducts(json.data || []);
-    },
-    staleTime: 60_000,
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ['trending-products', activeTab, queryParams],
+    queryFn: () => fetchProducts(queryParams).then(toStorefrontProducts),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
   });
 
   const tabs = [
