@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { imageLoader } from '@/lib/imageUrl';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, ShieldCheck, Sparkles, Star, Award } from 'lucide-react';
@@ -129,11 +130,12 @@ export default function HeroSection() {
             {/* Main image card */}
             <div className="relative w-full max-w-md lg:max-w-full aspect-[4/4.5]">
               <Image
-                src="/hero_product_showcase.png"
+                src="https://res.cloudinary.com/dzymvhmu/image/upload/v1789057639/nirmal-spices/marketing/hero_product_showcase.png"
                 alt="Nirmal's Spices – Premium Quality Masala Product Range"
                 fill
                 priority
                 loading="eager"
+                loader={imageLoader}
                 className="object-contain object-center drop-shadow-2xl"
                 sizes="(max-width: 768px) 100vw, 550px"
               />

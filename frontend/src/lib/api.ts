@@ -115,3 +115,23 @@ export async function fetchCategories(): Promise<ICategory[]> {
   const json = await res.json();
   return (json.data || []) as ICategory[];
 }
+
+export interface IProduct {
+  _id: string;
+  name: string;
+  slug: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Shared product fetcher for React Query deduplication.
+ * Accepts a URLSearchParams-compatible record so the query key and fetcher
+ * stay in sync — callers build params once and pass them to both.
+ */
+export async function fetchProducts(params: Record<string, string>): Promise<IProduct[]> {
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(`/api/products?${qs}`);
+  if (!res.ok) throw new Error('Failed to load products');
+  const json = await res.json();
+  return (json.data || []) as IProduct[];
+}

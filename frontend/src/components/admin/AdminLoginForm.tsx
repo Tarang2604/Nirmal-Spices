@@ -101,7 +101,8 @@ export default function AdminLoginForm() {
                 <input
                   type="email"
                   autoComplete="username"
-                  placeholder="admin@gmail.com"
+                  placeholder="admin@nirmalspices.in"
+                  suppressHydrationWarning
                   {...register('email')}
                   className="w-full bg-cream-dark/25 border border-border focus:border-primary rounded-xl pl-11 pr-4 py-3 text-sm outline-none"
                 />
@@ -121,6 +122,7 @@ export default function AdminLoginForm() {
                   type="password"
                   autoComplete="current-password"
                   placeholder="••••••••"
+                  suppressHydrationWarning
                   {...register('password')}
                   className="w-full bg-cream-dark/25 border border-border focus:border-primary rounded-xl pl-11 pr-4 py-3 text-sm outline-none"
                 />
@@ -133,6 +135,7 @@ export default function AdminLoginForm() {
             <button
               type="submit"
               disabled={loading}
+              suppressHydrationWarning
               className="w-full bg-primary hover:bg-crimson-dark text-white font-semibold font-accent uppercase tracking-wider text-xs py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight size={16} />}
